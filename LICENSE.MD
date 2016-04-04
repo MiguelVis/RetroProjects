@@ -1,0 +1,1 @@
+Each project has its own license; read LICENSE.MD in each folder for more details.

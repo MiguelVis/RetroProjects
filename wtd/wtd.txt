@@ -1,0 +1,455 @@
+WTD - WHAT TO DO
+----------------
+
+A "TO DO LIST" MANAGER FOR CP/M & Z80.
+
+v1.0 August 2014.
+
++------------+
+|    ?    ?  |
+| ?     ?    |
+|   ?      ? |
+|  ?  ?   ?  |
+|    ?  ?    |
++------------+
+
+(c) 2014 FLOPPY SOFTWARE, VALENCIA (SPAIN)
+    floppysoftware@gmail.com
+    www.floppysoftware.es
+    cpm-connections.blogspot.com.es
+
+
+INTRODUCTION
+------------
+
+This is a "To Do List" manager based on the "todo.txt" format
+by Gina Trapani. More info at 'http://todotxt.com'.
+
+It should run in any version of the CP/M operating system, running
+in any computer with a Z80 CPU.
+
+
+PROGRAM FILES
+-------------
+
+WTD     .COM -- Command to run the program in CP/M.
+WTD     .C   -- Source code.
+WTD     .TXT -- This help file.
+TODO    .TXT -- Simple text file with our tasks.
+COPYING .TXT -- GNU General Public License.
+
+
+THE PROGRAM
+-----------
+
+There are a lot of programs to help us to remember and organize our daily tasks.
+
+But too often, these programs have a big learning curve and / or they are not
+easy to use.
+
+This program uses the format and rules described by Gina Trapani in 'http://todotxt.com'.
+
+The "todo.txt" file format has some simple rules, but it is very effective, and is readable
+by humans.
+
+As it is a simple text file, it is very easy to copy, send or modify.
+
+It is not implemented yet the "done.txt" file.
+
+
+FORMAT & RULES
+--------------
+
+Here is presented a summary of format and rules as used in "todo.txt" file.
+
+You can read the full set of rules in Gina Trapani website:
+
+https://github.com/ginatrapani/todo.txt-cli/wiki/The-Todo.txt-Format
+
+The "todo.txt" file is a simple text file, and each text line is a task.
+
+Each task has some optional fields and one compulsory field:
+
+Done flag: x          (Optional: It sets a task as 'done'. It must be lowercase.)
+Priority:  (A)        (Optional: It sets a priority. Can be (A), (B), (C) ... (Z).
+                       It must be uppercase.)
+Date:      1977-08-16 (Optional: Date. It is written as YEAR-MONTH-DAY.)
+Subject:   any text   (Compulsory: Description of the task.
+                       It can contain +Projects and @Contexts.
+                       It can contain even own keywords or notations.)
+
+Each field has to be separated by one blank space.
+
+Examples:
+
+x (A) Cut my hair                  > Completed task with priority.
+(B) Call John                      > Pending task with priority.
+(B) Call John +Party @Phone        > Pending task with priority, project and context.
+2014-08-16 Remember Elvis +Music   > Pending task with date and project.
+x (C) 2014-12-25 Call Lisa @Phone  > Completed task with priority, date and context.
+
+You can even use your own keywords or notations in the subject field:
+
+(A) Pay tailor due:2015-01-15      > Uses our keyword 'due'.
+(B) 2014-01-04 Buy car *SUSPENDED* > Uses our keyword '*SUSPENDED*'.
+
+We can use our +Projects, @Contexts and keywords to filter the tasks we want
+to print on the screen.
+
+
+OPTIONS
+-------
+
+Commands and options are completed word as follows:
+
+ADD     {task def}       : Add task. You can enter directly the task following the format
+                           as defined before, or the program will ask the fields to you.
+
+EDIT    task-number      : Edit task. Changes one or more fields of a task.
+
+KILL    task-number      : Kill (delete) task.
+
+DONE    task-number      : Set task as done.
+
+PENDING task-number      : Set task as pending.
+
+SORT    PRIORITY | DATE  : Sort tasks by Priority or by Date.
+
+FILTER  {OFF}            : Set filters for Print option. If OFF option was not entered,
+                           the program will ask to you the fields values to filter.
+
+PACK                     : Kill all done tasks.
+
+PRINT   {how-many-tasks} : Print tasks on screen.
+
+SAVE                     : Save taks on disk.
+
+HELP                     : Help summary.
+
+QUIT                     : End program.
+
+Items between {} are optional.
+
+Examples:
+
+	ADD (A) Call Leslie @Phone
+
+	ADD
+
+	EDIT 2
+
+	KILL 2
+
+	SORT DATE
+
+	FILTER
+
+	FILTER OFF
+
+	PRINT
+
+	PRINT 10
+
+
+FILTERING	
+---------
+
+WTD supports simple but effective filtering for the PRINT command by each task field.
+
+When you FILTER by a field (or more fields), each task that matches with the filter
+will be printed on screen when you enter the PRINT command.
+
+The filter text will be searched in the task field. If it is found in any position in
+the field, it matches the filter.
+
+You can PRINT all tasks when filter is not active:
+
+	Command (HELP for help)? print
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 000 |   |   |            | Go fishing +Holidays                            |
+	| 001 |   | A |            | Buy train ticket +Holidays @Buy                 |
+	| 002 |   | A |            | Call hotel +Holidays @Phone                     |
+	| 003 |   |   |            | Visit oncle Joe +Holidays                       |
+	| 004 |   |   |            | Send a letter to daddy +Holidays @Letter        |
+	| 005 |   |   |            | Buy a present for oncle Joe +Holidays @Buy      |
+	| 006 |   |   | 2014-06-15 | My party! +Party                                |
+	| 007 |   |   |            | Call Sheyla +Party @Phone                       |
+	| 008 |   |   |            | Call John +Party @Phone                         |
+	| 009 |   |   |            | Call Peter & Marc +Party @Phone                 |
+	| 010 |   |   |            | Buy cake +Party @Buy                            |
+	| 011 |   |   |            | Buy pizza, chips & beer +Party @Buy             |
+	| 012 |   | A | 2014-07-01 | Holidays! +Holidays                             |
+	| 013 |   | A | 2014-07-16 | Return to work :(                               |
+	| 014 |   | C |            | Call plumber +Home @Phone                       |
+	+-----+---+---+------------+-------------------------------------------------+
+
+	15 of 15 tasks shown
+
+Or FILTER by one or more fields.
+
+In the following example, I want to know all tasks related with my birthday party:
+
+	Command (HELP for help)? filter
+	Done (x/CR)          :
+	Priority (A:Z/CR)    :
+	Date (yyyy-mm-dd/CR) :
+	Subject              : +Party
+
+	Command (HELP for help)? print
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	|     |   |   |            | +Party                                          |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 006 |   |   | 2014-06-15 | My party! +Party                                |
+	| 007 |   |   |            | Call Sheyla +Party @Phone                       |
+	| 008 |   |   |            | Call John +Party @Phone                         |
+	| 009 |   |   |            | Call Peter & Marc +Party @Phone                 |
+	| 010 |   |   |            | Buy cake +Party @Buy                            |
+	| 011 |   |   |            | Buy pizza, chips & beer +Party @Buy             |
+	+-----+---+---+------------+-------------------------------------------------+
+
+	6 of 15 tasks shown
+
+Note that active filters are shown under the header titles.
+
+A filter is active until the command FILTER OFF is entered, or the filter has been
+changed by another one.
+
+Now, I want to know what phone calls I must to do:
+
+	Command (HELP for help)? filter
+	Done (x/CR)          :
+	Priority (A:Z/CR)    :
+	Date (yyyy-mm-dd/CR) :
+	Subject              : @Phone
+
+	Command (HELP for help)? print
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	|     |   |   |            | @Phone                                          |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 002 |   | A |            | Call hotel +Holidays @Phone                     |
+	| 007 |   |   |            | Call Sheyla +Party @Phone                       |
+	| 008 |   |   |            | Call John +Party @Phone                         |
+	| 009 |   |   |            | Call Peter & Marc +Party @Phone                 |
+	| 014 |   | C |            | Call plumber +Home @Phone                       |
+	+-----+---+---+------------+-------------------------------------------------+
+
+	5 of 15 tasks shown
+
+But I have not too much time. Then, only phone calls with high priority, please:
+
+	Command (HELP for help)? filter
+	Done (x/CR)          :
+	Priority (A:Z/CR)    : A
+	Date (yyyy-mm-dd/CR) :
+	Subject              : @Phone
+
+	Command (HELP for help)? print
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	|     |   | A |            | @Phone                                          |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 002 |   | A |            | Call hotel +Holidays @Phone                     |
+	+-----+---+---+------------+-------------------------------------------------+
+
+	1 of 15 tasks shown
+
+Now, I want to know what high priority tasks I must to do in 2014, July:
+
+	Command (HELP for help)? filter
+	Done (x/CR)          :
+	Priority (A:Z/CR)    : A
+	Date (yyyy-mm-dd/CR) : 2014-07
+	Subject              :
+
+	Command (HELP for help)? print
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	|     |   | A | 2014-07    |                                                 |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 012 |   | A | 2014-07-01 | Holidays! +Holidays                             |
+	| 013 |   | A | 2014-07-16 | Return to work :(                               |
+	+-----+---+---+------------+-------------------------------------------------+
+
+Well, simple... but effective!
+
+
+OTHER COMMANDS
+--------------
+
+We want to SORT our taks according to their date? Easy:
+
+	Command (HELP for help)? sort date
+	Sorting... Ok
+
+	Command (HELP for help)? print
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 000 |   |   | 2014-06-15 | My party! +Party                                |
+	| 001 |   | A | 2014-07-01 | Holidays! +Holidays                             |
+	| 002 |   | A | 2014-07-16 | Return to work :(                               |
+	| 003 |   | A |            | Buy train ticket +Holidays @Buy                 |
+	| 004 |   | A |            | Call hotel +Holidays @Phone                     |
+	| 005 |   | C |            | Call plumber +Home @Phone                       |
+	| 006 |   |   |            | Buy a present for oncle Joe +Holidays @Buy      |
+	+-----+---+---+------------+-------------------------------------------------+
+
+	7 of 7 tasks shown
+
+Or by priority?
+
+	Command (HELP for help)? sort priority
+	Sorting... Ok
+
+	Command (HELP for help)? print
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 000 |   | A | 2014-07-01 | Holidays! +Holidays                             |
+	| 001 |   | A | 2014-07-16 | Return to work :(                               |
+	| 002 |   | A |            | Buy train ticket +Holidays @Buy                 |
+	| 003 |   | A |            | Call hotel +Holidays @Phone                     |
+	| 004 |   | C |            | Call plumber +Home @Phone                       |
+	| 005 |   |   | 2014-06-15 | My party! +Party                                |
+	| 006 |   |   |            | Buy a present for oncle Joe +Holidays @Buy      |
+	+-----+---+---+------------+-------------------------------------------------+
+
+	7 of 7 tasks shown
+
+We can set a task as DONE:
+
+	Command (HELP for help)? done 2
+	Command (HELP for help)? print
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 000 |   | A | 2014-07-01 | Holidays! +Holidays                             |
+	| 001 |   | A | 2014-07-16 | Return to work :(                               |
+	| 002 | x | A |            | Buy train ticket +Holidays @Buy                 |
+	| 003 |   | A |            | Call hotel +Holidays @Phone                     |
+	| 004 |   | C |            | Call plumber +Home @Phone                       |
+	| 005 |   |   | 2014-06-15 | My party! +Party                                |
+	| 006 |   |   |            | Buy a present for oncle Joe +Holidays @Buy      |
+	+-----+---+---+------------+-------------------------------------------------+
+
+	7 of 7 tasks shown
+
+To PRINT only the 3 first tasks:
+
+	Command (HELP for help)? print 3
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 000 |   | A | 2014-07-01 | Holidays! +Holidays                             |
+	| 001 |   | A | 2014-07-16 | Return to work :(                               |
+	| 002 | x | A |            | Buy train ticket +Holidays @Buy                 |
+	+-----+---+---+------------+-------------------------------------------------+
+
+	3 of 7 tasks shown
+
+To ADD a new task (method #1):
+
+	Command (HELP for help)? add (C) Go to the gym!
+	Command (HELP for help)? print
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 000 |   | A | 2014-07-01 | Holidays! +Holidays                             |
+	| 001 |   | A | 2014-07-16 | Return to work :(                               |
+	| 002 | x | A |            | Buy train ticket +Holidays @Buy                 |
+	| 003 |   | A |            | Call hotel +Holidays @Phone                     |
+	| 004 |   | C |            | Call plumber +Home @Phone                       |
+	| 005 |   |   | 2014-06-15 | My party! +Party                                |
+	| 006 |   |   |            | Buy a present for oncle Joe +Holidays @Buy      |
+	| 007 |   | C |            | Go to the gym!                                  |
+	+-----+---+---+------------+-------------------------------------------------+
+
+	8 of 8 tasks shown
+
+To ADD a new task (method #2):
+
+	Command (HELP for help)? add
+	Priority (A:Z/CR)    : A
+	Date (yyyy-mm-dd/CR) : 2014-08-16
+	Subject              : Remember Elvis
+
+	Command (HELP for help)? print
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 000 |   | A | 2014-07-01 | Holidays! +Holidays                             |
+	| 001 |   | A | 2014-07-16 | Return to work :(                               |
+	| 002 | x | A |            | Buy train ticket +Holidays @Buy                 |
+	| 003 |   | A |            | Call hotel +Holidays @Phone                     |
+	| 004 |   | C |            | Call plumber +Home @Phone                       |
+	| 005 |   |   | 2014-06-15 | My party! +Party                                |
+	| 006 |   |   |            | Buy a present for oncle Joe +Holidays @Buy      |
+	| 007 |   | A | 2014-08-16 | Remember Elvis                                  |
+	+-----+---+---+------------+-------------------------------------------------+
+
+	8 of 8 tasks shown
+
+To KILL the task #6 (oncle Joe is really an ugly person):
+
+	Command (HELP for help)? kill 6
+	Command (HELP for help)? print
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 000 |   | A | 2014-07-01 | Holidays! +Holidays                             |
+	| 001 |   | A | 2014-07-16 | Return to work :(                               |
+	| 002 | x | A |            | Buy train ticket +Holidays @Buy                 |
+	| 003 |   | A |            | Call hotel +Holidays @Phone                     |
+	| 004 |   | C |            | Call plumber +Home @Phone                       |
+	| 005 |   |   | 2014-06-15 | My party! +Party                                |
+	| 006 |   | A | 2014-08-16 | Remember Elvis                                  |
+	+-----+---+---+------------+-------------------------------------------------+
+
+	7 of 7 tasks shown
+
+CAUTION: Note that old task #7 is now task #6. Then, don't KILL two or more tasks
+without a PRINT command between them, or you will KILL a different task!
+
+To EDIT a task (we forgot the surname!):
+
+	Command (HELP for help)? edit 6
+	Priority (A:Z/CR)    : A
+	Date (yyyy-mm-dd/CR) : 2014-08-16
+	Subject              : Remember Elvis Presley
+
+	Command (HELP for help)? print
+	+-----+---+---+------------+-------------------------------------------------+
+	| Tsk | D | P | Date       | Subject                                         |
+	+-----+---+---+------------+-------------------------------------------------+
+	| 000 |   | A | 2014-07-01 | Holidays! +Holidays                             |
+	| 001 |   | A | 2014-07-16 | Return to work :(                               |
+	| 002 | x | A |            | Buy train ticket +Holidays @Buy                 |
+	| 003 |   | A |            | Call hotel +Holidays @Phone                     |
+	| 004 |   | C |            | Call plumber +Home @Phone                       |
+	| 005 |   |   | 2014-06-15 | My party! +Party                                |
+	| 006 |   | A | 2014-08-16 | Remember Elvis Presley                          |
+	+-----+---+---+------------+-------------------------------------------------+
+
+	7 of 7 tasks shown
+
+
+TECHNICAL NOTES
+---------------
+
+This program was developed using MESCC (Mike's Enhanced Small C Compiler - my
+own version of Small C), Z80ASMUK and HEXCOM.
+
+
+COPYRIGHT AND LEGAL NOTES
+-------------------------
+
+This program is copyright of FLOPPY SOFTWARE from VALENCIA, SPAIN, and is
+distributed under the GNU GENERAL PUBLIC LICENSE.
+
+Read the license.txt text archive for more details on this.
+
+

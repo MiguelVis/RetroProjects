@@ -1,0 +1,67 @@
+ROBOTS
+------
+
+A GAME FOR CP/M-80 & CP/M-86.
+
+v1.00 - 19 Mar 2015.
+
+      R           ()   : :   ()
+    R O B O T S    \  [0_0]  /
+      B             x-+-:-+-x
+R O B O T S           |___|
+      T               /   \
+      S               \   /
+
+(c) 2015 Miguel Garcia / FloppySoftware
+    www.floppysoftware.es
+    cpm-connections.blogspot.com
+    floppysoftware@gmail.com
+
+
+THE GAME
+--------
+
+Robots is a turn-based game for CP/M-80 & CP/M-86.
+
+Based on ROBOTS, a BSD game (but no source code was taken from it).
+
+The objetive of the robots is only one: to kill you.
+
+The only thing you can do, is to try to escape from them. But use the
+teletransportation with care: you have only a few teletransport tickets!
+
+The robots will die if they collide between them or crash against something.
+
+That's your only opportunity to win the robots.
+
+Good luck!
+
+
+GAME FILES
+----------
+
+ROBOTS  .COM -- Game for CP/M-80.
+ROBOTS  .CMD -- Game for CP/M-86.
+ROBOTS  .C   -- Source code for MESCC & DR-C.
+ROBOTS  .TXT -- This help file.
+COPYING .TXT -- GNU General Public License.
+
+
+TECHNICAL NOTES
+---------------
+
+This program was developed using MESCC (Mike's Enhanced Small C Compiler - my
+own version of Small C) for the CP/M-80 version, and Digital Research C for
+the CP/M-86 version.
+
+See ROBOTS.C for more details.
+
+
+COPYRIGHT AND LEGAL NOTES
+-------------------------
+
+This program is copyright of FLOPPY SOFTWARE from VALENCIA, SPAIN, and is
+distributed under the GNU GENERAL PUBLIC LICENSE.
+
+Read the COPYING.TXT text file for more details.
+

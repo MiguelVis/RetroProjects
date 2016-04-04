@@ -1,0 +1,66 @@
+AMSTTY
+------
+
+Small tools for the Amstrad CP/M screen.
+
+v1.00 - 20 Mar 2015.
+
++-------------------+
+| A>_               |
+|                   |
+|                   |
+|                   |
++-------------------+
+
+(c) 2015 Miguel Garcia / FloppySoftware
+    www.floppysoftware.es
+    cpm-connections.blogspot.com
+    floppysoftware@gmail.com
+
+
+INTRODUCTION
+------------
+
+This is a small package containing some useful tools for
+the screen of the Amstrad computers (CPC & PCW) in CP/M.
+
+As the Amstrad CP/M screen emulates a VT52, they can be
+useful for other CP/M computers too.
+
+
+TOOLS
+-----
+
+CLS              --  To clear the screen.
+CURSOR ON | OFF  --  To show / hide the screen cursor.
+STLINE ON | OFF  --  To show / hide the screen status line.
+
+
+FILES
+-----
+
+CLS     .COM -- Executable.
+CLS     .C   -- Source code.
+CURSOR  .COM -- Executable.
+CURSOR  .C   -- Source code.
+STLINE  .COM -- Executable.
+STLINE  .C   -- Source code.
+AMSTTY  .TXT -- This help file.
+COPYING .TXT -- GNU General Public License.
+
+
+TECHNICAL NOTES
+---------------
+
+This software was developed using MESCC (Mike's Enhanced Small C Compiler - my
+own version of Small C) for CP/M and Z80.
+
+
+COPYRIGHT AND LEGAL NOTES
+-------------------------
+
+This software is copyright of FLOPPY SOFTWARE from VALENCIA, SPAIN, and is
+distributed under the GNU GENERAL PUBLIC LICENSE.
+
+Read the COPYING.TXT text file for more details.
+

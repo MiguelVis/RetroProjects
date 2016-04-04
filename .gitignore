@@ -1,0 +1,59 @@
+# Ignore MESCC tool chain binaries
+cpm.exe
+cc.COM
+ccopt.COM
+zsm.com
+hextocom.COM
+
+# Ignore MESCC libraries
+alloc.h
+atexit.h
+bsearch.h
+clock.h
+conio.h
+cpm.h
+ctype.h
+fileio.h
+fprintf.h
+mem.h
+mescc.h
+printf.h
+qsort.h
+rand.h
+redir.h
+setjmp.h
+sprintf.h
+string.h
+xprintf.h
+z80.h
+
+# Don't ignore MESSC tool chain binaries in mescc directory
+!/mescc/*.exe
+!/mescc/*.com
+!/mescc/*.COM
+
+# Don't ignore MESCC libraries in mescc directory
+!/mescc/*.h
+
+# Ignore intermediate HEX files
+*.HEX
+
+# Ignore intermediate ZSM files
+*.ZSM
+
+# Ignore intermediate PRN files
+*.PRN
+
+# Ignore ZIP files
+*.zip
+
+# Ignore backup folders
+backup/
+
+# Ignore some projects
+/adv
+/ddfont
+/samarux
+/star
+/threads
+/wp

@@ -1,0 +1,92 @@
+FIND THAT MINE!
+---------------
+
+A GAME FOR CP/M & Z80.
+
+v1.4 - July 2014.
+
+
+ (o.o)   *
+  """      *
+ +-|-+    *
+ ! | !  (TNT)
+  .-.
+  | |
+  " "
+
+(c) 2014 FLOPPY SOFTWARE, VALENCIA (SPAIN)
+    floppysoftware@gmail.com
+    www.floppysoftware.es
+    cpm-connections.blogspot.com.es
+
+
+INTRODUCTION
+------------
+
+This is a clon (yes, one more) of MineSweeper for CP/M, derived from
+the Amstrad PCW & Samaruc GUI version.
+
+It should run in any version of the CP/M operating system, running in any
+computer with a Z80 CPU.
+
+
+GAME FILES
+----------
+
+MINESCPM.COM -- Command to run the game in CP/M.
+MINESCPM.TXT -- This help file.
+LICENSE .TXT -- GNU General Public License.
+
+
+THE GAME
+--------
+
+The aim of the game is to find all the mines of the board, putting a flag over
+them and uncovering the other squares.
+
+If you uncover a mine, you will lose the game.
+
+There are three different levels.
+
+In the level menu, you can exit the game by entering the command:
+
+	Q
+
+
+HOW TO PLAY
+-----------
+
+To uncover a square, you can enter a command telling its position as row and column.
+
+E.G. - To uncover the square in row 1 and column C, you can enter:
+
+	1C
+
+A number on a square means that there are the same amount of mines around it.
+
+To put or remove a flag over a square, you must append a F to the end.
+
+E.G. - To put / remove a flag in row 3 and column D, you can enter:
+
+	3DF
+
+To exit the level, you can enter the command:
+
+	Q
+
+
+TECHNICAL NOTES
+---------------
+
+This program was developed using MESCC (Mike's Enhanced Small C Compiler - my
+own version of Small C).
+
+
+COPYRIGHT AND LEGAL NOTES
+-------------------------
+
+This program is copyright of FLOPPY SOFTWARE from VALENCIA, SPAIN, and is
+distributed under the GNU GENERAL PUBLIC LICENSE.
+
+Read the license.txt text archive for more details on this.
+
