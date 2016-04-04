@@ -3,6 +3,14 @@ My retro programming projects
 
 For various targets, including CP/M, Z80, Amstrad PCW, Amstrad CPC, etc.
 
+Contact info.:
+
+Miguel García / FloppySoftware, Spain
+
+floppysoftware@gmail.com
+http://www.floppysoftware.es
+http://cpm-connections.blogspot.com.es
+
 
 AMSTTY
 ------
