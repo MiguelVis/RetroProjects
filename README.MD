@@ -8,7 +8,9 @@ Contact info.:
 Miguel García / FloppySoftware, Spain
 
 floppysoftware@gmail.com
+
 http://www.floppysoftware.es
+
 http://cpm-connections.blogspot.com.es
 
 
