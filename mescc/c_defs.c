@@ -39,6 +39,7 @@
 	27 Nov 2015 : Removed some text defs.
 	02 Dec 2015 : v1.10
 	08 Jan 2016 : Supported #ifs from 5 to 8.
+	04 Apr 2016 : v1.11
 */
 
 /*	OPTIONAL DEFS
@@ -54,8 +55,8 @@
 /*	VERSION
 */
 
-#define VERSION	"Mike's Enhanced Small C Compiler v1.10 - 18 Dec 2015"
-#define COPYRGT "(c) 1999-2015 FloppySoftware"
+#define VERSION	"Mike's Enhanced Small C Compiler v1.11 - 04 Apr 2015"
+#define COPYRGT "(c) 1999-2016 FloppySoftware"
 
 /*	COMMON
 */

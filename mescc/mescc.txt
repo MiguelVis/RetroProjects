@@ -6,7 +6,7 @@
 ]     ] ]       ]     ] ]     ] ]     ]
 ]     ] ]]]]]]]  ]]]]]   ]]]]]   ]]]]]
 
-MESCC v1.09 - 26 Mar 2016
+MESCC v1.11 - 04 Apr 2016
 
 Mike's Enhanced Small C Compiler for Z80 and CP/M
 
