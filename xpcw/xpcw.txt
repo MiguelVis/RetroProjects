@@ -1,0 +1,140 @@
+]     ] ]]]]]]   ]]]]]  ]     ]
+ ]   ]  ]     ] ]     ] ]  ]  ]
+  ] ]   ]     ] ]       ]  ]  ]
+   ]    ]]]]]]  ]       ]  ]  ]
+  ] ]   ]       ]       ]  ]  ]
+ ]   ]  ]       ]     ] ]  ]  ]
+]     ] ]        ]]]]]   ]] ]]
+
+XPCW
+
+Graphics and keyboard library for the Amstrad PCW and MESCC,
+under the CP/M operating system.
+
+Copyright (c) 2015 Miguel Garcia / FloppySoftware, Spain
+
+www.floppysoftware.es
+cpm-connections.blogspot.com
+floppysoftware@gmail.com
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2, or (at your option) any
+later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+
+See the copying file for more details.
+
+Last update: 16:57 14/08/2015.
+
+
+OVERVIEW
+========
+
+XPCW is a graphics and keyboard library for the Amstrad PCW and MESCC,
+under the CP/M operating system.
+
+It consists of a CP/M Plus RSX file, with some library files (.h) for MESCC (my
+own version of the Small-C compiler).
+
+
+THE RSX
+=======
+
+The RSX is written in Z80 assembler source code.
+
+It can be accessed by any CP/M program or language, provided it follows
+its conventions (read the RSX source code for more information).
+
+To generate the RSX, you can do the following steps:
+
+	m80 =xpcw                     <- Compile with M80, to generate XPCW.REL
+	link xpcw[op]                 <- Link to generate XPCW.PRL
+	erase xpcw.rsx                <- Erase previous XPCW.RSX file if exists
+	rename xpcw.prl xpcw.rsx      <- Rename XPCW.PRL to XPCW.RSX
+
+The above steps are only for your information, because the XPCW.RSX file
+is already included in the XPCW distribution files.
+
+The XPCW.RSX file, has to be attached to any program that uses this
+library:
+
+	gencom myprog.com xpcw.rsx
+
+
+THE LIBRARIES
+=============
+
+Only one MESCC library is needed (xpcw.h), the other are optional.
+
+The libraries are:
+
+	xpcw.h    - Main library.
+	xdraw.h   - Functions to draw pixels, lines, etc.
+	xtext.h   - Functions to write text, set the font, change attributes, etc.
+	xchrdef.h - Functions to get / set character definitions.
+	xbitmap.h - Functions to draw bitmaps.
+	xkeyb.h   - Functions to access the keyboard.
+
+You can extend the libraries, or create new ones.
+
+See the libraries source code, for more information about the available
+functions.
+
+
+MAKE PROGRAMS THAT USE XPCW
+===========================
+
+The XPCW RSX can be called from any CP/M program, written in any programming
+language, provided it follows the XPCW conventions (read the RSX source code
+for more information).
+
+In this section, you will see how to make a program written in MESCC, that uses
+the XPCW libraries.
+
+In your MESCC source code, you must to write the following line, to include
+the XPCW.H library:
+
+	#include "xpcw.h"
+
+As the other libraries are optional, you must include only, the libraries
+you will use.
+
+For example, if you will use functions to draw pixels, you must to include
+the XDRAW.H library:
+
+	#include "xdraw.h"
+
+Once you have compiled your program with MESCC, you must to attach the RSX
+file to it.
+
+The full procedure is as follows:
+
+	cc myprog                    <- To generate MYPROG.ZSM
+	zsm myprog                   <- To generate MYPROG.HEX
+	hexcom myprog                <- To generate MYPROG.COM
+	gencom myprog.com xpcw.rsx   <- To attach XPCW.RSX to MYPROG.COM
+
+Then, you can run your program by writing at the CP/M prompt:
+
+	myprog
+
+
+EXAMPLES
+========
+
+As an example, you can see the XDEMO program:
+
+	xdemo.com - Executable
+	xdemo.c   - Source code.
+
+My game SQUAREX uses this library too.
+

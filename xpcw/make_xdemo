@@ -1,0 +1,23 @@
+# Makefile for GNU-Make
+# ---------------------
+#
+# XDEMO
+#
+# Use: make -f make_xdemo
+
+# Fake
+xdemo : xdemo.com xpcw.rsx
+	@echo -- DONE --
+# COM
+xdemo.com : xdemo.c
+	cpm cc xdemo
+	cpm zsm xdemo
+	cpm hexcom xdemo
+	copy xdemo.com ..\cpmio\xdemo.com
+# RSX
+xpcw.rsx : xpcw.mac
+	cpm m80 =xpcw
+	cpm2 link xpcw[op]
+	erase xpcw.rsx
+	rename xpcw.prl xpcw.rsx
+	copy xpcw.rsx ..\cpmio\xpcw.rsx

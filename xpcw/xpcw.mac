@@ -1,0 +1,907 @@
+; -------------------------------------------
+;                  xpcw.mac
+;
+; Graphical and keyboard  functions  for  the
+;
+;                 Amstrad PCW
+;
+;              RSX for CP/M Plus
+;
+; (c) FloppySoftware / Miguel I. Garcia Lopez
+; -------------------------------------------
+;
+; Changes:
+;
+; 21 Jul 2015 : v1.00 : First version
+; 12 Aug 2015 : v1.01 : Minor changes
+; 17 Aug 2015 : v1.02 : Added SIGNATURE
+; 27 Sep 2015 : v1.03 : Solved bug in CalcBmpRC
+;
+; Call format:
+;
+; ld   c,60      ; Bdos function
+; ld   de,data   ; Data for RSX
+; call 5
+;
+; Data format:
+;
+; defb 9  ; RSX function # for this RSX
+; defb 6  ; # of parameters, including subfunction
+; defw 0  ; Subfunction as required
+; defw 0  ; Parameter #1
+; defw 0  ; Parameter #2
+; defw 0  ; Parameter #3
+; defw 0  ; Parameter #4
+; defw 0  ; Parameter #5
+
+	.Z80
+
+; -----------
+; Definitions
+; -----------
+
+RAMScroll  equ 0B600h  ; Roller ram address
+RAMChars   equ 0B800h  ; Font address
+RAMScreen  equ 05930h  ; Screen data address
+
+BDOS_RSX   equ 60      ; Bdos function to call an RSX
+RSX_FUN	   equ 9       ; RSX subfunction (this RSX)
+FUNCTIONS  equ 15      ; Number of available subfunctions
+
+BUFSIZE    equ 720     ; Buffer size (90 characters * 8 bytes each)
+
+SIGNATURE  equ 0CACAh  ; Signature for Hello function
+
+; Draw modes
+
+MODE_SET    equ 0
+MODE_CLEAR  equ 1
+MODE_TOGGLE equ 2
+
+; -------------
+; Start of code
+; -------------
+
+	cseg
+
+	defb 0,0,0,0,0,0 ;Serial number
+	jp   Trap        ;Jump to this RSX
+Cont:
+	jp   0           ;Jump to next RSX
+	defw 0           ;Address of previous RSX
+	defb 255         ;Remove flag (0 = permanent)
+	defb 0           ;Non banked only flag
+	defb 'XPCW    '  ;RSX name (8 bytes)
+	defb 0           ;Loader flag
+	defw 0           ;Reserved for CP/M
+
+Trap:
+	ld  a,c
+	cp  BDOS_RSX
+	jr  nz,Cont
+
+	ld  a,(de)
+	cp  RSX_FUN
+	jr  nz,Cont
+
+	inc de
+	;ld  a,(de)
+	;cp  6
+	;jr  nz,Cont
+
+	; Check if it is a legal subfunction #
+
+	inc de
+	ld  a,(de)
+	cp  FUNCTIONS
+	ret nc
+
+	; Disable the interrupts to gain some speed
+
+	di
+
+	inc de
+	inc de
+
+	; Copy the parameters
+
+	ex  de,hl
+	ld  de,par1
+	ld  bc,10    ; 5 parameters as WORD
+	ldir
+
+	; Save the SP
+
+	ld (oldsp),sp
+	ld sp,newsp
+
+	; Compute the subfunction address
+
+	ld  h,0
+	ld  l,a
+	add hl,hl
+	ld  de,functable
+	add hl,de
+	ld  a,(hl)
+	inc hl
+	ld  h,(hl)
+	ld  l,a
+
+	; Fake a call
+
+	ld   de,SysTrapRet
+	push de
+
+	; Call the subfunction
+
+	jp   (hl)
+
+	; The subfunction returns here
+
+SysTrapRet:
+	ld sp,(oldsp)  ; Restore the SP
+	ei             ; Enable the interrupts
+	ret            ; Return to the user program
+
+; ----
+; Data
+; ----
+
+oldsp:  defw 0   ; Old SP
+
+par1:   defw 0   ; Parameter # 1
+par2:   defw 0   ; ...
+par3:   defw 0   ; ...
+par4:   defw 0   ; ...
+par5:   defw 0   ; ...
+
+buffer: defs BUFSIZE ; Buffer to move data between screen and tpa banks
+
+functable:          ; Subfunctions table
+	defw Hello      ; #0
+	defw WriteEnv   ; #1
+	defw ReadEnv    ; #2
+	defw SetPixel   ; #3
+	defw GetPixel   ; #4
+	defw PutRC      ; #5
+	defw GetRC      ; #6
+	defw PutBmpRC   ; #7
+	defw GetBmpRC   ; #8
+	defw KeyMatrix  ; #9
+	defw SetFont    ; #10
+	defw SetAtts    ; #11
+	defw SetRC      ; #12
+	defw OutCh      ; #13
+	defw OutRpt     ; #14
+
+; ------------------------------
+; Checks if the RSX is in memory
+;
+; Entry: -
+; Exit:  hl = SIGNATURE
+; ------------------------------
+
+Hello:
+	ld hl,SIGNATURE
+	ret
+
+; ------------------------------------
+; Write data in the screen environment
+;
+; Entry: env_adr, tpa_adr, length
+; Exit:  -
+; ------------------------------------
+
+WriteEnv:
+	ld   hl, (par2)  ; Tpa address
+	ld   de, buffer
+	push de
+	ld   bc, (par3)  ; Length
+	push bc
+	ldir
+
+	call ScrBanks
+
+	pop  bc
+	pop  hl
+	ld   de, (par1)  ; Env address
+	ldir
+
+	jp TpaBanks
+
+; ------------------------------------
+; Get data from the screen environment
+;
+; Entry: env_adr, tpa_adr, length
+; Exit:  data in (tpa_adr)
+; ------------------------------------
+
+ReadEnv:
+	call ScrBanks
+
+	ld   hl, (par1)  ; Env address
+	ld   de, buffer
+	push de
+	ld   bc, (par3)  ; Length
+	push bc
+	ldir
+
+	call TpaBanks
+
+	pop  bc
+	pop  hl
+	ld   de, (par2)  ; Tpa address
+	ldir
+	ret
+
+; ------------------
+; Set pixel
+;
+; Entry: x, y, mode
+; Exit:  -
+; ------------------
+
+SetPixel:
+	call ScrBanks
+	call CalcXY
+	call SetPix0
+	jp   TpaBanks
+
+SetPix0:
+	ld   c,a
+	ld   a,(par3)     ; Mode
+	cp   MODE_SET
+	jr   z,SetPix1
+	cp   MODE_CLEAR
+	jr   z,SetPix2
+	cp   MODE_TOGGLE
+	ret  nz
+
+	; Toggle mode
+
+	ld   a,c
+	xor  (hl)
+	ld   (hl),a
+	ret
+
+	; Set mode
+
+SetPix1:
+	ld   a,c
+	or   (hl)
+	ld   (hl),a
+	ret
+
+	; Clear mode
+
+SetPix2:
+	ld   a,c
+	cpl
+	and  (hl)
+	ld   (hl),a
+	ret
+
+; --------------------------
+; Get pixel
+;
+; Entry: x, y
+; Exit:  a = h = l = 0 or NZ
+; --------------------------
+
+GetPixel:
+	call ScrBanks
+	call CalcXY
+
+	and  (hl)
+	ld   h,a
+	ld   l,a
+
+	jp   TpaBanks
+
+; ---------------------------------
+; Put data on row,col
+;
+; Entry: row, col, data, length
+; Exit:  -
+; ---------------------------------
+
+PutRC:
+	ld   hl, (par3) ;Data
+	ld   de, buffer
+	push de
+	ld   bc, (par4) ;Length
+	push bc
+	ldir
+
+	call ScrBanks
+
+	call CalcRC
+
+	ex   de,hl
+	pop  bc
+	pop  hl
+	ldir
+
+	jp   TpaBanks
+
+; ---------------------------------
+; Get data from row,col
+;
+; Entry: row, col, data, length
+; Exit:  data in (data)
+; ---------------------------------
+
+GetRC:
+	call ScrBanks
+
+	call CalcRC
+	ld   de,buffer
+	push de
+	ld   bc,(par4)  ; Length
+	push bc
+	ldir
+
+	call TpaBanks
+
+	pop  bc
+	pop  hl
+	ld   de,(par3)  ; Data
+	ldir
+	ret
+
+; -----------------------------------
+; Put bitmap on row,col
+;
+; Entry: row, col, rows, cols, bitmap
+; Exit:  -
+; -----------------------------------
+
+PutBmpRC:
+	call CalcBmpRC
+
+	ld   hl,(par5)        ; Bitmap
+	ld   de,buffer
+	ld   bc,(bmpTotSize)
+	ldir
+
+	call ScrBanks
+
+	ld   hl,buffer
+	ld   a,(par3)  ; Rows
+	ld   b,a
+
+PutBmpRC2:
+	push bc
+	push hl
+	call CalcRC
+
+	ex   de,hl  ; de = position on screen
+	pop  hl     ; hl = position on bitmap
+	ld   bc,(bmpRowSize)
+	ldir
+
+	; hl = hl + (bmpRowSize)
+
+	ex   de,hl
+	ld   hl,par1    ; Row
+	inc  (hl)
+	ex   de,hl
+
+	pop  bc
+	djnz PutBmpRC2
+
+	jp   TpaBanks
+
+; -----------------------------------
+; Get bitmap from row,col
+;
+; Entry: row, col, rows, cols, bitmap
+; Exit:  bitmap data in (bitmap)
+; -----------------------------------
+
+GetBmpRC:
+	call CalcBmpRC
+
+	call ScrBanks
+
+	ld   de,buffer
+	ld   a,(par3)  ; Rows
+	ld   b,a
+
+GetBmpRC2:
+	push bc
+	push de
+	call CalcRC   ; hl = position on screen
+	pop  de       ; de = position on bitmap
+	ld   bc,(bmpRowSize)
+	ldir
+
+	; de = de + (bmpRowSize)
+
+	ld   hl,par1    ; Row
+	inc  (hl)
+
+	pop  bc
+	djnz GetBmpRC2
+
+	call TpaBanks
+
+	ld   hl,buffer
+	ld   de,(par5)    ; Bitmap
+	ld   bc,(bmpTotSize)
+	ldir
+
+	ret
+
+; -------------------------------------------
+; Update the keyboard matrix.
+;
+; Entry: -
+; Exit:  hl = updated keyboard matrix address
+; -------------------------------------------
+
+KeyMatrix:
+	ld   a,083h
+	out  (0F2h),a    ; 08000h = Bank 3 R/W - BDOS/BIOS
+
+	ld   hl,0BFF0h   ; hl = keyboard matrix address
+	ld   de,matrix
+	ld   bc,16
+	ldir             ; copy to common bank
+
+	ld   a,086h
+	out  (0F2h),a    ; 08000h = Bank 2 R/W - Screen
+
+	ld   hl,matrix
+	ret
+
+matrix: defs 16
+
+; --------------
+; Text functions
+; --------------
+
+; Attributes
+
+AttBold   equ 00000001b
+AttItalic equ 00000010b
+AttUline  equ 00000100b
+AttLink   equ 00001000b
+AttGray   equ 00010000b
+AttInv    equ 00100000b
+
+; Globals
+
+txfnt:  defw 0  ; Font address (or 0 for internal)
+txatt:  defb 0  ; Attributes
+txrow:  defb 0  ; Current row on screen (0..31)
+txcol:  defb 0  ; Current column on screen (0..89)
+txpos:  defw 0  ; Current position on screen
+
+; ------------------------------------
+; Set font
+;
+; Entry: font address (0 for internal)
+; Exit:  -
+; ------------------------------------
+
+SetFont:
+	ld   hl,(par1)   ; Font
+	ld   (txfnt),hl
+	ret
+
+; -------------------
+; Set text attributes
+;
+; Entry: attributes
+; Exit:  -
+; -------------------
+
+SetAtts:
+	ld   a,(par1)   ; Attributes
+	ld   (txatt),a
+	ret
+
+; ------------------
+; Set text position
+;
+; Entry: row, column
+; Exit:  -
+; ------------------
+
+SetRC:
+	ld   a,(par1)   ; Row
+	ld   (txrow),a
+	ld   a,(par2)   ; Column
+	ld   (txcol),a
+	ld   hl,0       ; Mark position as unknown
+	ld   (txpos),hl
+	ret
+
+; ---------------------------
+; Print a character on screen
+;
+; Entry: character
+; Exit:  -
+; ---------------------------
+
+OutCh:
+	ld   hl,1       ; Fake a call to OutRpt (1 repetition)
+	ld   (par2),hl
+
+; --------------------------------------
+; Print a character on screen repeteadly
+;
+; Entry: character, how many times
+; Exit:  -
+; --------------------------------------
+
+OutRpt:
+	ld   hl,(par1)   ; hl = Character #
+	add  hl,hl
+	add  hl,hl
+	add  hl,hl      ; hl = hl * 8 = Char. offset in font map
+
+	ld   de,(txfnt)  ; de = font address or 0 for internal font
+	ld   a,e
+	or   d
+	push af
+	jr   nz,OutRpt2
+
+	; Internal font
+
+	call ScrBanks
+	ld   de,RAMChars
+
+OutRpt2:
+	; de = font address
+
+	; Copy character bitmap to buffer
+
+	add  hl,de      ; hl = Char. address
+	ld   de,buffer
+	ld   bc,8
+	ldir
+
+	; Change the environment if we are on TPA yet
+
+	pop  af
+	call nz,ScrBanks
+
+	; Check attributes
+
+	ld   a,(txatt)
+	or   a
+	jr   z,OutRptPos ; No attributes, print faster
+
+	ld   c,a         ; c = attributes
+
+	; Check bold
+
+	rr   c
+	jr   nc,OutRptItal
+
+	; Make bold
+
+	ld   hl,buffer
+	ld   b,8
+
+OutRptBold:
+	ld   a,(hl)
+	srl  a
+	or   (hl)
+	ld   (hl),a
+	inc  hl
+	djnz OutRptBold
+
+	; Check italic
+
+OutRptItal:
+	rr   c
+	jr   nc,OutRptUlin
+
+	; Make italic
+
+	ld   hl,buffer
+	ld   b,4
+
+OutRptItal2:
+	srl  (hl)
+	inc  hl
+	djnz OutRptItal2
+
+	; Check underline
+
+OutRptULin:
+	rr   c
+	jr   nc,OutRptLink
+
+	; Make underline
+
+	ld   hl,buffer + 7
+	ld   (hl),255
+
+	; Check link underline
+
+OutRptLink:
+	rr   c
+	jr   nc,OutRptGray
+
+	; Make link underline
+
+	ld   hl,buffer + 7
+	ld   (hl),01010101b
+
+	; Check grayed
+
+OutRptGray:
+	rr   c
+	jr   nc,OutRptInv
+	ld   hl,buffer
+	ld   b,8
+
+	; Make grayed
+
+OutRptGray1:
+	ld   a,b
+	and  1
+	jr   z,OutRptGray2
+
+	ld   a,10101010b
+	jr   OutRptGray3
+
+OutRptGray2:
+	ld   a,01010101b
+
+OutRptGray3:
+	and  (hl)
+	ld   (hl),a
+	inc  hl
+	djnz OutRptGray1
+
+	; Check inverse
+
+OutRptInv:
+	rr   c
+	jr   nc,OutRptPos
+
+	; Make inverse
+
+	ld   hl,buffer
+	ld   b,8
+
+OutRptInv1:
+	ld   a,(hl)
+	xor  255
+	ld   (hl),a
+	inc  hl
+	djnz OutRptInv1
+
+	; Compute position
+
+OutRptPos:
+	ld   hl,(par2)   ; # of repeats
+
+OutRptPos2:
+
+	; hl = # of repeats left
+
+	push hl
+
+	; Check if we know the position
+
+	ld   hl,(txpos)
+	ld   a,h
+	or   l
+	jr   nz,OutRpt3
+
+	; Compute position
+
+	ld   hl,(txrow)
+	ld   h,0
+	ld   (par1),hl     ; Fake row
+	ld   hl,(txcol)
+	ld   h,0
+	ld   (par2),hl     ; Fake column
+	call CalcRC        ; Compute position
+
+OutRpt3:
+
+	; hl = screen position
+
+	; Copy character bitmap on screen
+
+	ex   de,hl
+	ld   hl,buffer
+	ld   bc,8
+	ldir
+
+	; Update column position
+
+	ld   a,(txcol)
+	inc  a
+	cp   90
+	jr   nz,OutRpt5
+
+	; Unknown position
+
+	ld   de,0
+
+	; Update row position
+
+	ld   a,(txrow)
+	inc  a
+	cp   32
+	jr   nz,OutRpt4
+
+	xor  a           ; Row 0
+
+OutRpt4:
+	ld   (txrow),a   ; Update row
+	xor  a           ; Column 0
+
+OutRpt5:
+	ld   (txcol),a   ; Update column
+	ld   (txpos),de  ; Update position
+
+	; Check repeats left #
+
+	pop  hl
+	dec  hl
+	ld   a,l
+	or   h
+	jr   nz,OutRptPos2
+
+	; No more repeats
+
+	call TpaBanks
+
+	ret
+
+; -------
+; Helpers
+; -------
+
+; ----------------
+; Set screen banks
+; ----------------
+
+ScrBanks:
+	ld   a,81
+	out  (0F1h),a  ; 04000h = Bank 1 R/W - Screen/BIOS
+	ld   a,82
+	out  (0F2h),a  ; 08000h = Bank 2 R/W - Screen
+	ret
+
+; -------------
+; Set TPA banks
+; -------------
+
+TpaBanks:
+	ld   a,85
+	out  (0F1h),a  ; 04000h = Bank 5 R/W - TPA
+	ld   a,86
+	out  (0F2h),a  ; 08000h = Bank 6 R/W - TPA
+	ret
+
+; ----------------------------------------------------------
+; Calculate the screen ram address, and the mask for a pixel
+;
+; Entry: x (par1), y (par2)
+; Exit:  hl = screen ram address, a = mask
+; ----------------------------------------------------------
+
+CalcXY:
+	ld  hl,(par2)		; y
+	add hl,hl
+	ld  bc,RAMScroll
+	add hl,bc
+	ld  a,(hl)
+	inc hl
+	ld  h,(hl)
+	ld  l,a			; hl = roller ram value
+	add hl,hl
+	and 00000111b
+	ld  c,a
+	ld  a,l
+	and 11110000b
+	or  c
+	ld  l,a			; hl = screen ram Y address
+
+	ld  de,(par1)		; x
+	ld  a,e
+	ld  c,a
+	and 11111000b
+	ld  e,a
+	add hl,de		; hl = screen ram X,Y address
+
+	ld  a,c
+	and 00000111b
+	ld  c,10000000b
+
+CalcXYMask:
+	or  a
+	jr  z,CalcXYEnd
+	rr  c
+	dec a
+	jr  CalcXYMask
+
+CalcXYEnd:
+	ld  a,c			; a = mask
+	ret
+
+; --------------------------------
+; Calculate the screen ram address
+;
+; Entry: row (par1), col (par2)
+; Exit:  hl = screen ram address
+; --------------------------------
+
+CalcRC:
+	ld  a,(par1)		; row
+	add a,a
+	add a,a
+	add a,a
+	ld  h,0
+	ld  l,a
+	add hl,hl
+	ld  bc,RAMScroll
+	add hl,bc
+	ld  a,(hl)
+	inc hl
+	ld  h,(hl)
+	ld  l,a			; hl = roller ram value
+	add hl,hl
+	;and 00000111b
+	;ld  c,a
+	ld  a,l
+	and 11110000b
+	;or  c
+	ld  l,a			; hl = screen ram row address
+
+	ex  de,hl
+	ld  hl,(par2)		; col
+	add hl,hl
+	add hl,hl
+	add hl,hl
+	add hl,de		; hl = screen ram row,col address
+	ret
+
+; ------------------------------------------------------
+; Calculate bitmap sizes in bytes
+;
+; Entry: rows (par3), cols (par4)
+; Exit:  row size (bmpRowSize), bitmap size (bmpTotSize)
+; ------------------------------------------------------
+
+CalcBmpRC:
+	ld  hl,(par4)        ; hl = cols
+	add hl,hl
+	add hl,hl
+	add hl,hl            ; hl = cols * 8 (row size in bytes)
+	ld  (bmpRowSize),hl
+	ld  d,h
+	ld  e,l              ; de = hl = cols * 8 (row size in bytes)
+	ld  a,(par3)         ; a = rows
+
+CalcBmpRC2:
+	dec a
+	jr  z,CalcBmpRC3
+	add hl,de
+	jr  CalcBmpRC2
+
+CalcBmpRC3:
+	ld  (bmpTotSize),hl  ; hl = cols * 8 * rows (total size in bytes)
+	ret
+
+bmpRowSize: defw 0
+bmpTotSize: defw 0
+
+; -----
+; Stack
+; -----
+
+	defs 32
+newsp:
+
+	end

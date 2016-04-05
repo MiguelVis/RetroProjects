@@ -1,0 +1,65 @@
+ ]]]]]   ]]]]]  ]     ]    ]    ]]]]]]  ]]]]]]] ]     ]
+]     ] ]     ] ]     ]   ] ]   ]     ] ]        ]   ]
+]       ]     ] ]     ]  ]   ]  ]     ] ]         ] ]
+ ]]]]]  ]     ] ]     ] ]     ] ]]]]]]  ]]]]]      ]
+      ] ]   ] ] ]     ] ]]]]]]] ]   ]   ]         ] ]
+]     ] ]    ]  ]     ] ]     ] ]    ]  ]        ]   ]
+ ]]]]]   ]]]] ]  ]]]]]  ]     ] ]     ] ]]]]]]] ]     ]
+
+SQUAREX
+
+A game for the Amstrad PCW.
+
+Released on Sep 2015, as a present for the Amstrad PCW,
+in its 30th anniversary.
+
+Copyright (c) 2015 Miguel Garcia / FloppySoftware, Spain
+
+www.floppysoftware.es
+cpm-connections.blogspot.com
+floppysoftware@gmail.com
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2, or (at your option) any
+later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+
+See the copying file for more details.
+
+Last update: 17:47 14/08/2015.
+
+
+OVERVIEW
+========
+
+Squarex is a game for the Amstrad PCW.
+
+Your goal is to complete lines (or rows) of squares, with the
+pieces that fall from the top of the screen.
+ 
+The completed lines will disappear.
+
+Do you remember the name of a game that does something similar?
+
+Er... humm... yes, you do, don't you?
+
+
+TECHNICAL NOTES
+===============
+
+This game has been developed with MESCC, my own Small-C compiler
+version, and the XPCW library for the Amstrad PCW.
+
+Both are available in my website, and are released under the GPL
+license (the source code is included).
+
+You can read the source code of Squarex for more information.
