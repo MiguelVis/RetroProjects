@@ -18,12 +18,26 @@
 	along with this program; if not, write to the Free Software
 	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
-	23 Feb 2015
+	Revisions:
+
+	23 Feb 2015 : v1.00
+	05 Apr 2016 : v1.01 Minor changes.
 */
 
+/* Some defs. to save memory
+*/
+#define CC_NO_MUL    // To exclude MULTIPLICATION code.
+#define CC_NO_DIV    // To exclude DIVISION & MODULUS code.
+#define CC_NO_SWITCH // To exclude SWITCH code.
+#define CC_NO_ARGS   // To exclude ARGC & ARGV code.
+
+/* Standard libraries
+*/
 #include "mescc.h"
 #include "conio.h"
 
+/* The real code
+*/
 main()
 {
 	puts("Hello world!");
