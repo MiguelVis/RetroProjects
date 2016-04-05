@@ -32,6 +32,12 @@ CPMX
 Some Unix-like tools for CP/M.
 
 
+EXAMPLES
+--------
+
+Some small examples for MESCC.
+
+
 MESCC
 -----
 
@@ -66,6 +72,12 @@ WTD
 ---
 
 What To Do; a to-do list manager for CP/M.
+
+
+XPCW
+----
+
+Graphics and keyboard library for the Amstrad PCW.
 
 
 License
