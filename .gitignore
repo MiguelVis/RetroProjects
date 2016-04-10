@@ -52,9 +52,10 @@ z80.h
 # Ignore backup folders
 backup/
 
-# Ignore some projects
+# Ignore some projects for now
 /adv
 /ddfont
+/gdoc
 /samarux
 /star
 /threads
