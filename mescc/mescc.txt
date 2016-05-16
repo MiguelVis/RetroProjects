@@ -10,7 +10,7 @@ MESCC v1.11 - 04 Apr 2016
 
 Mike's Enhanced Small C Compiler for Z80 and CP/M
 
-Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
+Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware, Spain
 
 www.floppysoftware.es
 cpm-connections.blogspot.com
@@ -32,7 +32,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 See the copying file for more details.
 
-Last update: 18:07 24/12/2015.
+Last update: 22:42 13/05/2016.
 
 
 OVERVIEW
@@ -99,16 +99,17 @@ compiler is compatible.
 Note that some MESCC libraries can change their behaviour, by #defining some
 macros like CC_NO_ARGS, CC_STDIO, etc., as described below.
 
-There is an optimizer that analizes the assembler output of the compiler: ccopt.
+There is a new optimizer that analizes the assembler output of the compiler: ccopt.
 
-Usage: ccopt name.typ [-td]
+Usage: ccopt file [-r]
 
 Options:
 
--td	Set the temporary drive. Optional.
+-r	Generate new rules for the optimizer. After this command,
+	you must re-compile ccopt.
 
-Examples:	ccopt code.zsm -tm
-		ccopt hello.zsm
+Examples:	ccopt myprog
+		ccopt ccopt -r
 
 
 SUPPORTED TYPES
@@ -440,6 +441,7 @@ qsort.h		Sort function.
 rand.h		Pseudo-random number generation.
 setjmp.h	Non-local jumps.
 sprintf.h	Formatted output to memory.
+stdbool.h	Boolean type and values.
 string.h	String functions.
 xprintf.h	Support library for printf, fprintf and sprintf.
 z80.h		Z80 specific functions. 
@@ -794,16 +796,6 @@ int redir(int argc, char *argv[])
 	Returns number of args after parsing redirection.
 
 
-sprintf.h
----------
-
-Formatted output to memory.
-
-int sprintf(char *dst, char *fmt, arg1, arg2, ...) [S]
-
-	See printf.h for more information.
-
-
 setjmp.h
 --------
 
@@ -818,6 +810,25 @@ void longjmp (jmp_buf env, int rv) [S]
 
 	Restore environment state information, as stored in env.
 	Execution resumes after setjmp(), and returns the value of rv, that must be NON-ZERO.
+
+
+sprintf.h
+---------
+
+Formatted output to memory.
+
+int sprintf(char *dst, char *fmt, arg1, arg2, ...) [S]
+
+	See printf.h for more information.
+
+stdbool.h
+---------
+
+Boolean type and values.
+
+#define bool  int
+#define true  1      [S]
+#define false 0      [S]
 
 
 string.h

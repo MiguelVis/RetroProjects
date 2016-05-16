@@ -38,6 +38,12 @@ EXAMPLES
 Some small examples for MESCC.
 
 
+GDOC
+----
+
+Documentation generator from C-like sources, including MESCC.
+
+
 MESCC
 -----
 

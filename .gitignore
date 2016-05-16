@@ -25,6 +25,7 @@ rand.h
 redir.h
 setjmp.h
 sprintf.h
+stdbool.h
 string.h
 xprintf.h
 z80.h
