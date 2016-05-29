@@ -12,6 +12,7 @@
 /* Defines for MESCC libraries
    ---------------------------
 */
+#define CC_NO_ARGS	// Exclude support for ARGC and ARGV.
 #define CC_NO_DIV       // Exclude support for DIVISION and MODULUS.
 
 /* Standard MESCC library
@@ -45,8 +46,7 @@
 /* The program
    -----------
 */
-main(argc, argv)
-int argc, argv[];
+main()
 {
 	char usrname[NAME_SIZ],
 	     usrpass[NAME_SIZ];
