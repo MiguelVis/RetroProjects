@@ -86,6 +86,12 @@ XPCW
 Graphics and keyboard library for the Amstrad PCW.
 
 
+ZSM
+---
+
+Tools for the ZSM / Z80ASMUK assembler.
+
+
 License
 -------
 
