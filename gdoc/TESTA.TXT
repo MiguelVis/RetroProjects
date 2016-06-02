@@ -1,0 +1,30 @@
+=========
+testa.zsm
+=========
+
+A test for gdoc.
+
+Author:
+   Miguel Garcia / FloppySoftware
+
+Functions:
+   say
+     -Prints a string on screen
+
+---
+say
+---
+
+Prints a string on screen
+
+This function simply prints a string on screen,
+using the BDOS function #9. The string must to
+be terminated with a '$' character.
+
+Parameters:
+   de - messaje
+
+Returns:
+   all registers destroyed
+
+

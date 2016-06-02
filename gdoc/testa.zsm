@@ -1,0 +1,29 @@
+;(
+; @file
+; @brief A test for gdoc.
+;
+; @author Miguel Garcia / FloppySoftware
+;)
+	org 0100h
+	
+	ld   de,hello
+	call say
+	jp   0
+	
+;(
+; @fn     say
+; @brief  Prints a string on screen
+;
+; This function simply prints a string on screen,
+; using the BDOS function #9. The string must to
+; be terminated with a '$' character.
+;
+; @param  de - messaje
+; @return all registers destroyed
+;)
+say:
+	ld   c,9
+	jp   5
+
+hello:
+	defb 'Hello$'

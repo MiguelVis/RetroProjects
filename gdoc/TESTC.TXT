@@ -1,0 +1,97 @@
+=======
+testc.c
+=======
+
+The purpose of this file is to test the gdoc program.
+
+Author:
+   Miguel I. Garcia Lopez / FloppySoftware
+
+Version:
+   1.00
+
+Date:
+   10 Apr 2016
+
+The gdoc program is a documentation generator for MESCC source code files (and
+presumably other sources for c-like compilers).
+
+It is written to be simple but effective, and it has some degree of
+compatibility with other documentation generator tools as doxygen or javadoc.
+
+Functions:
+   main(int argc, WORD argv[]) : int
+     -The main function.
+   hello() : void
+     -Say hello (or something)
+   program(char *name) : void
+     -Print the program name.
+   params(int num, WORD what[]) : int
+     -Print the program arguments.
+   bye() : void
+     -Say bye.
+
+---------------------------------
+main(int argc, WORD argv[]) : int
+---------------------------------
+
+The main function.
+
+This function will be called on the first place. The second
+argument would be 'char *argv[]' in standard C.
+
+Parameters:
+   argc - the number or arguments given in the command line
+   argv - the arguments (#0 is the program name)
+
+Returns:
+   the success / error / whatever code
+
+--------------
+hello() : void
+--------------
+
+Say hello (or something)
+
+Say hello, or whatever the message is passed as an argument.
+
+Parameters:
+   msg - the message
+
+--------------------------
+program(char *name) : void
+--------------------------
+
+Print the program name.
+
+Print the name of the program, given as a parameter.
+
+Parameters:
+   name - the program name
+
+----------------------------------
+params(int num, WORD what[]) : int
+----------------------------------
+
+Print the program arguments.
+
+Print the arguments given in the command line, if any. The second
+argument would be 'char *argv[]' in standard C.
+
+Parameters:
+   num - the number of arguments
+   what - the arguments
+
+Returns:
+   the number of arguments
+
+------------
+bye() : void
+------------
+
+Say bye.
+
+Say bye to the user. This function should be
+the last called function in the program, but who knows.
+
+

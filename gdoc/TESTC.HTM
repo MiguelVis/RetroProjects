@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>testc.c</title>
+ <head>
+ <body>
+  <h1>testc.c</h1>
+  <p>The purpose of this file is to test the gdoc program.<p>
+  <dl>
+   <dt>Author:</dt>
+   <dd>Miguel I. Garcia Lopez / FloppySoftware</dd>
+  </dl>
+  <dl>
+   <dt>Version:</dt>
+   <dd>1.00</dd>
+  </dl>
+  <dl>
+   <dt>Date:</dt>
+   <dd>10 Apr 2016</dd>
+  </dl>
+  <p>
+   The gdoc program is a documentation generator for MESCC source code files (and
+   presumably other sources for c-like compilers).
+   <br>
+   <br>
+   It is written to be simple but effective, and it has some degree of
+   compatibility with other documentation generator tools as doxygen or javadoc.
+  <p>
+  <dl>
+   <dt>Functions:</dt>
+   <dd><a href="#fn0">main(int argc, WORD argv[]) : int</a></dd>
+   <dd>&nbsp;- The main function.</dd>
+   <dd><a href="#fn1">hello() : void</a></dd>
+   <dd>&nbsp;- Say hello (or something)</dd>
+   <dd><a href="#fn2">program(char *name) : void</a></dd>
+   <dd>&nbsp;- Print the program name.</dd>
+   <dd><a href="#fn3">params(int num, WORD what[]) : int</a></dd>
+   <dd>&nbsp;- Print the program arguments.</dd>
+   <dd><a href="#fn4">bye() : void</a></dd>
+   <dd>&nbsp;- Say bye.</dd>
+  </dl>
+  <h2 id="fn0">main(int argc, WORD argv[]) : int</h2>
+  <p>The main function.<p>
+  <p>
+   This function will be called on the first place. The second
+   argument would be 'char *argv[]' in standard C.
+  <p>
+  <dl>
+   <dt>Parameters:</dt>
+   <dd>argc - the number or arguments given in the command line</dd>
+   <dd>argv - the arguments (#0 is the program name)</dd>
+  </dl>
+  <dl>
+   <dt>Returns:</dt>
+   <dd>the success / error / whatever code</dd>
+  </dl>
+  <h2 id="fn1">hello() : void</h2>
+  <p>Say hello (or something)<p>
+  <p>
+   Say hello, or whatever the message is passed as an argument.
+  <p>
+  <dl>
+   <dt>Parameters:</dt>
+   <dd>msg - the message</dd>
+  </dl>
+  <h2 id="fn2">program(char *name) : void</h2>
+  <p>Print the program name.<p>
+  <p>
+   Print the name of the program, given as a parameter.
+  <p>
+  <dl>
+   <dt>Parameters:</dt>
+   <dd>name - the program name</dd>
+  </dl>
+  <h2 id="fn3">params(int num, WORD what[]) : int</h2>
+  <p>Print the program arguments.<p>
+  <p>
+   Print the arguments given in the command line, if any. The second
+   argument would be 'char *argv[]' in standard C.
+  <p>
+  <dl>
+   <dt>Parameters:</dt>
+   <dd>num - the number of arguments</dd>
+   <dd>what - the arguments</dd>
+  </dl>
+  <dl>
+   <dt>Returns:</dt>
+   <dd>the number of arguments</dd>
+  </dl>
+  <h2 id="fn4">bye() : void</h2>
+  <p>Say bye.<p>
+  <p>
+   Say bye to the user. This function should be
+   the last called function in the program, but who knows.
+  <p>
+ </body>
+</html>

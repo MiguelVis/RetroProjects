@@ -56,7 +56,6 @@ backup/
 # Ignore some projects for now
 /adv
 /ddfont
-/gdoc
 /samarux
 /star
 /threads
