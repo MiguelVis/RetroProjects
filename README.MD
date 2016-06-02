@@ -41,7 +41,7 @@ Some small examples for MESCC.
 GDOC
 ----
 
-Documentation generator from C-like sources, including MESCC.
+Documentation generator from C and assembler sources. Supported output formats are plain text and html.
 
 
 MESCC
