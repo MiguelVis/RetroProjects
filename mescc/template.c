@@ -38,6 +38,7 @@
 	Revisions:
 
 		06 Jan 2016 : Last update of template.
+		02 Jun 2016 : Added stderr support in usage(). Added error(). Added some comments.
 */
 
 /* Defines for MESCC libraries
@@ -113,8 +114,12 @@ unsigned int argv[]; // char *argv[] - unsupported by MESCC (yet?)
 {
 	char *pch; int i;
 
+	// Show usage if there are no arguments
+
 	if(argc == 1)
 		usage();
+
+	// Check options in command line
 
 	for(i = 1; i < argc; ++i)
 	{
@@ -122,7 +127,7 @@ unsigned int argv[]; // char *argv[] - unsupported by MESCC (yet?)
 
 		if(*pch == '-')
 		{
-			/* Options */
+			// Option
 
 			switch(pch[1])
 			{
@@ -133,10 +138,12 @@ unsigned int argv[]; // char *argv[] - unsupported by MESCC (yet?)
 		}
 		else
 		{
-			/* Filenames */
+			// Filename
 
 		}
 	}
+
+	// Success
 
 	exit(0);
 }
@@ -146,9 +153,30 @@ unsigned int argv[]; // char *argv[] - unsupported by MESCC (yet?)
 */
 usage()
 {
+#ifdef CC_REDIR
+	fprintf(stderr, "%s %s\n\n", APP_NAME, APP_VERSION);
+	fprintf(stderr, "%s\n\n", APP_COPYRGT);
+	fprintf(stderr, "Usage: %s\n", APP_USAGE);
+#else
 	printf("%s %s\n\n", APP_NAME, APP_VERSION);
 	printf("%s\n\n", APP_COPYRGT);
 	printf("Usage: %s\n", APP_USAGE);
+#endif
 
 	exit(0);
+}
+
+/* Print error and exit
+   --------------------
+*/
+error(msg)
+char *msg;
+{
+#ifdef CC_REDIR
+	fprintf(stderr, "%s: %s\n", APP_NAME, msg);
+#else
+	printf("%s: %s\n", APP_NAME, msg);
+#endif
+
+	exit(-1);
 }

@@ -55,7 +55,7 @@
 /*	VERSION
 */
 
-#define VERSION	"Mike's Enhanced Small C Compiler v1.11 - 04 Apr 2015"
+#define VERSION	"Mike's Enhanced Small C Compiler v1.11 - 04 Apr 2016"
 #define COPYRGT "(c) 1999-2016 FloppySoftware"
 
 /*	COMMON
