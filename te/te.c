@@ -4,7 +4,7 @@
 
 	Main module.
 
-	Copyright (c) 2015 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2016 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -20,19 +20,9 @@
 	along with this program; if not, write to the Free Software
 	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
-	Usage:
-
-	te [file_name]
-
-	Compile with MESCC for CP/M & Z80:
-
-	cc te
-	zsm te
-	hexcom te
-
 	Notes:
 
-	Change TE_VERSION & CRT_FILE in 'te.h' as required, before compilation.
+	Change TE_VERSION in 'te.h' as required, before compilation.
 
 	Changes:
 
@@ -52,6 +42,7 @@
 	                      to activate them.
 	15 May 2015 : v1.03 : Modified getch & putch to getchr & putchr.
 	31 Aug 2015 : v1.04 : Minor changes in comments and ReadLine().
+	02 Jun 2016 : v1.05 : Minor changes.
 
 	Notes:
 
@@ -71,8 +62,6 @@
    -----------
 */
 #include <te.h>
-
-#include CRT_FILE /* CRT file */
 
 /* Globals
    -------
@@ -1309,9 +1298,9 @@ MenuAbout()
 	CenterText(row++, "Configured for");
 	CenterText(row++, CRT_NAME);
 	row++;
-	CenterText(row++, "(c) 2015 Miguel Garcia / FloppySoftware");
+	CenterText(row++, "(c) 2015-2016 Miguel Garcia / FloppySoftware");
 	row++;
-	CenterText(row++, "www.floppysoftware.vacau.com");
+	CenterText(row++, "www.floppysoftware.es");
 	CenterText(row++, "cpm-connections.blogspot.com");
 	CenterText(row++, "floppysoftware@gmail.com");
 

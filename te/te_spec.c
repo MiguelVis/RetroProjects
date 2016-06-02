@@ -1,10 +1,8 @@
 /*	te_spec.c
 
-	Text editor.
+	Text editor -- version for the Spectrum +3.
 
-	CRT module for the Spectrum +3.
-
-	Copyright (c) 2015 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2016 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -20,10 +18,22 @@
 	along with this program; if not, write to the Free Software
 	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
+	Usage:
+
+	te_spec [filename]
+
+	Compilation:
+
+	cc te_spec
+	ccopt te_spec
+	zsm te_spec
+	hextocom te_spec
+
 	Changes:
 
 	06 May 2015 : 1st version.
 	31 Aug 2015 : Minor changes in comments.
+	02 Jun 2016 : Minor changes.
 
 	Notes:
 
@@ -92,6 +102,11 @@
 #define H_7 "Cut    ^U"           
 #define H_8 "Copy   ^R          Intro  ^M [ENTER]"
 #define H_9 "Paste  ^W          Esc    ^[ [BREAK]"
+
+/* Include main code
+   -----------------
+*/
+#include "te.c"
 
 /* Setup CRT: Used when the editor starts
    --------------------------------------

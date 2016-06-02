@@ -1,10 +1,8 @@
 /*	te_mur.c
 
-	Text editor.
+	Text editor -- version for the K. Murakami's CP/M emulator.
 
-	CRT module for the K. Murakami's CP/M emulator.
-
-	Copyright (c) 2015 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2016 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -20,9 +18,21 @@
 	along with this program; if not, write to the Free Software
 	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
+	Usage:
+
+	te_mur [filename]
+
+	Compilation:
+
+	cc te_mur
+	ccopt te_mur
+	zsm te_mur
+	hextocom te_mur
+
 	Changes:
 
 	03 May 2015 : 1st version.
+	02 Jun 2016 : Minor changes.
 
 	Notes:
 
@@ -89,6 +99,11 @@
 #define H_7 "Cut    ^U"           
 #define H_8 "Copy   ^O         Intro  ^M [RETURN]"
 #define H_9 "Paste  ^W         Esc    ^[ [EXIT]"
+
+/* Include main code
+   -----------------
+*/
+#include "te.c"
 
 /* Setup CRT: Used when the editor starts
    --------------------------------------

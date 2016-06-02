@@ -1,10 +1,8 @@
 /*	te_pcw.c
 
-	Text editor.
+	Text editor -- version for the Amstrad PCW.
 
-	CRT module for the Amstrad PCW.
-
-	Copyright (c) 2015 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2016 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -20,9 +18,21 @@
 	along with this program; if not, write to the Free Software
 	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
+	Usage:
+
+	te_pcw [filename]
+
+	Compilation:
+
+	cc te_pcw
+	ccopt te_pcw
+	zsm te_pcw
+	hextocom te_pcw
+
 	Changes:
 
 	02 May 2015 : 1st version.
+	02 Jun 2016 : Minor changes.
 
 	Notes:
 
@@ -43,8 +53,8 @@
 #define RULER_CHR     0x90 /* Ruler: Character - ie: . */
 #define SYS_LINE_SEP  0x9A /* System line separator character - ie: - */
 
-/*#define CRT_SPANISH*/
 #define CRT_ENGLISH
+//#define CRT_SPANISH
 
 /* Keys
    ----
@@ -111,6 +121,11 @@
 #define H_9 "Paste  ^W [INS]    Esc    ^[ [SAL]"
 
 #endif
+
+/* Include main code
+   -----------------
+*/
+#include "te.c"
 
 /* Setup CRT: Used when the editor starts
    --------------------------------------

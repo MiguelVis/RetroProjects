@@ -1,9 +1,7 @@
 /*	te_kp.c
 
-	Text editor.
-
-	CRT module for the Kaypro II, 4, and 10 (and any other terminal
-	emulating the ADM-3A)
+	Text editor -- version for the Kaypro II, 4, and 10 (and any other terminal
+	               emulating the ADM-3A)
 
 	Adapted by Stephen S. Mitchell from a version for the Amstrad PCW
         written by Miguel Garcia / Floppy Software.
@@ -22,8 +20,22 @@
 	along with this program; if not, write to the Free Software
 	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
+	Usage:
+
+	te_kp [filename]
+
+	Compilation:
+
+	cc te_kp
+	ccopt te_kp
+	zsm te_kp
+	hextocom te_kp
+
+	Changes:
+
 	Original code: July 4, 2015.
 
+	02 Jun 2016 : Minor changes.
 */
 
 /* Definitions
@@ -86,7 +98,10 @@
 #define H_8 "Copy   ^R          Intro  ^M [RETURN]"
 #define H_9 "Paste  ^W          Esc    [ESC]"
 
-
+/* Include main code
+   -----------------
+*/
+#include "te.c"
 
 /* Setup CRT: Used when the editor starts
    --------------------------------------

@@ -2,9 +2,9 @@
 
 	Text editor.
 
-	Main module.
+	Defs. for main module.
 
-	Copyright (c) 2015 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2016 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -27,23 +27,18 @@
 	14 May 2015 : v1.02
 	15 May 2015 : v1.03
 	31 Aug 2015 : v1.04
+	02 Jun 2016 : v1.05 : CRT_FILE, CRT_ENGLISH, CRT_SPANISH, etc. are now out of this file.
 
 	Notes:
 
-	Change TE_VERSION & CRT_FILE as required, before compilation.
+	Change TE_VERSION as required, before compilation.
 */
 
 /* Version
    -------
 */
 
-#define TE_VERSION "v1.04 / 31 Aug 2015 for CP/M"  /* Program version and date */
-
-/* CRT file
-   --------
-*/
-
-#define CRT_FILE "te_pcw.c" /* CRT file */
+#define TE_VERSION "v1.05 / 02 Jun 2016 for CP/M"  /* Program version and date */
 
 /* More defs.
    ----------
@@ -61,6 +56,6 @@
 #define BOX_ROW 2        /* Editor box position */
 #define BOX_COL 0        /* Editor box position */
 
-#define getchr CrtIn      /* Get a character from the keyboard */
-#define putchr CrtOut     /* Print a character on screen */
+#define getchr CrtIn     /* Get a character from the keyboard */
+#define putchr CrtOut    /* Print a character on screen */
 

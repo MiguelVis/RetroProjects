@@ -3,9 +3,9 @@
 +----| Text Editor |
      +-------------+
 
-v1.04 / 31 Aug 2015
+v1.05 / 02 Jun 2016
 
-(c) 2015 Miguel Garcia / FloppySoftware
+(c) 2015-2016 Miguel Garcia / FloppySoftware
 
     www.floppysoftware.es
     cpm-connections.blogspot.com
@@ -26,15 +26,14 @@ operating systems: CP/M, DOS, Windows and GNU/Linux.
 Command line
 ------------
 
-It's simple:
+It's simple (for the PCW version; see below):
 
-        te [filename]
+        te_pcw [filename]
 
 Examples:
 
-        te              - To start an empty document
-        te notes.txt    - To edit the document 'notes.txt'.
-
+        te_pcw              - To start an empty document
+        te_pcw notes.txt    - To edit the document 'notes.txt'.
 
 The screen layout
 -----------------
@@ -124,14 +123,14 @@ See the source code files for more information.
 
 Current CP/M adaptations are:
 
-        - Amstrad PCW and CP/M Plus (31x90 VT52 like terminal).
-        - Amstrad CPC and CP/M Plus (24x80 VT52 like terminal).
-        - Spectrum +3 and CP/M Plus (23x51 VT52 like terminal).
-        - K. Murakami's CP/M emulator (25x80 VT100/Ansi).
-        - Takeda Toshiya's CP/M emulator (25x80 VT100/Ansi).
-        - Generic 25x80 VT100 and WordStar keys.
-        - Kaypro II, 4 and 10 (24x80 ADM-3A like terminal),
-          contributed by Stephen S. Mitchell (thanks!).
+        - te_pcw:   Amstrad PCW and CP/M Plus (31x90 VT52 like terminal).
+        - te_cpc3:  Amstrad CPC and CP/M Plus (24x80 VT52 like terminal).
+        - te_spec:  Spectrum +3 and CP/M Plus (23x51 VT52 like terminal).
+        - te_mur:   K. Murakami's CP/M emulator (25x80 VT100/Ansi).
+        - te_tak:   Takeda Toshiya's CP/M emulator (25x80 VT100/Ansi).
+        - te_ws100: Generic 25x80 VT100 and WordStar keys.
+        - te_kp:    Kaypro II, 4 and 10 (24x80 ADM-3A like terminal),
+                    contributed by Stephen S. Mitchell (thanks!).
 
 Adaptations for other OS are:
 

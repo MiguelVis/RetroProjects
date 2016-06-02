@@ -1,10 +1,8 @@
 /*	te_tak.c
 
-	Text editor.
+	Text editor -- version for the Takeda Toshiya's CP/M emulator.
 
-	CRT module for the Takeda Toshiya's CP/M emulator.
-
-	Copyright (c) 2015 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2016 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -20,9 +18,21 @@
 	along with this program; if not, write to the Free Software
 	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
+	Usage:
+
+	te_tak [filename]
+
+	Compilation:
+
+	cc te_tak
+	ccopt te_tak
+	zsm te_tak
+	hextocom te_tak
+
 	Changes:
 
 	06 May 2015 : 1st version.
+	02 Jun 2016 : Minor changes.
 
 	Notes:
 
@@ -89,6 +99,11 @@
 #define H_7 "Cut    ^U [F1]"           
 #define H_8 "Copy   ^O [F2]        Intro  ^M [ENTER]"
 #define H_9 "Paste  ^W [F3]        Esc    ^[ [ESC]"
+
+/* Include main code
+   -----------------
+*/
+#include "te.c"
 
 /* Setup CRT: Used when the editor starts
    --------------------------------------

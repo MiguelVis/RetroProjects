@@ -1,8 +1,6 @@
 /*	te_ws100.c
 
-	Text editor.
-
-	CRT module for VT100 & WordStar keys, under CP/M.
+	Text editor -- version for VT100 & WordStar keys, under CP/M.
 
 	Copyright (c) 2015 Miguel Garcia / FloppySoftware
 
@@ -20,10 +18,22 @@
 	along with this program; if not, write to the Free Software
 	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
+	Usage:
+
+	te_ws100 [filename]
+
+	Compilation:
+
+	cc te_ws100
+	ccopt te_ws100
+	zsm te_ws100
+	hextocom te_ws100
+
 	Changes:
 
 	12 May 2015 : 1st version.
 	14 May 2015 : Completed adaptation for WS keys.
+	02 Jun 2016 : Minor changes.
 */
 
 /* Definitions
@@ -85,6 +95,11 @@
 #define H_7 "Cut    ^Y   Tab   ^I"
 #define H_8 "Copy   ^O   Intro ^M"
 #define H_9 "Paste  ^W   Esc   ^["
+
+/* Include main code
+   -----------------
+*/
+#include "te.c"
 
 /* Setup CRT: Used when the editor starts
    --------------------------------------
