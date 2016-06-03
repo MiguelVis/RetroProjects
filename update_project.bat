@@ -44,6 +44,7 @@ copy /Y mescc\rand.h %1\
 copy /Y mescc\redir.h %1\
 copy /Y mescc\setjmp.h %1\
 copy /Y mescc\sprintf.h %1\
+copy /Y mescc\stdbool.h %1\
 copy /Y mescc\string.h %1\
 copy /Y mescc\xprintf.h %1\
 copy /Y mescc\z80.h %1\
