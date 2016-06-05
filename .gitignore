@@ -7,12 +7,20 @@ cpm.exe
 cpm2.exe
 cc.com
 cc.COM
+CC.COM
 ccopt.com
 ccopt.COM
+CCOPT.COM
 zsm.com
-zsm.COM
+ZSM.COM
 hextocom.com
 hextocom.COM
+HEXTOCOM.COM
+link.com
+LINK.COM
+prntosym.com
+prntosym.COM
+PRNTOSYM.COM
 zmac.exe
 
 # Don't ignore binaries in MESCC directory
@@ -23,6 +31,9 @@ zmac.exe
 # Don't ignore some binaries in ZSM directory
 !/zsm/zsm.com
 !/zsm/ZSM.COM
+!/zsm/prntosym.com
+!/zsm/prntosym.COM
+!/zsm/PRNTOSYM.COM
 
 # ------------------------
 # SECTION: MESCC LIBRARIES
