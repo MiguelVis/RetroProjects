@@ -1,11 +1,32 @@
-# Remote github repository: githubRetroProjects
-#
+# -----------------
+# SECTION: BINARIES
+# -----------------
+
 # Ignore MESCC tool chain binaries
 cpm.exe
+cpm2.exe
+cc.com
 cc.COM
+ccopt.com
 ccopt.COM
 zsm.com
+zsm.COM
+hextocom.com
 hextocom.COM
+zmac.exe
+
+# Don't ignore binaries in MESCC directory
+!/mescc/*.exe
+!/mescc/*.com
+!/mescc/*.COM
+
+# Don't ignore some binaries in ZSM directory
+!/zsm/zsm.com
+!/zsm/ZSM.COM
+
+# ------------------------
+# SECTION: MESCC LIBRARIES
+# ------------------------
 
 # Ignore MESCC libraries
 alloc.h
@@ -30,13 +51,12 @@ string.h
 xprintf.h
 z80.h
 
-# Don't ignore MESSC tool chain binaries in mescc directory
-!/mescc/*.exe
-!/mescc/*.com
-!/mescc/*.COM
-
 # Don't ignore MESCC libraries in mescc directory
 !/mescc/*.h
+
+# ---------------------------
+# SECTION: INTERMEDIATE FILES
+# ---------------------------
 
 # Ignore intermediate HEX files
 *.HEX
@@ -50,13 +70,23 @@ z80.h
 # Ignore ZIP files
 *.zip
 
+# ----------------
+# SECTION: FOLDERS
+# ----------------
+
 # Ignore backup folders
 backup/
+
+# Ignore ZMAC output folders
+zout/
+
+# -----------------------
+# SECTION: WHOLE PROJECTS
+# -----------------------
 
 # Ignore some projects for now
 /adv
 /ddfont
-/samarux
 /star
 /threads
 /wp
