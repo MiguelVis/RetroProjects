@@ -1,0 +1,31 @@
+# ----------------------- #
+# ASK FOR NEW DATE & TIME #
+# ----------------------- #
+#
+echo -n 'New date (YYYY-MM-DD): '
+read NDATE
+echo -n 'New time (HH:MM:SS):   '
+read NTIME
+#
+if $NTIME not eq '' goto Set
+if $NDATE eq '' goto End
+echo
+echo Error: You can set only TIME or both DATE & TIME.
+goto End
+#
+# Set:
+#
+echo
+echo -n 'Press ENTER to proceed: '
+read ASKDT
+env ASKDT
+echo
+date $NDATE $NTIME
+if $? not eq 0 goto End
+date
+#
+# End:
+#
+env NDATE
+env NTIME
+

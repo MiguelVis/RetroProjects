@@ -1,0 +1,22 @@
+# mk_cover.sx - Make the cover for the SamaruX printed manual
+#
+# Last edited: 11 Apr 2015
+#
+# Use: batch mk_cover.sx dest_file version date
+# Ex.: batch mk_cover.sx cover.tmp 1.30 '08 Mar 2015'
+#
+echo Making COVER
+#
+if $# eq 3 goto make
+echo Error in # of args.
+goto end
+#
+# make:
+#
+echo 'This manual covers SamaruX version' $2 / $3 > vn.tmp
+#
+cat mk_cover.txt vn.tmp nl.tmp > $1
+#
+rm vn.tmp
+#
+# end:

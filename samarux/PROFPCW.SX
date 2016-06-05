@@ -1,0 +1,40 @@
+# ---------------------- #
+# SAMARUX START-UP : PCW #
+# ---------------------- #
+#
+if banner.txt not exist goto Login
+cat banner.txt
+echo
+#
+# Login:
+#
+echo -n 'Login: '
+read LOGNAME
+#
+if $LOGNAME eq Miguel goto IsMiguel
+goto Login
+#
+# IsMiguel:
+#
+env HOME A00:
+env BINDIR $HOME
+env MANPATH $HOME
+env TMPDIR M00:
+goto Done
+#
+# Done:
+#
+alias h history 0
+alias nl cat -n
+alias logout exit
+diralias sys a0:
+diralias tmp m0:
+env USER $LOGNAME
+env TERM vt52
+env ROWS 31
+env COLUMNS 90
+env PROMPT [%u@%w] %$
+echo
+echo Hi $USER welcome to SamaruX!
+echo
+

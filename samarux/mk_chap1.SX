@@ -1,0 +1,21 @@
+# mk_chap1.sx - Make the chaper 1 for the SamaruX printed manual
+#
+# Last edited: 08 Mar 2015
+#
+# Use: batch mk_chap1.sx dest_file
+# Ex.: batch mk_chap1.sx chap1.txt
+#
+echo Making CHAPTER 1
+#
+if $# eq 1 goto make
+echo Error in # of args.
+goto end
+#
+# make:
+#
+batch mk_chtit.sx ct1.tmp '1' 'INTRODUCTION'
+batch mk_sect.sx s101.tmp '1.01' 'SamaruX' samarux
+#
+cat ct1.tmp s101.tmp nl.tmp > $1
+#
+# end:

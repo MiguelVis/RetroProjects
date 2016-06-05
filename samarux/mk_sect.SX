@@ -1,0 +1,22 @@
+# mk_sect.sx - Make a section for the SamaruX printed manual
+#
+# Last edited: 08 Mar 2015
+#
+# Use: batch mk_sect.sx dest_file section_number section_title man_topic
+# Ex.: batch mk_sect.sx sec130.txt '1.30' 'cat - Concatenate files' cat
+#
+echo Making SECTION $2 : $3
+#
+if $# eq 4 goto make
+echo Error in # of args.
+goto end
+#
+# make:
+#
+echo '+--------------+' > t1.tmp
+echo '| SECTION' $2 '| ' $3 > t2.tmp
+man $4 > c.tmp
+#
+cat sectsep.tmp t1.tmp t2.tmp t1.tmp nl.tmp c.tmp > $1
+#
+# end:

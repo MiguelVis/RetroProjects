@@ -1,0 +1,25 @@
+# ---------- #
+# FIND FILES #
+# ---------- #
+if $# eq 1 goto Go
+echo 'Usage: whereis filename'
+goto End
+# Go:
+batch whereis2 $1 00
+batch whereis2 $1 01
+batch whereis2 $1 02
+batch whereis2 $1 03
+batch whereis2 $1 04
+batch whereis2 $1 05
+batch whereis2 $1 06
+batch whereis2 $1 07
+batch whereis2 $1 08
+batch whereis2 $1 09
+batch whereis2 $1 10
+batch whereis2 $1 11
+batch whereis2 $1 12
+batch whereis2 $1 13
+batch whereis2 $1 14
+batch whereis2 $1 15
+# End:
+

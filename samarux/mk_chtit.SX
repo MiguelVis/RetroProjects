@@ -1,0 +1,21 @@
+# mk_chap.sx - Make a chapter title for the SamaruX printed manual
+#
+# Last edited: 08 Mar 2015
+#
+# Use: batch mk_chap.sx dest_file chapter_number chapter_title
+# Ex.: batch mk_chap.sx chap2.txt '2' 'Commands'
+#
+echo Making TITLE for CHAPTER $2 - $3
+#
+if $# eq 3 goto make
+echo Error in # of args.
+goto end
+#
+# make:
+#
+echo '+-----------+' > t1.tmp
+echo '| CHAPTER' $2 '| ' $3 > t2.tmp
+#
+cat chapsep.tmp t1.tmp t2.tmp t1.tmp > $1
+#
+# end:

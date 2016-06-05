@@ -1,0 +1,20 @@
+# ------------------------ #
+# SAMARUX START-UP PROFILE #
+# ------------------------ #
+#
+if banner.txt exist cat banner.txt
+#
+env TERM vt52
+env USER YourName
+env PROMPT [%u@%w] %$
+#
+alias h history 0
+alias nl cat -n
+alias logout exit
+#
+diralias sys a0:
+#
+echo
+echo Hi $USER welcome to SamaruX!
+echo
+

@@ -1,0 +1,52 @@
++-------------------+
+| TABLE OF CONTENTS |
++-------------------+
+
+CHAPTER 1 : INTRODUCTION
+            1.01 : SamaruX
+
+CHAPTER 2 : ENVIRONMENT
+            2.01 : Command line
+            2.02 : Environment variables
+            2.03 : File and directory names
+            2.04 : Profiling the shell
+            2.05 : Terminal settings
+
+CHAPTER 3 : BUILT-IN COMMANDS
+            3.01 : alias - Manage command aliases
+            3.02 : ascii - Print the character table
+            3.03 : batch - Execute commands from a file
+            3.04 : builtin - Print the internal command names
+            3.05 : cat - Concatenate files
+            3.06 : cd - Change the current working directory
+            3.07 : chmod - Change file modes
+            3.08 : clear - Clear the console
+            3.09 : cp - Copy files
+            3.10 : cpm - Execute CP/M commands
+            3.11 : date - Print or set the system date and time
+            3.12 : df - Print free disk space
+            3.13 : diralias - Manage directory names
+            3.14 : dump - Print files in hexadecimal and ascii
+            3.15 : echo - Print its arguments
+            3.16 : ed - Edit small text files
+            3.17 : env - Manage environment variables
+            3.18 : exit - Quit the shell
+            3.19 : goto - Jump to label in batch mode
+            3.20 : grep - Find text patterns in files
+            3.21 : history - Manage command line history
+            3.22 : if - Test condition
+            3.23 : ls - List files
+            3.24 : man - Print manual pages
+            3.25 : mem - Print memory usage
+            3.26 : more - Print the contents of text files
+            3.27 : mv - Rename files
+            3.28 : pwd - Print the current working directory
+            3.29 : read - Read a line from standard input
+            3.30 : rm - Remove files
+            3.31 : sort - Sort text lines
+            3.32 : tail - Print last lines from files
+            3.33 : tee - Duplicate the standard input
+            3.34 : ver - Print CP/M version and facts
+            3.35 : wc - Count newlines, words and characters
+            3.36 : whoami - Print the user name
+

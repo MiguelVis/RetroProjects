@@ -1,0 +1,1150 @@
+# SamaruX Manual
+#
+# (c) 2015 Miguel I. Garcia Lopez, FloppySoftware, Spain
+#
+# Created:     08 Dec 2014
+# Last edited: 03 Jun 2016
+#
+# $NM is NAME
+# $SY is SYNOPSIS
+# $DE is DESCRIPTION
+# $OP is OPTIONS
+# $EX is EXAMPLES
+# $NT is NOTES
+#
+# ========
+@alias
+#
+$NM
+alias - Manage command aliases
+$SY
+alias [name [arg ...]]
+$DE
+The command alias creates, removes and prints command
+aliases.
+
+To create (or modify) an alias, enter the alias name,
+the real command name and the arguments (if any).
+
+To remove an alias, simply enter the alias name.
+
+To print all the aliases, enter a command line
+without arguments.
+$OP
+None.
+$EX
+alias            = Prints all the aliases
+alias dir ls     = Creates an alias without arguments
+alias lf ls -f   = Creates an alias with arguments
+alias lf         = Removes the named alias
+$NT
+Aliases defined with arguments can't be executed with
+pipes (single aliases, can).
+# ========
+@ascii
+#
+$NM
+ascii - Print the character table
+$SY
+ascii
+$DE
+The command ascii prints the character table.
+$OP
+None.
+$EX
+ascii
+# ========
+@batch
+#
+$NM
+batch - Execute commands from a file
+$SY
+batch file [arg ...]
+$DE
+The command batch executes commands from a file.
+
+If it's not specified, the default type for the
+file name will be ".sx".
+
+When executing, the name of the file becomes
+the $0 variable.
+
+If arguments are included, the 1st argument becomes
+the $1 variable, the 2nd argument becomes the $2
+variable and so on.
+
+The $# variable will have the number of arguments
+supplied to batch.
+$OP
+None.
+$EX
+batch setmyenv John B01:
+batch backup.sx
+$NT
+Batch commands can be nexted up to 3 levels.
+# ========
+@builtin
+#
+$NM
+builtin - Print the internal command names
+$SY
+cmds
+$DE
+The command builtin prints the available internal
+command names.
+$OP
+None.
+$EX
+builtin
+# ========
+@cat
+#
+$NM
+cat - Concatenate files
+$SY
+cat [-kn] [file ...]
+$DE
+The command cat writes its input to the standard output.
+
+If no arguments are given, it reads from the standard
+input.
+
+The - file means the standard input.
+$OP
+-k  Skip empty lines
+-n  Number lines
+$EX
+cat
+cat -kn phrases.txt
+cat -n facts.doc
+cat header.txt - footer.txt > myletter.txt
+# ========
+@cd
+#
+$NM
+cd - Change the current working directory
+$SY
+cd [directory]
+$DE
+The command cd changes the current working directory.
+
+If the directory is not supplied as an argument, cd
+tries to use the $HOME environment variable.
+$OP
+None.
+$EX
+cd A02:
+cd 1:
+cd
+$NT
+See the diralias command, for directory names.
+# ========
+@chmod
+#
+$NM
+chmod - Change file modes (CP/M attributes)
+$SY
+chmod mode file ...
+$DE
+The command chmod changes file modes (CP/M attributes).
+$OP
+Modes are:
+
++w  To set   write permission  (R/W in CP/M).
+-w  To reset write permission  (R/O in CP/M).
++s  To set   system attribute  (SYS in CP/M).
+-s  To reset system attribute  (DIR in CP/M).
++a  To set   archive attribute (ARCHIVE ON  in CP/M 3).
+-a  To reset archive attribute (ARCHIVE OFF in CP/M 3).
+
+Modes can be combined.
+
+If an attribute is not specified, it will remain unchanged.
+$EX
+chmod +s login.com
+chmod +wa-s notes.txt calendar.doc
+# ========
+@clear
+#
+$NM
+clear - Clear the console
+$SY
+clear
+$DE
+The command clear clears the console.
+$OP
+None.
+$EX
+clear
+$NT
+The command clear searches for the $TERM environment
+variable, in order to know how to clear the console.
+# ========
+@command
+#
+$NM
+Command edition
+$SY
+Rules to edit command lines
+$DE
+An usual command line looks like this:
+
+   command arg0 arg1 arg2 ...
+
+To include spaces in an argument, enclose it between
+single quotes:
+
+   'This is a single argument'
+
+Environment variables can be used in the command line as
+arguments and they will be substituted with their values,
+if you precede them with '$':
+
+   echo Your name is $USER
+
+You can include more than a command in the same command
+line, by separating them with the ';' character:
+
+   cp letter.old letter.new ; cat letter.new
+
+A command line starting with the '#' character, it is a
+comment, with no effect:
+
+   # This is a comment, not a command
+
+You can redirect stdin (console input) with the '<'
+character:
+
+   ed < letter.txt
+
+You can redirect stdout (console output) with the '>'
+character:
+
+   ls *.c > mydir.txt
+
+You can redirect the output of a command to the input
+of another command (piping), with the character '|':
+
+   ls *.c | more
+
+Or you can enter a combination of above.
+
+You can use the following control characters to edit
+the command line:
+
+   - To delete the last character:
+
+     BS / CTRL-H (0x08)
+     DEL         (0x7F)
+
+   - To delete the entire line:
+
+     CTRL-U (0x15)
+     CTRL-X (0x18)
+
+   - To retype the line:
+
+     CTRL-R (0x12)
+
+   - To execute the line:
+
+     CR / CTRL-M (0x0D)
+     LF / CTRL-J (0x0A)
+
+Be aware that in the case of external commands,
+if the variable BINDIR exists, SamaruX will
+search there the executable files.
+
+If the variable doesn't exists, SamaruX will
+search in the current working directory.
+
+To force SamaruX to search in another directory,
+prefix the filename with it:
+
+   a04:program
+
+To force SamaruX to search in the current working
+directory, prefix the filename with ':':
+
+   :program
+$NT
+Some commands (alias) have restrictions on above.
+
+Pipes are done using temporary files.
+# ========
+@compile
+#
+$NM
+How to compile the SamaruX shell and its commands
+$SY
+This topic explains how to compile the shell with
+its builtin commands, and the external commands.
+$DE
+To compile the shell (and its builtin commands):
+
+  1.Compile with MESCC - in CP/M:
+    cc sx
+  2.Optimize the code (optional) - in CP/M:
+    ccopt sx.zsm
+  3.Assemble the ZSM file - in CP/M:
+    zsm sx
+  4.Build the COM file from the HEX file - in CP/M:
+    hextocom sx
+
+Once you have build the shell, you must modify the
+file samarux.h, and recompile all the SamaruX external
+commands.
+
+To compile an external command (for example: less.c):
+
+  1.Compile with MESCC - in CP/M:
+    cc less
+  2.Optimize the code (optional) - in CP/M:
+    ccopt less.zsm
+  3.Build the REL file - in the host OS:
+    zmac less.zsm --rel
+  4.Build the PRL file - in CP/M:
+    link less [OP]
+  5.Rename the file from PRL to X - in CP/M:
+    ren less.prl less.x
+$NT
+To build the REL file, I use ZMAC version 03 Dec 2014,
+a Z80 cross assembler, downloaded from George Phillips's
+site: http://members.shaw.ca/gp2000/zmac.html.
+
+Of course, you can use your preferred tools to achieve
+the same results: emulators, hexcom, genprl, etc.
+
+See the source files for more information.
+# ========
+@cp
+#
+$NM
+cp - Copy files
+$SY
+cp [-fi] file_src file_dst
+cp [-fi] src ... directory
+$DE
+The command cp copies files.
+
+In the first form, only a single file can be copied.
+
+In the second form, more than a file can be copied (src
+can be a single file, an ambiguous file name, or a
+directory).
+$OP
+-f  Force:       Delete destination if already exists
+-i  Interactive: Asks to user to delete destination if
+                 already exists. It has prevalence
+                 over -f option.
+-v  Verbose
+$EX
+cp myfile.txt myfile.bak
+cp -i cat.c ls.c head.c b01:
+cp 1:*.c 2:*.h 3:
+cp -fv a00: b01:
+# ========
+@cpm
+#
+$NM
+cpm - Execute CP/M commands
+$SY
+cpm command [arg ...]
+$DE
+The command cpm executes CP/M commands as PIP, STAT,
+ED, BASIC, etc.
+
+Pipes or redirections are useless.
+
+If there are other commands after this in the same command
+line, they will not be executed.
+
+The procedure is:
+
+  - Save current environment variables and aliases.
+  - Exit from SamaruX to CP/M.
+  - Execute the CP/M command.
+  - Execute SamaruX quietly.
+  - Restore environment variables and aliases.
+$OP
+None.
+$EX
+cpm PIP A:=B:*.TXT
+cpm BASIC myprog
+cpm WS
+$NT
+In CP/M 2, it uses the $$$.SUB feature of the
+standard CP/M CCP.
+
+In CP/M 3, it uses the BDOS function CHAIN TO PROGRAM.
+
+It uses the temporary batch file PROFRST.SX to load and
+save the environment variables and aliases.
+# ========
+@date
+#
+$NM
+date - Print or set the system date and time
+$SY
+date [[YYYY-MM-DD] hh:mm:ss]
+date [[YYYY/MM/DD] hh:mm:ss]
+$DE
+The command date prints or sets the system date and
+time.
+$OP
+None.
+$EX
+date
+date 17:20:00
+date 2015-04-08 17:20:00
+$NT
+Needs CP/M version 3.
+# ========
+@df
+#
+$NM
+df - Print free disk space
+$SY
+df [drive ...]
+$DE
+The command df prints the free disk space for the
+specified drives.
+If no drive is specified, it prints the free disk
+space for the current drive.
+$OP
+None.
+$EX
+df
+df A: B:
+# ========
+@diralias
+#
+$NM
+diralias - Manage directory names
+$SY
+diralias [name [directory]]
+$DE
+The command diralias manages the directory names.
+
+A directory name, is an alias for a drive and user
+specification.
+
+To create a directory alias, enter the alias name,
+followed by the drive and user specification.
+
+To delete a directory alias, simply enter the alias
+name.
+
+To print all the directory aliases, enter a command
+line without arguments.
+$OP
+None.
+$EX
+diralias          = Prints all the directory aliases
+diralias root a0: = ROOT: will reference A00:
+diralias root     = Removes the directory alias
+
+cd root:
+ls root:*.txt
+cat root:profile.sx
+# ========
+@dump
+#
+$NM
+dump - Print files in hexadecimal and ascii
+$SY
+dump file ...
+$DE
+The command dump prints files in hexadecimal and
+ascii form.
+$OP
+None.
+$EX
+dump dump.com
+dump login.txt cat.com
+# ========
+@echo
+#
+$NM
+echo - Print its arguments
+$SY
+echo [-n] [arg ...]
+$DE
+The command echo prints its arguments.
+$OP
+-n  To suppress the new line.
+$EX
+echo Hello world
+echo -n Hello world
+# ========
+@ed
+#
+$NM
+ed - Edit small text files
+$SY
+ed [file]
+$DE
+The command ed edits small text files.
+
+Once in the editor, you can enter the following commands:
+
+edit   line_number   -- Edit an line
+insert line_number   -- Insert a line over another
+remove line_number   -- Remove (delele) a line
+copy   line_number   -- Copy to clipboard
+paste  line_number   -- Paste from clipboard
+append               -- Append a line
+print  [line_number [how_many_lines]]
+                     -- Print lines on the console
+write  [file_name]   -- Write the file
+info                 -- Information
+help                 -- Help on commands
+exit                 -- Exit to shell
+$OP
+None.
+$EX
+ed letter.txt
+1 lines read.
+ed> print
+    0: Hello
+ed> append
+    1: Bye!
+ed> print
+    0: Hello
+    1: Bye!
+ed> insert 1
+    1: How are you?
+ed> edit 0
+    0: Hello my friend.
+ed> print
+    0: Hello my friend.
+    1: How are you?
+    2: Bye!
+ed> write
+ed> exit
+# ========
+@env
+#
+$NM
+env - Manage environment variables
+$SY
+env [name [arg ...]]
+env [-s] name arg ...
+$DE
+The command env creates, removes and prints environment
+variables.
+
+To create (or modify) an environment variable, enter the
+variable name, and the arguments.
+
+To remove an environment variable, simply enter the
+variable name.
+
+To print all the environment variables, enter a command
+line without arguments.
+$OP
+-s  To skip spaces
+$EX
+env                      = Prints all the variables
+env TERM vt52            = Creates a variable
+env TERM                 = Removes the named variable
+env -s NAME John Smith   = Creates NAME as JohnSmith
+env -s FILE $HOME phones = Creates FILE as A00:phones
+$NT
+See the topic 'variables' to find a list of environment
+variables used by SamaruX.
+# ========
+@exit
+#
+$NM
+exit - Quit the shell
+$SY
+exit
+$DE
+The command exit quits the shell.
+$OP
+None.
+$EX
+exit
+# ========
+@files
+#
+$NM
+File and directory names
+$SY
+Rules to name files and directories
+$DE
+SamaruX accepts all usual CP/M file names, including
+wildcards (* and ?) with the usual behaviour.
+
+In addition to this, you can specify the directory in
+the file name.
+
+A directory can be named with its drive letter and
+user number.
+
+Also, you can use the diralias command to name
+directories, and use that name instead.
+
+If the drive letter is not included, it's assumed to
+be the current drive.(1)
+
+If the user number is not included, it's assumed to
+be the current user number.(1)
+
+(1) Be aware that in some circunstances, SamaruX will
+    search a file in another directory, instead of the
+    current one, if you don't specify it in the
+    filename (see the variables BINDIR for external
+    executables, and MANPATH for manuals).
+    To force SamaruX to search a file in the current
+    working directory, prefix the filename with the
+    character ':', as in:
+
+    :myprog
+    man :mescc stdio
+$EX
+Legal file and directory names:
+
+a01:file.txt   -- File in drive A, user number 1
+2:account.dat  -- File in current drive, user number 2
+*.h            -- Files matching *.h in current directory
+b2:*.c         -- Files matching *.c in drive A, user
+                  number 2
+c3:            -- Directory on drive A, user number 3
+
+Using diralias to name directories:
+
+diralias root a0:
+ls root:*.x
+cd root:
+
+Illegal file and directory names:
+
+a:letter.doc  -- User number not included
+c:            -- User number not included
+$NT
+In some commands, a directory name is equivalent to
+all files in that directory (i.e. A2: means A2:*.*).
+
+See the diralias command, to know more about directory
+names.
+# ========
+@goto
+#
+$NM
+goto - Jump to label in batch mode
+$SY
+goto label
+$DE
+The command goto jumps to a label in batch mode.
+
+Labels are maximum 8 characteres long, must follow a
+comment and must end with a ':' (see example).
+$OP
+None.
+$EX
+1: # Entry:
+2: echo -n Enter 'y':
+3: read REPLY
+4: if $REPLY eq y goto Cont
+5: goto Entry
+6: # Cont:
+# ========
+@grep
+#
+$NM
+grep - Find text patterns in files
+$SY
+grep [-options] pattern [file ...]
+$DE
+The command greps find patterns in files and sends the
+result to the standard output.
+
+If no file names are entered, more reads from the
+standard input.
+
+The - file means the standard input.
+$OP
+-c : Count [non] matching lines.
+-i : Ignore case.
+-v : Select non matching lines instead of matching ones.
+$EX
+grep -i Elvis bio.txt story.txt article.doc
+# ========
+@history
+#
+$NM
+history - Manage command line history
+$SY
+history [entry]
+$DE
+The command history selects an entry from the
+command line history or prints all the entries.
+
+To select a history entry, enter the entry
+number. The entry number 0 has the last
+entered command line.
+
+To print the history entries, enter a command
+line without arguments.
+$OP
+None.
+$EX
+history 0   = Selects the last command line
+history 3   = Selects the entry number 3
+history     = Prints all the history entries
+# ========
+@if
+#
+$NM
+if - Test condition
+$SY
+if arg1 [not] eq arg2 command
+if file [not] exist command
+if arg1 [not] in_env command
+$DE
+The command if tests a condition and runs a command if
+the result of the test is true:
+
+eq     -- Test if two strings are equal.
+exist  -- Test if a file exists.
+in_env -- Test if an environment variable exists.
+
+The optional word not inverts the test result.
+$OP
+None.
+$EX
+if TERM not in_env echo Terminal type is unknown!
+if $USER eq John batch profjohn
+if letter.txt exist ed letter.txt
+$NT
+The command if it's very useful in batch mode.
+# ========
+@ls
+#
+$NM
+ls - List files
+$SY
+ls [-avksfl ...] [dir|file ...]
+$DE
+The command ls list files.
+
+You can enter ambiguous file names.
+
+If no file name is entered, ls lists all
+the files (*.*).
+$OP
+-a  Print file attributes
+-v  Verbose
+-k  Print file sizes
+-s  Sort file names
+-f  Same as -aksv
+-l  Same as -aks
+$EX
+ls a02:
+ls -f *.c
+ls -sv myfile.c m00:myfile.h myfile.zsm
+# ========
+@man
+#
+$NM
+man - Print manual pages
+$SY
+man [[file] topic | ALL | TOPICS]
+$DE
+The command man prints manual pages about a topic, all
+topics, or prints the available topics.
+
+If no file name is given, man searchs in the default
+man file "samarux.man".
+
+If no arguments are given, the command is equivalent to:
+
+  man TOPICS
+
+The optional MANPATH environment variable has the man
+file path.
+
+If MANPATH does not exists or it's not a valid path,
+the current directory will be used instead.
+
+To force man to search in another directory, prefix the
+filename with it:
+
+   man a04:mescc stdio
+
+To force man to search in the current working directory,
+prefix the filename with ':':
+
+   man :mescc stdio
+$OP
+None.
+$EX
+man           -- Print available topics in samarux.man
+man cat       -- Print cat topic help in samarux.man
+man ALL       -- Print all contents in samarux.man
+man wp TOPICS -- Print available topics in wp.man
+man wp fi     -- Print fi topic help in wp.man
+# ========
+@mem
+#
+$NM
+mem - Print memory usage
+$SY
+mem
+$DE
+The command mem prints the free and used memory size
+in bytes.
+$OP
+None.
+# ========
+@more
+#
+$NM
+more - Print the contents of text files
+$SY
+more [-number] [file ...]
+$DE
+The command more prints the contents of text files,
+doing a pause when the screen is full.
+
+You can enter the number of screen lines or leave
+more to take this data from the system.
+
+If no file names are entered, more reads from
+the standard input.
+
+The - file means the standard input.
+$OP
+-number  To specify the number of screen lines
+$EX
+more
+more myfile.doc
+more -24 file.txt letter.doc
+# ========
+@mv
+#
+$NM
+mv - Rename files
+$SY
+mv old_name new_name
+$DE
+The command mv rename files.
+$OP
+None.
+$EX
+mv schedule.txt schedule.bak
+$NT
+The command mv can't be used to move files,
+or rename directories.
+# ========
+@profile
+#
+$NM
+Profile
+$SY
+Profiling the shell
+$DE
+When running the shell, an optional startup file can be
+used to setup your SamaruX environment:
+
+profile.sx : For interactive mode.
+profcpm.sx : For CP/M mode.
+# ========
+@pwd
+#
+$NM
+pwd - Print the current working directory
+$SY
+pwd
+$DE
+The command pwd prints the current working
+directory.
+$OP
+None.
+$EX
+pwd
+# ========
+@read
+#
+$NM
+read - Read a line from standard input
+$SY
+read name
+$DE
+The command read reads a line from standard input and
+assign its value to an environment variable.
+$OP
+None
+$EX
+echo -n Enter your name:
+read USER
+echo Hello $USER !!!
+# ========
+@rm
+#
+$NM
+rm - Remove files
+$SY
+rm [-fi] dir|file ...
+$DE
+The command rm remove files.
+
+You can enter ambiguous file names.
+
+If a directory name is entered, rm assumes
+all the files in that directory (*.*).
+
+If the file name is ambiguous, rm will
+print an error if the option -f is not
+entered.
+$OP
+-f   To force deletion in ambiguous file names
+-i   To ask to user for each file deletion
+-v   To be verbose
+$EX
+rm myfile.txt
+rm hello.c hello.h
+rm -f B01:
+rm -fi A02:*.bak
+# ========
+@samarux
+#
+$NM
+SamaruX - Unix-like shell for CP/M systems
+
+(c) 2014, 2015 FloppySoftware, Valencia, Spain
+www.floppysoftware.es
+cpm-connections.blogspot.com
+floppysoftware@gmail.com
+$SY
+samarux [arg ...]
+$DE
+SamaruX is a Unix-like shell for Z80 computers, running
+the CP/M operating system from Digital Research Inc.
+
+It has been developed with MESCC (Mike's Enhanced Small
+C Compiler).
+$OP
+The optional command line, is a command line for the shell.
+
+If you enter a command line, then SamaruX will execute the
+command and return to CP/M (this is known as CP/M mode).
+
+If no command line is given, SamaruX presents the shell
+prompt, waiting for user commands (this is known
+as interactive mode).
+
+In the interactive mode, enter the exit command to
+leave SamaruX and return to CP/M.
+
+In both modes, there is an optional profiling procedure,
+to setup your environment, according to your
+preferences.
+
+SamaruX has some built-in commands, and since version
+2.00, it has some external commands too.
+$EX
+samarux               -- To enter to the interactive shell
+samarux cat file.txt  -- To execute the SamaruX cat
+                         command and exit to CP/M
+$NT
+See the topics in the manual (with man), to learn about
+its commands, options, profiling, compiling, etc.
+# ========
+@sort
+#
+$NM
+sort - Sort text lines
+$SY
+sort [-rn] [file ...]
+$DE
+The sort command sorts lines of text and sends
+the result to the standard output.
+
+If no file names are entered, sort reads from
+the standard input.
+
+The - file means the standard input.
+$OP
+-r   Reverse the result
+-n   Compare numbers instead of text
+$EX
+grep 2015-05- tasks.txt | sort
+sort -n myprog.bas
+# ========
+@tail
+#
+$NM
+tail - Print last lines from files
+$SY
+tail [-nNUMBER] [file ...]
+$DE
+The command tail writes the last NUMBER lines from files
+to the standard output.
+
+If no arguments are given, it reads from the standard
+input.
+
+The - file means the standard input.
+$OP
+-nNUMBER  Writes up to NUMBER lines (default = 10).
+$EX
+tail -n12 mytasks.txt
+tail myapp.c
+# ========
+@tee
+#
+$NM
+tee - Copy standard input to standard output
+      and to a file.
+$SY
+tee file
+$DE
+The tee command copy the standard input to the
+standard output and to a file.
+$OP
+None.
+$EX
+cat profile.sx | tee profile.bak
+# ========
+@terminal
+#
+$NM
+Terminal
+$SY
+Terminal settings
+$DE
+The terminal settings can be controlled by following
+environment variables:
+
+  $TERM    - Terminal name: vt52, vt100 (or ansi),
+             ascii.
+
+  $LINES   - Terminal rows (> 0 and < 256).
+
+  $COLUMNS - Terminal columns (> 0 and < 256).
+
+When a command asks for terminal rows or columns,
+the procedure is as follows:
+
+  - If the environment variable exists and has a
+    legal value, this value is used.
+
+  - Else, if CP/M is version 3, the values from
+    the SCB (System Control Block) are used.
+
+  - Else, the default values are used (25 rows,
+    80 columns).
+# ========
+@variables
+#
+$NM
+Environment variables
+$SY
+Environment (& pseudo-environment) variables
+$DE
+Environment variables can be used in the command line as
+arguments and they will be substituted with their values,
+if you precede them with '$'.
+
+Pseudo-environment variables are not stored as environment
+variables, but they can be used in command lines as if
+they were.
+
+Some SamaruX environment variables include:
+
+  $BINDIR  - Directory for SamaruX external commands.
+
+  $HOME    - Default user directory.
+
+  $TERM    - Terminal name.
+
+  $LINES   - Terminal rows.
+
+  $COLUMNS - Terminal columns.
+
+  $USER    - User name.
+
+  $PROMPT  - Prompt string, with some special sequences:
+
+             %$ : $ symbol.
+             %u : User name (reads $USER).
+             %w : Working directory.
+             %% : % symbol.
+
+  $TMPDIR  - Temporary directory.
+
+  $MANPATH - Path for manual file.
+
+SamaruX pseudo-environment variables are:
+
+  $? - Exit code of last executed command (0 for SUCCESS,
+       1 for FAILURE).
+
+When executing batch commands, there are some additional
+pseudo-environment variables:
+
+  $0        - Batch file name.
+  $1 ... $9 - Batch arguments.
+  $#        - Number of arguments supplied to batch.
+$EX
+echo My terminal is $TERM and I am $USER
+rm myfile.txt ; echo RM exit code is $?
+env PROMPT [%u in %w] %$
+$NT
+See related topics as batch, profile, terminal, etc.
+# ========
+@ver
+#
+$NM
+ver - Print SamaruX and CP/M versions and facts
+$SY
+ver
+$DE
+The command ver prints the SamaruX and CP/M versions,
+the free TPA memory, and some other information.
+$OP
+None.
+$EX
+ver
+# ========
+@wc
+#
+$NM
+wc - Count newlines, words and characters
+$SY
+wc [file ...]
+$DE
+The command wc counts the number of newlines, words
+and characters in files.
+
+It prints also a line with totals if more than one
+file is specified.
+
+If no file names are entered, wc reads from the
+standard input.
+
+The - file means the standard input.
+$OP
+None.
+$EX
+wc mytasks.txt
+grep 2015 diary.doc | wc
+$NT
+The CR ('\r') characters will not be counted.
+# ========
+@whoami
+#
+$NM
+whoami - Print the user name
+$SY
+whoami
+$DE
+The command whoami prints the user name.
+$OP
+None.
+$EX
+whoami
+

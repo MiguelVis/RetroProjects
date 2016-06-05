@@ -1,0 +1,194 @@
+SamaruX
+
+(c) Miguel I. Garcia Lopez / FloppySoftware
+
+www.floppysoftware.es
+cpm-connections.blogspot.com
+floppysoftware@gmail.com
+
+
+SamaruX v2.05, 05 Jun 2016
+==========================
+
+Last changes.
+
+New built-in commands:
+----------------------
+
+tail   : Print last lines from files.
+whoami : Print the user name.
+
+External commands
+-----------------
+
+Some built-in commands can be compiled as external ones.
+
+Compile SamaruX with SX_MINIMAL for a minimal number of built-in commands. Then
+execute make_all_ext2 to build the excluded built-in commands as external.
+
+
+SamaruX v2.04, 04 Sep 2015
+==========================
+
+Last changes.
+
+Executing SamaruX external commands
+-----------------------------------
+
+Like in previous releases, SamaruX will search the external command files in the
+directory specified in the environment variable BINDIR:
+
+	env BINDIR system:
+
+It this variable does not exists, or it's not valid, SamaruX will search the
+external command files in the current working directory.
+
+If you prefix the filename with a directory, Samarux will search the external
+command file there:
+
+	mescc:cc myprog
+
+New in this release: You can force SamaruX to search a external command file in
+the current working directory, if you prefix the filename with the character ':',
+as in:
+
+	:cc
+
+Searching manuals with the command man
+--------------------------------------
+
+Like in previous releases, SamaruX will seach the manual files in the directory
+specified in the environment variable MANPATH:
+
+	env MANPATH manuals:
+
+It this variable does not exists, or it's not valid, SamaruX will search the
+manual files in the current working directory.
+
+If you prefix the filename with a directory, Samarux will search the manual
+file there:
+
+	man mescc:help stdio
+
+New in this release: You can force SamaruX to search a manual file in the current
+working directory, if you prefix the filename with the character ':', as in:
+
+	man :help stdio
+
+
+SamaruX v2.03, 03 Sep 2015
+==========================
+
+Last changes.
+
+New built-in command:
+---------------------
+
+diralias : Support for named directories.
+
+With the use of diralias, you can reference a directory (a
+drive and user specification) with a name.
+
+I.E.:
+
+diralias root a0:
+diralias temp m0:
+diralias mescc a3:
+
+cat mescc:sx.c | more
+ls root:*.x
+cd root:
+
+
+SamaruX v2.02, 22 Ago 2015
+==========================
+
+Last changes.
+
+New examples of SamaruX external commands:
+------------------------------------------
+
+banner  - print text banners (ported)
+cal     - print calendars (ported)
+head    - print first lines of files (ported)
+whoami  - print current user name
+strings - print strings from binary files
+robots  - a game (already included in last SamaruX version)
+
+Added support for SamaruX external commands:
+--------------------------------------------
+
+As an example, the game robots has been included.
+
+
+New built-in commands:
+----------------------
+
+date  : Print and set the system date and time (only CP/M 3).
+mem   : Show memory usage.
+sort  : Sort text lines.
+wc    : Count text lines, words and characters.
+tee   : Copy standard input to standard output and to a file.
+
+
+Improved commands:
+-----------------
+
+batch : Default file type for batch files - ".sx".
+cat   : Added -k and -n options.
+cd    : Added support for $HOME.
+cpm   : Under CP/M 3, it uses the BDOS fn. CHAIN TO PROGRAM.
+ed    : Added COPY and PASTE commands.
+env   : Added -s option.
+if    : Added in_env test for environment variables.
+man   : Added support for $MANPATH and external manuals.
+        Default file type for manual files - ".man".
+
+
+New environment variables:
+--------------------------
+
+- HOME    : Default user directory.
+- BINDIR  : Directory for SamaruX external commands.
+- MANPATH : Path for manuals.
+
+
+SamaruX v1.02, 27 Feb 2015
+==========================
+
+Last changes.
+
+
+New control characters for command line edition:
+------------------------------------------------
+
+To delete the entire line:
+
+     CTRL-U (0x15)
+     CTRL-X (0x18)
+
+To retype the line:
+
+     CTRL-R (0x12)
+
+
+New environment variables:
+--------------------------
+
+- LINES   : Number of console lines.
+- COLUMNS : Number of console columns.
+- TMPDIR  : Temporary directory (used by pipes).
+
+The use of these environment variables is optional.
+
+When a builtin command asks for a system variable,
+the procedure is as follows:
+
+- If the corresponding environment variable exists and
+  has a legal value, use it.
+
+- Under CP/M 3, use the value from the SCB.
+
+- Otherwise, use the default values (for the console dimensions,
+  the values #defined in the source code; for the temporary
+  drive, the current drive).

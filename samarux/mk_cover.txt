@@ -1,0 +1,33 @@
+ @@@@@                                          @     @
+@     @    @@    @    @    @@    @@@@@   @    @  @   @
+@         @  @   @@  @@   @  @   @    @  @    @   @ @
+ @@@@@   @    @  @ @@ @  @    @  @    @  @    @    @
+      @  @@@@@@  @    @  @@@@@@  @@@@@   @    @   @ @
+@     @  @    @  @    @  @    @  @   @   @    @  @   @
+ @@@@@   @    @  @    @  @    @  @    @   @@@@  @     @
+
+
+               +-----------------------+
+               |     S a m a r u X     |
+               |                       |
+               | U s e r   M a n u a l |
+               +-----------------------+
+
+
+         A shell for the CP/M(tm) Operating System
+
+
+
+   Copyright (c) Miguel I. Garcia Lopez / FloppySoftware
+
+                  www.floppysoftware.es
+              cpm-connections.blogspot.com
+                floppysoftware@gmail.com
+
+
+
+
+CP/M is a registered trademark of Digital Research Inc.
+Z80 is a registered trademark of Zilog.
+Unix is a registered trademark of The Open Group.
+

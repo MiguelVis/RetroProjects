@@ -1,0 +1,17 @@
+# --------------------------------- #
+# whoami.sx - Display current user  #
+# --------------------------------- #
+# Usage: batch whoami               #
+# Alias: alias whoami batch whoami  #
+# ----------------------------------#
+if $# eq 0 goto Guess
+echo 'Use: whoami'
+goto Quit
+# Guess:
+if USER in_env goto PrUser
+echo Unknown.
+goto Quit
+# PrUser:
+echo You are: $USER
+# Quit:
+
