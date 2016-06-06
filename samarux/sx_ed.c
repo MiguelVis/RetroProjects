@@ -94,7 +94,9 @@ int argc, argv[];
 
 	ed_cols = TermCols() - 10; /* FIXME */
 
-	ed_lin = ed_copy = ed_file = ed_buf = err = 0;
+	ed_lin = ed_copy = ed_file = ed_buf = NULL;
+
+	err = 0;
 
 	/* Create buffers */
 

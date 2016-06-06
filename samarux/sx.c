@@ -1821,8 +1821,8 @@ char *fn; int max_lines, max_len;
 	if(pbuf != NULL)
 		free(pbuf);
 
-	if(err)
-		KeyFree(arr_lines);
+	if(err && arr_lines != NULL)
+		KeyFree(arr_lines, max_lines);
 
 	return err ? NULL : arr_lines;
 }
