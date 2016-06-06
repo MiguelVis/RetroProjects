@@ -31,22 +31,25 @@ CHAPTER 3 : BUILT-IN COMMANDS
             3.16 : ed - Edit small text files
             3.17 : env - Manage environment variables
             3.18 : exit - Quit the shell
-            3.19 : goto - Jump to label in batch mode
-            3.20 : grep - Find text patterns in files
-            3.21 : history - Manage command line history
-            3.22 : if - Test condition
-            3.23 : ls - List files
-            3.24 : man - Print manual pages
-            3.25 : mem - Print memory usage
-            3.26 : more - Print the contents of text files
-            3.27 : mv - Rename files
-            3.28 : pwd - Print the current working directory
-            3.29 : read - Read a line from standard input
-            3.30 : rm - Remove files
-            3.31 : sort - Sort text lines
-            3.32 : tail - Print last lines from files
-            3.33 : tee - Duplicate the standard input
-            3.34 : ver - Print CP/M version and facts
-            3.35 : wc - Count newlines, words and characters
-            3.36 : whoami - Print the user name
+            3.19 : false - Return false.
+            3.20 : goto - Jump to label in batch mode
+            3.21 : grep - Find text patterns in files
+            3.22 : head - Print first lines from files
+            3.23 : history - Manage command line history
+            3.24 : if - Test condition
+            3.25 : ls - List files
+            3.26 : man - Print manual pages
+            3.27 : mem - Print memory usage
+            3.28 : more - Print the contents of text files
+            3.29 : mv - Rename files
+            3.30 : pwd - Print the current working directory
+            3.31 : read - Read a line from standard input
+            3.32 : rm - Remove files
+            3.33 : sort - Sort text lines
+            3.34 : tail - Print last lines from files
+            3.35 : tee - Duplicate the standard input
+            3.36 : true - Return true.
+            3.37 : ver - Print CP/M version and facts
+            3.38 : wc - Count newlines, words and characters
+            3.39 : whoami - Print the user name
 

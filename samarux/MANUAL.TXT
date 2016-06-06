@@ -31,7 +31,7 @@ CP/M is a registered trademark of Digital Research Inc.
 Z80 is a registered trademark of Zilog.
 Unix is a registered trademark of The Open Group.
 
-This manual covers SamaruX version 2.05 / 05 Jun 2016
+This manual covers SamaruX version 2.05 / 06 jun 2016
 
 === oOo ===
 
@@ -68,24 +68,27 @@ CHAPTER 3 : BUILT-IN COMMANDS
             3.16 : ed - Edit small text files
             3.17 : env - Manage environment variables
             3.18 : exit - Quit the shell
-            3.19 : goto - Jump to label in batch mode
-            3.20 : grep - Find text patterns in files
-            3.21 : history - Manage command line history
-            3.22 : if - Test condition
-            3.23 : ls - List files
-            3.24 : man - Print manual pages
-            3.25 : mem - Print memory usage
-            3.26 : more - Print the contents of text files
-            3.27 : mv - Rename files
-            3.28 : pwd - Print the current working directory
-            3.29 : read - Read a line from standard input
-            3.30 : rm - Remove files
-            3.31 : sort - Sort text lines
-            3.32 : tail - Print last lines from files
-            3.33 : tee - Duplicate the standard input
-            3.34 : ver - Print CP/M version and facts
-            3.35 : wc - Count newlines, words and characters
-            3.36 : whoami - Print the user name
+            3.19 : false - Return false.
+            3.20 : goto - Jump to label in batch mode
+            3.21 : grep - Find text patterns in files
+            3.22 : head - Print first lines from files
+            3.23 : history - Manage command line history
+            3.24 : if - Test condition
+            3.25 : ls - List files
+            3.26 : man - Print manual pages
+            3.27 : mem - Print memory usage
+            3.28 : more - Print the contents of text files
+            3.29 : mv - Rename files
+            3.30 : pwd - Print the current working directory
+            3.31 : read - Read a line from standard input
+            3.32 : rm - Remove files
+            3.33 : sort - Sort text lines
+            3.34 : tail - Print last lines from files
+            3.35 : tee - Duplicate the standard input
+            3.36 : true - Return true.
+            3.37 : ver - Print CP/M version and facts
+            3.38 : wc - Count newlines, words and characters
+            3.39 : whoami - Print the user name
 
 === oOo ===
 
@@ -1019,7 +1022,26 @@ EXAMPLES
 	exit
 
 +--------------+
-| SECTION 3.19 |  goto
+| SECTION 3.19 |  false
++--------------+
+
+NAME
+	false - Return false
+
+SYNOPSIS
+	false
+
+DESCRIPTION
+	The command false returns the value false: 1.
+
+OPTIONS
+	None.
+
+EXAMPLES
+	false
+
++--------------+
+| SECTION 3.20 |  goto
 +--------------+
 
 NAME
@@ -1046,7 +1068,7 @@ EXAMPLES
 	6: # Cont:
 
 +--------------+
-| SECTION 3.20 |  grep
+| SECTION 3.21 |  grep
 +--------------+
 
 NAME
@@ -1073,7 +1095,33 @@ EXAMPLES
 	grep -i Elvis bio.txt story.txt article.doc
 
 +--------------+
-| SECTION 3.21 |  history
+| SECTION 3.22 |  head
++--------------+
+
+NAME
+	head - Print first lines from files
+
+SYNOPSIS
+	head [-nNUMBER] [file ...]
+
+DESCRIPTION
+	The command head writes the first NUMBER lines from files
+	to the standard output.
+	
+	If no arguments are given, it reads from the standard
+	input.
+	
+	The - file means the standard input.
+
+OPTIONS
+	-nNUMBER  Writes up to NUMBER lines (default = 10).
+
+EXAMPLES
+	head -n12 mytasks.txt
+	head myapp.c
+
++--------------+
+| SECTION 3.23 |  history
 +--------------+
 
 NAME
@@ -1102,7 +1150,7 @@ EXAMPLES
 	history     = Prints all the history entries
 
 +--------------+
-| SECTION 3.22 |  if
+| SECTION 3.24 |  if
 +--------------+
 
 NAME
@@ -1135,7 +1183,7 @@ NOTES
 	The command if it's very useful in batch mode.
 
 +--------------+
-| SECTION 3.23 |  ls
+| SECTION 3.25 |  ls
 +--------------+
 
 NAME
@@ -1166,7 +1214,7 @@ EXAMPLES
 	ls -sv myfile.c m00:myfile.h myfile.zsm
 
 +--------------+
-| SECTION 3.24 |  man
+| SECTION 3.26 |  man
 +--------------+
 
 NAME
@@ -1213,7 +1261,7 @@ EXAMPLES
 	man wp fi     -- Print fi topic help in wp.man
 
 +--------------+
-| SECTION 3.25 |  mem
+| SECTION 3.27 |  mem
 +--------------+
 
 NAME
@@ -1230,7 +1278,7 @@ OPTIONS
 	None.
 
 +--------------+
-| SECTION 3.26 |  more
+| SECTION 3.28 |  more
 +--------------+
 
 NAME
@@ -1260,7 +1308,7 @@ EXAMPLES
 	more -24 file.txt letter.doc
 
 +--------------+
-| SECTION 3.27 |  mv
+| SECTION 3.29 |  mv
 +--------------+
 
 NAME
@@ -1283,7 +1331,7 @@ NOTES
 	or rename directories.
 
 +--------------+
-| SECTION 3.28 |  pwd
+| SECTION 3.30 |  pwd
 +--------------+
 
 NAME
@@ -1303,7 +1351,7 @@ EXAMPLES
 	pwd
 
 +--------------+
-| SECTION 3.29 |  read
+| SECTION 3.31 |  read
 +--------------+
 
 NAME
@@ -1325,7 +1373,7 @@ EXAMPLES
 	echo Hello $USER !!!
 
 +--------------+
-| SECTION 3.30 |  rm
+| SECTION 3.32 |  rm
 +--------------+
 
 NAME
@@ -1358,7 +1406,7 @@ EXAMPLES
 	rm -fi A02:*.bak
 
 +--------------+
-| SECTION 3.31 |  sort
+| SECTION 3.33 |  sort
 +--------------+
 
 NAME
@@ -1385,7 +1433,7 @@ EXAMPLES
 	sort -n myprog.bas
 
 +--------------+
-| SECTION 3.32 |  tail
+| SECTION 3.34 |  tail
 +--------------+
 
 NAME
@@ -1411,7 +1459,7 @@ EXAMPLES
 	tail myapp.c
 
 +--------------+
-| SECTION 3.33 |  tee
+| SECTION 3.35 |  tee
 +--------------+
 
 NAME
@@ -1432,7 +1480,26 @@ EXAMPLES
 	cat profile.sx | tee profile.bak
 
 +--------------+
-| SECTION 3.34 |  ver
+| SECTION 3.36 |  true
++--------------+
+
+NAME
+	true - Return true
+
+SYNOPSIS
+	true
+
+DESCRIPTION
+	The command false returns the value true: 0.
+
+OPTIONS
+	None.
+
+EXAMPLES
+	true
+
++--------------+
+| SECTION 3.37 |  ver
 +--------------+
 
 NAME
@@ -1452,7 +1519,7 @@ EXAMPLES
 	ver
 
 +--------------+
-| SECTION 3.35 |  wc
+| SECTION 3.38 |  wc
 +--------------+
 
 NAME
@@ -1484,7 +1551,7 @@ NOTES
 	The CR ('\r') characters will not be counted.
 
 +--------------+
-| SECTION 3.36 |  whoami
+| SECTION 3.39 |  whoami
 +--------------+
 
 NAME
@@ -1502,4 +1569,4 @@ OPTIONS
 EXAMPLES
 	whoami
 
-
+

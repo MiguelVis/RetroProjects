@@ -567,6 +567,19 @@ None.
 $EX
 exit
 # ========
+@false
+#
+$NM
+false - Return false
+$SY
+false
+$DE
+The command false returns the value false: 1.
+$OP
+None.
+$EX
+false
+# ========
 @files
 #
 $NM
@@ -671,6 +684,26 @@ $OP
 -v : Select non matching lines instead of matching ones.
 $EX
 grep -i Elvis bio.txt story.txt article.doc
+# ========
+@head
+#
+$NM
+head - Print first lines from files
+$SY
+head [-nNUMBER] [file ...]
+$DE
+The command head writes the first NUMBER lines from files
+to the standard output.
+
+If no arguments are given, it reads from the standard
+input.
+
+The - file means the standard input.
+$OP
+-nNUMBER  Writes up to NUMBER lines (default = 10).
+$EX
+head -n12 mytasks.txt
+head myapp.c
 # ========
 @history
 #
@@ -1037,6 +1070,19 @@ the procedure is as follows:
 
   - Else, the default values are used (25 rows,
     80 columns).
+# ========
+@true
+#
+$NM
+true - Return true
+$SY
+true
+$DE
+The command false returns the value true: 0.
+$OP
+None.
+$EX
+true
 # ========
 @variables
 #

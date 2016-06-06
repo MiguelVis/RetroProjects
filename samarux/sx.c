@@ -146,6 +146,7 @@
 	03 Jun 2016 : Added tail and whoami commands.
 	04 Jun 2016 : Added SX_MINIMAL to include only a minimal # of built-in commands.
 	05 Jun 2016 : SamaruX defines are now in sx.h.
+	06 Jun 2016 : Added head, true, and false commands.
 
 	NOTES:
 	
@@ -158,7 +159,7 @@
 
 	TO-DO & IDEAS:
 
-	- Add commands: true, false, who.
+	- Add commands: who.
 	- Add environment variables: PWD - see command cd in POSIX specification.
 	- Implement setenv(), unsetenv(), getenv(), putenv() - see POSIX specification.
 	- Add options in compilation time to build for any CP/M, CP/M 2 or CP/M 3.
@@ -315,10 +316,12 @@ int sx_exit_code;     /* exit code */
 
 #include <sx_env.c>
 #include <sx_exit.c>
+#include <sx_false.c>
 #include <sx_goto.c>
 
 #ifndef SX_MINIMAL
 #include <sx_grep.c>
+#include <sx_head.c>
 #endif
 
 #include <sx_hist.c>
@@ -344,6 +347,11 @@ int sx_exit_code;     /* exit code */
 #include <sx_sort.c>
 #include <sx_tail.c>
 #include <sx_tee.c>
+#endif
+
+#include <sx_true.c>
+
+#ifndef SX_MINIMAL
 #include <sx_ver.c>
 #include <sx_wc.c>
 #include <sx_whoam.c>
@@ -425,11 +433,17 @@ main()
 #ifdef SX_EXIT
 	sv_cmd_name[sv_cmd_max]="exit";     sv_cmd_fun[sv_cmd_max++]=ExitMain;
 #endif
+#ifdef SX_FALSE
+	sv_cmd_name[sv_cmd_max]="false";    sv_cmd_fun[sv_cmd_max++]=FalseMain;
+#endif
 #ifdef SX_GOTO
 	sv_cmd_name[sv_cmd_max]="goto";     sv_cmd_fun[sv_cmd_max++]=GotoMain;
 #endif
 #ifdef SX_GREP
 	sv_cmd_name[sv_cmd_max]="grep";     sv_cmd_fun[sv_cmd_max++]=GrepMain;
+#endif
+#ifdef SX_HEAD
+	sv_cmd_name[sv_cmd_max]="head";     sv_cmd_fun[sv_cmd_max++]=HeadMain;
 #endif
 #ifdef SX_HISTORY
 	sv_cmd_name[sv_cmd_max]="history";  sv_cmd_fun[sv_cmd_max++]=HistMain;
@@ -469,6 +483,9 @@ main()
 #endif
 #ifdef SX_TEE
 	sv_cmd_name[sv_cmd_max]="tee";      sv_cmd_fun[sv_cmd_max++]=TeeMain;
+#endif
+#ifdef SX_TRUE
+	sv_cmd_name[sv_cmd_max]="true";     sv_cmd_fun[sv_cmd_max++]=TrueMain;
 #endif
 #ifdef SX_VER
 	sv_cmd_name[sv_cmd_max]="ver";      sv_cmd_fun[sv_cmd_max++]=VerMain;

@@ -14,6 +14,7 @@ call make_ext2 sx_dump dump
 call make_ext2 sx_echo echo
 call make_ext2 sx_ed ed
 call make_ext2 sx_grep grep
+call make_ext2 sx_head head
 call make_ext2 sx_ls ls
 call make_ext2 sx_man man
 call make_ext2 sx_more more
@@ -43,6 +44,7 @@ call make_tst dump.x
 call make_tst echo.x
 call make_tst ed.x
 call make_tst grep.x
+call make_tst head.x
 call make_tst ls.x
 call make_tst man.x
 call make_tst more.x

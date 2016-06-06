@@ -37,7 +37,7 @@
 
 #define SX_VERSION 2
 #define SX_RELEASE 05
-#define SX_APPDATE "03 Jun 2016"
+#define SX_APPDATE "06 Jun 2016"
 
 #define SX_COPYRGT "(c) 2015-2016 Miguel Garcia / FloppySoftware"
 
@@ -62,7 +62,7 @@
 
 #define SX_MAX_ARGS 24  /* Max. # of arguments in the command line */
 
-#define SX_MAX_CMD 36   /* Max. # of built-in commands */
+#define SX_MAX_CMD 39   /* Max. # of built-in commands */
 
 #define SX_MAX_BATCH 10 /* Max. # of batch variables: $0 .. $9 */
 

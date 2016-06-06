@@ -24,13 +24,6 @@
 	07 Sep 2015 : v1.00 : Version for CP/M.
 	07 Sep 2015 : v1.00 : Version for SamaruX as external command.
 	03 Jun 2016 : v1.01 : Built-in and external.
-
-	To-do & ideas:
-
-	- Print a banner with the filename, when files > 1.
-	- Add an option to disable banners (see prev. comment).
-
-	Define only one of following defs.:
 */
 
 /* Built-in or external
