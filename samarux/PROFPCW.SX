@@ -8,7 +8,7 @@ echo
 #
 # Login:
 #
-echo -n 'Login: '
+echo -n 'login: '
 read LOGNAME
 #
 if $LOGNAME eq Miguel goto IsMiguel
