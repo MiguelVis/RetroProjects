@@ -28,6 +28,8 @@
 	15 May 2015 : v1.03
 	31 Aug 2015 : v1.04
 	02 Jun 2016 : v1.05 : CRT_FILE, CRT_ENGLISH, CRT_SPANISH, etc. are now out of this file.
+	10 Jun 2016 : v1.06 : Removed BOX_COL. Added PS_FNAME, PS_INF, PS_LIN_CUR, PS_LIN_NOW,
+	                      PS_LIN_MAX, PS_COL_CUR, PS_COL_NOW, PS_COL_MAX.
 
 	Notes:
 
@@ -38,7 +40,7 @@
    -------
 */
 
-#define TE_VERSION "v1.05 / 02 Jun 2016 for CP/M"  /* Program version and date */
+#define TE_VERSION "v1.06 / 10 Jun 2016 for CP/M"  /* Program version and date */
 
 /* More defs.
    ----------
@@ -50,11 +52,18 @@
 
 #define FORCED_MAX 128   /* Keyboard forced entry buffer size (for paste, tabs, etc.) */
 
-#define PS_ROW 0         /* Information position */
-#define PS_TXT "Lin:0000/0000/0000 Col:00/00 Len:00"  /* Information layout */
+#define PS_ROW     0     /* Information position */
+#define PS_FNAME   4     /* Filename - position in row */
+#define PS_TXT     "Lin:0000/0000/0000 Col:00/00 Len:00"  /* Information layout */
+#define PS_INF     (CRT_COLS - 35)  /* Information layout - position in row */
+#define PS_LIN_CUR (CRT_COLS - 31)  /* Current line # - position in row */
+#define PS_LIN_NOW (CRT_COLS - 26)  /* How many lines # - position in row */
+#define PS_LIN_MAX (CRT_COLS - 21)  /* Max. # of lines - position in row */
+#define PS_COL_CUR (CRT_COLS - 12)  /* Current column # - position in row */
+#define PS_COL_NOW (CRT_COLS -  2)  /* Line length - position in row */
+#define PS_COL_MAX (CRT_COLS - 9)   /* Max. line length - position in row */
 
 #define BOX_ROW 2        /* Editor box position */
-#define BOX_COL 0        /* Editor box position */
 
 #define getchr CrtIn     /* Get a character from the keyboard */
 #define putchr CrtOut    /* Print a character on screen */

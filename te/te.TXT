@@ -3,7 +3,7 @@
 +----| Text Editor |
      +-------------+
 
-v1.05 / 02 Jun 2016
+v1.06 / 10 Jun 2016
 
 (c) 2015-2016 Miguel Garcia / FloppySoftware
 

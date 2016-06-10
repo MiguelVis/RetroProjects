@@ -43,6 +43,9 @@
 	15 May 2015 : v1.03 : Modified getch & putch to getchr & putchr.
 	31 Aug 2015 : v1.04 : Minor changes in comments and ReadLine().
 	02 Jun 2016 : v1.05 : Minor changes.
+	10 Jun 2016 : v1.06 : Screen optimizations in Menu(). Removed BOX_COL.
+	                      Removed lp_max, box_cols, ps_fname, ps_lin_cur, ps_lin_now, ps_lin_max,
+	                      ps_col_cur, ps_col_now, ps_col_max.
 
 	Notes:
 
@@ -71,7 +74,6 @@
    -------------------
 */
 WORD *lp_arr; /* Text lines pointers array */
-int   lp_max; /* Max. # of lines */
 int   lp_now; /* How man lines are in the array */
 int   lp_cur; /* Current line */
 
@@ -90,23 +92,9 @@ char file_name[FILENAME_MAX];
 /* Editor box
    ----------
 */
-int box_rows; /* Width */
-int box_cols; /* Height */
-int box_shr;  /* Position of current line (0..box_rows-1) */
-int box_shc;  /* Position of current line (0..box_cols-1) */
-
-/* Data & counters position
-   ------------------------
-*/
-int ps_fname;   /* Filename */
-
-int ps_lin_cur; /* Current line # */
-int ps_lin_now; /* How many lines # */
-int ps_lin_max; /* Max. # of lines */
-
-int ps_col_cur; /* Current column # */
-int ps_col_now; /* Line length # */
-int ps_col_max; /* Max. line length */
+int box_rows; /* Height in lines */
+int box_shr;  /* Vertical   position of cursor in the box (0..box_rows - 1) */
+int box_shc;  /* Horizontal position of cursor in the box (0..CRT_COLS - 1) */
 
 /* Keyboard forced entry
    ---------------------
@@ -132,22 +120,8 @@ int argc, argv[];
 	/* Setup some globals */
 
 	box_rows = CRT_ROWS - 4;
-	box_cols = CRT_COLS;
 
-	lp_max = MAX_LINES;
-
-	ln_max = box_cols - 1;
-
-	ps_fname = 4;
-
-	ps_lin_cur = CRT_COLS - 31;
-	ps_lin_now = ps_lin_cur + 5;
-	ps_lin_max = ps_lin_now + 5;
-
-	ps_col_cur = CRT_COLS - 12;
-	ps_col_max = ps_col_cur + 3;
-
-	ps_col_now = CRT_COLS - 2;
+	ln_max = CRT_COLS - 1;
 
 	/* Setup CRT */
 
@@ -165,7 +139,7 @@ int argc, argv[];
 
 	fe_dat = malloc(FORCED_MAX);
 
-	lp_arr = malloc(lp_max * SIZEOF_PTR);
+	lp_arr = malloc(MAX_LINES * SIZEOF_PTR);
 
 	if(ln_dat == NULL || ln_clp == NULL || fe_dat == NULL || lp_arr == NULL)
 	{
@@ -178,7 +152,7 @@ int argc, argv[];
 
 	/* Setup lines array */
 
-	for(i = 0; i < lp_max; ++i)
+	for(i = 0; i < MAX_LINES; ++i)
 		lp_arr[i] = NULL;
 
 	/* Check command line */
@@ -266,8 +240,8 @@ Loop()
 
 		/* Print current column position & line length */
 
-		CrtLocate(PS_ROW, ps_lin_cur); putint("%04d", lp_cur + 1);
-		CrtLocate(PS_ROW, ps_lin_now); putint("%04d", lp_now);
+		CrtLocate(PS_ROW, PS_LIN_CUR); putint("%04d", lp_cur + 1);
+		CrtLocate(PS_ROW, PS_LIN_NOW); putint("%04d", lp_now);
 
 		/* Edit the line */
 
@@ -441,12 +415,12 @@ LoopFileName()
 {
 	int i;
 
-	CrtLocate(PS_ROW, ps_fname);
+	CrtLocate(PS_ROW, PS_FNAME);
 
 	for(i = FILENAME_MAX - 1; i; --i)
 		putchr(' ');
 
-	CrtLocate(PS_ROW, ps_fname);
+	CrtLocate(PS_ROW, PS_FNAME);
 
 	putstr(file_name[0] ? file_name : "-no name-");
 }
@@ -549,7 +523,7 @@ LoopLeftDel()
 
 	if(box_shr)
 	{
-		CrtLocate(BOX_ROW + --box_shr, BOX_COL + box_shc); putstr(lp_arr[lp_cur] + box_shc);
+		CrtLocate(BOX_ROW + --box_shr, box_shc); putstr(lp_arr[lp_cur] + box_shc);
 
 		Refresh(box_shr + 1, lp_cur + 1);
 	}
@@ -622,15 +596,15 @@ Layout()
 
 	/* Information layout */
 
-	CrtLocate(PS_ROW, ps_lin_cur - 4); putstr(PS_TXT);
+	CrtLocate(PS_ROW, PS_INF); putstr(PS_TXT);
 
 	/* Max. # of lines */
 
-	CrtLocate(PS_ROW, ps_lin_max); putint("%04d", lp_max);
+	CrtLocate(PS_ROW, PS_LIN_MAX); putint("%04d", MAX_LINES);
 
 	/* # of columns */
 
-	CrtLocate(PS_ROW, ps_col_max); putint("%02d", CRT_COLS);
+	CrtLocate(PS_ROW, PS_COL_MAX); putint("%02d", CRT_COLS);
 
 	/* Ruler */
 
@@ -824,7 +798,7 @@ ResetLines()
 {
 	int i;
 
-	for(i = 0; i < lp_max; ++i)
+	for(i = 0; i < MAX_LINES; ++i)
 	{
 		if(lp_arr[i] != NULL)
 		{
@@ -888,7 +862,7 @@ char *fn;
 		if(fgets(ln_dat, ln_max + 2, fp) == NULL) /* ln_max + CR + ZERO */
 			break;
 
-		if(i == lp_max)
+		if(i == MAX_LINES)
 		{
 			ErrLineTooMany(); ++code; break;
 		}
@@ -1096,11 +1070,11 @@ int row; char *txt;
 */
 Menu()
 {
-	int run, row, stay;
+	int run, row, stay, menu, ask;
 
 	/* Setup some things */
 
-	run = stay = 1;
+	run = stay = menu = ask = 1;
 
 	/* Loop */
 
@@ -1108,25 +1082,37 @@ Menu()
 	{
 		/* Show the menu */
 
-		row = BOX_ROW + 1;
+		if(menu)
+		{
+			row = BOX_ROW + 1;
 
-		ClearBox();
+			ClearBox();
 
-		CenterText(row++, "OPTIONS");
-		row++;
-		CenterText(row++, "New");
-		CenterText(row++, "Open");
-		CenterText(row++, "Save");
-		CenterText(row++, "save As");
-		CenterText(row++, "Help");
-		CenterText(row++, "aBout te");
-		CenterText(row++, "eXit te");
+			CenterText(row++, "OPTIONS");
+			row++;
+			CenterText(row++, "New");
+			CenterText(row++, "Open");
+			CenterText(row++, "Save");
+			CenterText(row++, "save As");
+			CenterText(row++, "Help");
+			CenterText(row++, "aBout te");
+			CenterText(row++, "eXit te");
+
+			menu = 0;
+		}
 
 		/* Ask for option */
 
-		SysLine("Enter option, please (or [");
-		putstr(CRT_ESC_KEY);
-		putstr("] to return): ");
+		if(ask)
+		{
+			SysLine("Enter option, please (or [");
+			putstr(CRT_ESC_KEY);
+			putstr("] to return): ");
+		}
+		else
+		{
+			++ask;
+		}
 
 		/* Do it */
 
@@ -1136,10 +1122,11 @@ Menu()
 			case 'O'   : run = MenuOpen(); break;
 			case 'S'   : run = MenuSave(); break;
 			case 'A'   : run = MenuSaveAs(); break;
-			case 'B'   : MenuAbout(); break;
-			case 'H'   : MenuHelp(); break;
+			case 'B'   : MenuAbout(); ++menu; break;
+			case 'H'   : MenuHelp(); ++menu; break;
 			case 'X'   : run = stay = MenuExit(); break;
 			case K_ESC : run = 0; break;
+			default    : ask = 0; break;
 		}
 	}
 
@@ -1396,7 +1383,7 @@ BfEdit()
 		{
 			upd_now = 0;
 
-			CrtLocate(PS_ROW, ps_col_now); putint("%02d", len);
+			CrtLocate(PS_ROW, PS_COL_NOW); putint("%02d", len);
 		}
 
 		/* Print column #? */
@@ -1405,7 +1392,7 @@ BfEdit()
 		{
 			upd_col = 0;
 
-			CrtLocate(PS_ROW, ps_col_cur); putint("%02d", box_shc + 1);
+			CrtLocate(PS_ROW, PS_COL_CUR); putint("%02d", box_shc + 1);
 		}
 
 		/* Locate cursor? */
@@ -1414,7 +1401,7 @@ BfEdit()
 		{
 			upd_cur = 0;
 
-			CrtLocate(BOX_ROW + box_shr, BOX_COL + box_shc);
+			CrtLocate(BOX_ROW + box_shr, box_shc);
 		}
 
 		/* Get character: forced entry or keyboard */
@@ -1558,7 +1545,7 @@ BfEdit()
 				run = 0;
 				break;
 			case K_INTRO :  /* Insert CR (split the line) ----------- */
-				if(lp_now < lp_max)
+				if(lp_now < MAX_LINES)
 					run = 0;
 				break;
 			case K_TAB :    /* Insert TAB (spaces) ------------------ */
