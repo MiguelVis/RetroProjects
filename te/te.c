@@ -701,7 +701,7 @@ char *fn;
 
 	SysLine("Filename (or [");
 	putstr(CRT_ESC_KEY);
-	putstr("]): ");
+	putstr("] to cancel): ");
 
 	ch = ReadLine(fn, FILENAME_MAX - 1);
 

@@ -34,6 +34,7 @@
 	12 May 2015 : 1st version.
 	14 May 2015 : Completed adaptation for WS keys.
 	02 Jun 2016 : Minor changes.
+	11 Jun 2016 : Minor changes in help text.
 */
 
 /* Definitions
@@ -87,14 +88,14 @@
 */
 #define H_0 "Up     ^E   Left   ^S"
 #define H_1 "Down   ^X   Right  ^D"
-#define H_2 "Begin  ^QS  LtDel  7F / ^H"
+#define H_2 "Begin  ^QS  LtDel  ^H / 7F"
 #define H_3 "End    ^QD  RtDel  ^G"
-#define H_4 "Top    ^QR  PgUp   ^C  Left  Word ^A"
-#define H_5 "Bottom ^QC  PgDown ^R  Right Word ^F"
+#define H_4 "Top    ^QR  PgUp   ^C  LtWord ^A"
+#define H_5 "Bottom ^QC  PgDown ^R  RtWord ^F"
 #define H_6 ""
-#define H_7 "Cut    ^Y   Tab   ^I"
-#define H_8 "Copy   ^O   Intro ^M"
-#define H_9 "Paste  ^W   Esc   ^["
+#define H_7 "Cut    ^Y   Tab    ^I"
+#define H_8 "Copy   ^O   Intro  ^M"
+#define H_9 "Paste  ^W   Esc    ^["
 
 /* Include main code
    -----------------
