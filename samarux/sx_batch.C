@@ -41,12 +41,13 @@
 	                     Added support for nexted batch commands.
 	08 Mar 2015 : 1.06 : Increased BATCH_LINES to 64.
 	09 Mar 2015 : 1.07 : Default type for file name.
+	14 Jun 2016 : 1.08 : Increased BATCH_LINES to 72.
 */
 
 #define SX_BATCH
 
 #define BATCH_MAX   3      /* Max. number of nexted batch */
-#define BATCH_LINES 64     /* Max. number of lines in batch file */
+#define BATCH_LINES 72     /* Max. number of lines in batch file */
 #define BATCH_TYPE  ".sx"  /* Default type for file name */
 
 int batch_argc;    /* # of arguments */

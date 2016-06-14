@@ -3,7 +3,7 @@
 # (c) 2015 Miguel I. Garcia Lopez, FloppySoftware, Spain
 #
 # Created:     08 Dec 2014
-# Last edited: 03 Jun 2016
+# Last edited: 14 Jun 2016
 #
 # $NM is NAME
 # $SY is SYNOPSIS
@@ -1083,6 +1083,26 @@ $OP
 None.
 $EX
 true
+# ========
+@tty
+#
+$NM
+tty - Return user's terminal name
+$SY
+tty
+$DE
+The command tty prints the name of the terminal that is
+open as standard input - ie:
+
+  "vt52\n"            (tty returns 0)
+
+If standard input is not a terminal, it prints:
+
+  "not a tty\n"       (tty returns 1)
+$OP
+None.
+$EX
+tty
 # ========
 @variables
 #

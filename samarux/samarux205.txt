@@ -19,6 +19,7 @@ false  : Return false.
 head   : Return first lines from files.
 tail   : Print last lines from files.
 true   : Return true.
+tty    : Return user's terminal name.
 whoami : Print the user name.
 
 External commands

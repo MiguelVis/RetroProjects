@@ -1,6 +1,6 @@
 # mk_chap3.sx - Make the chaper 3 for the SamaruX printed manual
 #
-# Last edited: 03 Sep 2015
+# Last edited: 14 Jun 2016
 #
 # Use: batch mk_chap3.sx dest_file
 # Ex.: batch mk_chap3.sx chap3.txt
@@ -50,15 +50,16 @@ batch mk_sect.sx s333.tmp '3.33' 'sort' sort
 batch mk_sect.sx s334.tmp '3.34' 'tail' tail
 batch mk_sect.sx s335.tmp '3.35' 'tee' tee
 batch mk_sect.sx s336.tmp '3.36' 'true' true
-batch mk_sect.sx s337.tmp '3.37' 'ver' ver
-batch mk_sect.sx s338.tmp '3.38' 'wc' wc
-batch mk_sect.sx s339.tmp '3.39' 'whoami' whoami
+batch mk_sect.sx s337.tmp '3.37' 'tty' tty
+batch mk_sect.sx s338.tmp '3.38' 'ver' ver
+batch mk_sect.sx s339.tmp '3.39' 'wc' wc
+batch mk_sect.sx s340.tmp '3.40' 'whoami' whoami
 #
 cat s301.tmp s302.tmp s303.tmp s304.tmp s305.tmp s306.tmp s307.tmp s308.tmp > c3a.tmp
 cat s309.tmp s310.tmp s311.tmp s312.tmp s313.tmp s314.tmp s315.tmp s316.tmp > c3b.tmp
 cat s317.tmp s318.tmp s319.tmp s320.tmp s321.tmp s322.tmp s323.tmp s324.tmp > c3c.tmp
 cat s325.tmp s326.tmp s327.tmp s328.tmp s329.tmp s330.tmp s331.tmp s332.tmp > c3d.tmp
-cat s333.tmp s334.tmp s335.tmp s336.tmp s337.tmp s338.tmp s339.tmp > c3e.tmp
+cat s333.tmp s334.tmp s335.tmp s336.tmp s337.tmp s338.tmp s339.tmp s340.tmp > c3e.tmp
 cat ct3.tmp c3a.tmp c3b.tmp c3c.tmp c3d.tmp c3e.tmp nl.tmp > $1
 #
 # end:

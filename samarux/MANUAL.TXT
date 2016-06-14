@@ -31,7 +31,7 @@ CP/M is a registered trademark of Digital Research Inc.
 Z80 is a registered trademark of Zilog.
 Unix is a registered trademark of The Open Group.
 
-This manual covers SamaruX version 2.05 / 06 jun 2016
+This manual covers SamaruX version 2.05 / 06 Jun 2016
 
 === oOo ===
 
@@ -86,9 +86,10 @@ CHAPTER 3 : BUILT-IN COMMANDS
             3.34 : tail - Print last lines from files
             3.35 : tee - Duplicate the standard input
             3.36 : true - Return true.
-            3.37 : ver - Print CP/M version and facts
-            3.38 : wc - Count newlines, words and characters
-            3.39 : whoami - Print the user name
+            3.37 : tty - Return user's terminal name.
+            3.38 : ver - Print CP/M version and facts
+            3.39 : wc - Count newlines, words and characters
+            3.40 : whoami - Print the user name
 
 === oOo ===
 
@@ -1499,7 +1500,33 @@ EXAMPLES
 	true
 
 +--------------+
-| SECTION 3.37 |  ver
+| SECTION 3.37 |  tty
++--------------+
+
+NAME
+	tty - Return user's terminal name
+
+SYNOPSIS
+	tty
+
+DESCRIPTION
+	The command tty prints the name of the terminal that is
+	open as standard input - ie:
+	
+	  "vt52\n"            (tty returns 0)
+	
+	If standard input is not a terminal, it prints:
+	
+	  "not a tty\n"       (tty returns 1)
+
+OPTIONS
+	None.
+
+EXAMPLES
+	tty
+
++--------------+
+| SECTION 3.38 |  ver
 +--------------+
 
 NAME
@@ -1519,7 +1546,7 @@ EXAMPLES
 	ver
 
 +--------------+
-| SECTION 3.38 |  wc
+| SECTION 3.39 |  wc
 +--------------+
 
 NAME
@@ -1551,7 +1578,7 @@ NOTES
 	The CR ('\r') characters will not be counted.
 
 +--------------+
-| SECTION 3.39 |  whoami
+| SECTION 3.40 |  whoami
 +--------------+
 
 NAME
@@ -1569,4 +1596,4 @@ OPTIONS
 EXAMPLES
 	whoami
 
-
+

@@ -147,6 +147,7 @@
 	04 Jun 2016 : Added SX_MINIMAL to include only a minimal # of built-in commands.
 	05 Jun 2016 : SamaruX defines are now in sx.h.
 	06 Jun 2016 : Added head, true, and false commands.
+	14 Jun 2016 : Added tty command.
 
 	NOTES:
 	
@@ -303,14 +304,22 @@ int sx_exit_code;     /* exit code */
 
 #ifndef SX_MINIMAL
 #include <sx_chmod.c>
+#endif
+
 #include <sx_clear.c>
+
+#ifndef SX_MINIMAL
 #include <sx_cp.c>
 #include <sx_cpm.c>
 #include <sx_date.c>
 #include <sx_df.c>
 #include <sx_diral.c>
 #include <sx_dump.c>
+#endif
+
 #include <sx_echo.c>
+
+#ifndef SX_MINIMAL
 #include <sx_ed.c>
 #endif
 
@@ -352,6 +361,7 @@ int sx_exit_code;     /* exit code */
 #include <sx_true.c>
 
 #ifndef SX_MINIMAL
+#include <sx_tty.c>
 #include <sx_ver.c>
 #include <sx_wc.c>
 #include <sx_whoam.c>
@@ -486,6 +496,9 @@ main()
 #endif
 #ifdef SX_TRUE
 	sv_cmd_name[sv_cmd_max]="true";     sv_cmd_fun[sv_cmd_max++]=TrueMain;
+#endif
+#ifdef SX_TTY
+	sv_cmd_name[sv_cmd_max]="tty";      sv_cmd_fun[sv_cmd_max++]=TtyMain;
 #endif
 #ifdef SX_VER
 	sv_cmd_name[sv_cmd_max]="ver";      sv_cmd_fun[sv_cmd_max++]=VerMain;

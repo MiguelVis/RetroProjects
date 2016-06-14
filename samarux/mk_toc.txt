@@ -49,7 +49,8 @@ CHAPTER 3 : BUILT-IN COMMANDS
             3.34 : tail - Print last lines from files
             3.35 : tee - Duplicate the standard input
             3.36 : true - Return true.
-            3.37 : ver - Print CP/M version and facts
-            3.38 : wc - Count newlines, words and characters
-            3.39 : whoami - Print the user name
+            3.37 : tty - Return user's terminal name.
+            3.38 : ver - Print CP/M version and facts
+            3.39 : wc - Count newlines, words and characters
+            3.40 : whoami - Print the user name
 
