@@ -46,20 +46,34 @@
 	10 Jun 2016 : v1.06 : Screen optimizations in Menu(). Removed BOX_COL.
 	                      Removed lp_max, box_cols, ps_fname, ps_lin_cur, ps_lin_now, ps_lin_max,
 	                      ps_col_cur, ps_col_now, ps_col_max.
+	14 Jun 2016 : v1.07 : Hack for SamaruX.
 
 	Notes:
 
 	See FIX-ME notes.
 */
 
+/* Operating System
+   ----------------
+*/
+//#define OS_CPM
+#define OS_SAMARUX
+
 /* Libraries
    ---------
 */
+#ifdef OS_SAMARUX
+#include <samarux.h>
+#define ReadFile InputFile
+#define ReadLine InputLine
+#define putstr putstring
+#else
 #include <mescc.h>
 #include <string.h>
 #include <ctype.h>
 #include <fileio.h>
 #include <sprintf.h>
+#endif
 
 /* CRT library
    -----------
@@ -185,7 +199,14 @@ int argc, argv[];
 
 	Loop();
 
-	/* FIX-ME: We should free all buffers allocated with malloc? Not needed in CP/M. */
+	/* Free allocated buffers with malloc? Not needed in CP/M. */
+
+#ifdef OS_SAMARUX
+	free(lp_arr);
+	free(fe_dat);
+	free(ln_clp);
+	free(ln_dat);
+#endif
 
 	/* Clear CRT */
 
@@ -769,7 +790,7 @@ int width;
 
 	while(1)
 	{
-		switch((ch = toupper(getchr())))
+		switch((ch = getchr()))
 		{
 			case K_LDEL :
 				if(len)
