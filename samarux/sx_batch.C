@@ -42,6 +42,7 @@
 	08 Mar 2015 : 1.06 : Increased BATCH_LINES to 64.
 	09 Mar 2015 : 1.07 : Default type for file name.
 	14 Jun 2016 : 1.08 : Increased BATCH_LINES to 72.
+	19 Jun 2016 : 1.09 : Added BatchShift() for shift command.
 */
 
 #define SX_BATCH
@@ -169,6 +170,18 @@ char *label;
 		return 0;
 
 	return 1;
+}
+
+BatchShift()
+{
+	int i;
+
+	if(batch_argc > 1) {
+		for(i = 2; i < batch_argc; ++i)
+			batch_argv[i - 1] = batch_argv[i];
+
+		--batch_argc;
+	}
 }
 
 BatchFn(fn)

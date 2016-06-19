@@ -62,7 +62,7 @@
 
 #define SX_MAX_ARGS 24  /* Max. # of arguments in the command line */
 
-#define SX_MAX_CMD 40   /* Max. # of built-in commands */
+#define SX_MAX_CMD 41   /* Max. # of built-in commands */
 
 #define SX_MAX_BATCH 10 /* Max. # of batch variables: $0 .. $9 */
 

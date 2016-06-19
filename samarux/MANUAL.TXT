@@ -31,7 +31,7 @@ CP/M is a registered trademark of Digital Research Inc.
 Z80 is a registered trademark of Zilog.
 Unix is a registered trademark of The Open Group.
 
-This manual covers SamaruX version 2.05 / 06 Jun 2016
+This manual covers SamaruX version 2.05 / 06 Jun 2015
 
 === oOo ===
 
@@ -82,14 +82,15 @@ CHAPTER 3 : BUILT-IN COMMANDS
             3.30 : pwd - Print the current working directory
             3.31 : read - Read a line from standard input
             3.32 : rm - Remove files
-            3.33 : sort - Sort text lines
-            3.34 : tail - Print last lines from files
-            3.35 : tee - Duplicate the standard input
-            3.36 : true - Return true.
-            3.37 : tty - Return user's terminal name.
-            3.38 : ver - Print CP/M version and facts
-            3.39 : wc - Count newlines, words and characters
-            3.40 : whoami - Print the user name
+            3.33 : shift - Shift positional parameters to the left
+            3.34 : sort - Sort text lines
+            3.35 : tail - Print last lines from files
+            3.36 : tee - Duplicate the standard input
+            3.37 : true - Return true.
+            3.38 : tty - Return user's terminal name.
+            3.39 : ver - Print CP/M version and facts
+            3.40 : wc - Count newlines, words and characters
+            3.41 : whoami - Print the user name
 
 === oOo ===
 
@@ -1407,7 +1408,35 @@ EXAMPLES
 	rm -fi A02:*.bak
 
 +--------------+
-| SECTION 3.33 |  sort
+| SECTION 3.33 |  shift
++--------------+
+
+NAME
+	shift - Shift positional parameters to the left
+
+SYNOPSIS
+	shift
+
+DESCRIPTION
+	The shift command shifts the arguments inside a batch
+	command one position to the left, and decrements $#.
+	
+	If there are no arguments ($# is 0), nothing happens.
+
+OPTIONS
+	None.
+
+EXAMPLES
+	batch myscript one two three
+	
+	  $# = 3, $1 = one, $2 = two, $3 = three
+	  
+	  shift
+	  
+	  $# = 2, $1 = two, $2 = three
+
++--------------+
+| SECTION 3.34 |  sort
 +--------------+
 
 NAME
@@ -1434,7 +1463,7 @@ EXAMPLES
 	sort -n myprog.bas
 
 +--------------+
-| SECTION 3.34 |  tail
+| SECTION 3.35 |  tail
 +--------------+
 
 NAME
@@ -1460,7 +1489,7 @@ EXAMPLES
 	tail myapp.c
 
 +--------------+
-| SECTION 3.35 |  tee
+| SECTION 3.36 |  tee
 +--------------+
 
 NAME
@@ -1481,7 +1510,7 @@ EXAMPLES
 	cat profile.sx | tee profile.bak
 
 +--------------+
-| SECTION 3.36 |  true
+| SECTION 3.37 |  true
 +--------------+
 
 NAME
@@ -1500,7 +1529,7 @@ EXAMPLES
 	true
 
 +--------------+
-| SECTION 3.37 |  tty
+| SECTION 3.38 |  tty
 +--------------+
 
 NAME
@@ -1526,7 +1555,7 @@ EXAMPLES
 	tty
 
 +--------------+
-| SECTION 3.38 |  ver
+| SECTION 3.39 |  ver
 +--------------+
 
 NAME
@@ -1546,7 +1575,7 @@ EXAMPLES
 	ver
 
 +--------------+
-| SECTION 3.39 |  wc
+| SECTION 3.40 |  wc
 +--------------+
 
 NAME
@@ -1578,7 +1607,7 @@ NOTES
 	The CR ('\r') characters will not be counted.
 
 +--------------+
-| SECTION 3.40 |  whoami
+| SECTION 3.41 |  whoami
 +--------------+
 
 NAME
@@ -1596,4 +1625,4 @@ OPTIONS
 EXAMPLES
 	whoami
 
-
+

@@ -148,6 +148,7 @@
 	05 Jun 2016 : SamaruX defines are now in sx.h.
 	06 Jun 2016 : Added head, true, and false commands.
 	14 Jun 2016 : Added tty command.
+	19 Jun 2016 : Added shift command.
 
 	NOTES:
 	
@@ -160,7 +161,7 @@
 
 	TO-DO & IDEAS:
 
-	- Add commands: who.
+	- Add commands: who, getconf, unalias, dirname, basename, printf.
 	- Add environment variables: PWD - see command cd in POSIX specification.
 	- Implement setenv(), unsetenv(), getenv(), putenv() - see POSIX specification.
 	- Add options in compilation time to build for any CP/M, CP/M 2 or CP/M 3.
@@ -353,6 +354,11 @@ int sx_exit_code;     /* exit code */
 
 #ifndef SX_MINIMAL
 #include <sx_rm.c>
+#endif
+
+#include <sx_shift.c>
+
+#ifndef SX_MINIMAL
 #include <sx_sort.c>
 #include <sx_tail.c>
 #include <sx_tee.c>
@@ -484,6 +490,9 @@ main()
 #endif
 #ifdef SX_RM
 	sv_cmd_name[sv_cmd_max]="rm";       sv_cmd_fun[sv_cmd_max++]=RmMain;
+#endif
+#ifdef SX_SHIFT
+	sv_cmd_name[sv_cmd_max]="shift";    sv_cmd_fun[sv_cmd_max++]=ShiftMain;
 #endif
 #ifdef SX_SORT
 	sv_cmd_name[sv_cmd_max]="sort";     sv_cmd_fun[sv_cmd_max++]=SortMain;
@@ -2028,7 +2037,7 @@ char *type, *fn;
 
 /* PREFIX A FILENAME WITH A PATH - IE: "A01:"
    ------------------------------------------
-   If the filename starts with ':', delete it an return the filename.
+   If the filename starts with ':', delete it and return the filename.
    If the filename already has a path, return the filename.
    If the path is NULL, return the filename.
    In other case, prefix the path and return the filename,
@@ -2120,7 +2129,7 @@ PrintCWD()
 	char path[4]; /* ie: A00 */
 	int x;
 
-	/* If hasn't a name: A00         */
+	/* If hasn't a name: A00:        */
 	/* If has a name:    A00|SYSTEM: */
 
 	sprintf(path, "%c%02d", 'A' + sv_drive, sv_user);

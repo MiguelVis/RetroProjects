@@ -17,6 +17,7 @@ New built-in commands:
 
 false  : Return false.
 head   : Return first lines from files.
+shift  : Shift positional parameters to the left.
 tail   : Print last lines from files.
 true   : Return true.
 tty    : Return user's terminal name.

@@ -3,7 +3,7 @@
 # (c) 2015 Miguel I. Garcia Lopez, FloppySoftware, Spain
 #
 # Created:     08 Dec 2014
-# Last edited: 14 Jun 2016
+# Last edited: 19 Jun 2016
 #
 # $NM is NAME
 # $SY is SYNOPSIS
@@ -985,6 +985,28 @@ samarux cat file.txt  -- To execute the SamaruX cat
 $NT
 See the topics in the manual (with man), to learn about
 its commands, options, profiling, compiling, etc.
+# ========
+@shift
+#
+$NM
+shift - Shift positional parameters to the left
+$SY
+shift
+$DE
+The shift command shifts the arguments inside a batch
+command one position to the left, and decrements $#.
+
+If there are no arguments ($# is 0), nothing happens.
+$OP
+None.
+$EX
+batch myscript one two three
+
+  $# = 3, $1 = one, $2 = two, $3 = three
+  
+  shift
+  
+  $# = 2, $1 = two, $2 = three
 # ========
 @sort
 #
