@@ -26,6 +26,12 @@ BLOCKS
 A clone of SameGame for CP/M and VT-52 like terminals (like the Amstrad PCW and CPC ones).
 
 
+CF
+--
+
+Management library for configuration files.
+
+
 CPMX
 ----
 
