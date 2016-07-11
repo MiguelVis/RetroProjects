@@ -129,7 +129,7 @@ CF *cf; char *fname;
 			}
 
 			// Add the key / value pair to the configuration buffer
-			if(cf_add_key(cf, key, bf)) {
+			if(cf_set_key(cf, key, bf)) {
 				err = -1; break;
 			}
 		}

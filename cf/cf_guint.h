@@ -1,8 +1,8 @@
-/*	cf_int.h
+/*	cf_uint.h
 
 	Management library for configuration files under MESCC.
 
-	cf_get_int() for CF.
+	cf_get_guint() for CF.
 
 	Copyright (c) 2016 Miguel I. Garcia Lopez / FloppySoftware, Spain
 
@@ -25,20 +25,36 @@
 	10 Jul 2016 : First version.
 */
 
-/* Get the int value of a key
-   --------------------------
-   Return an int, or the default value on failure.
+/* Dependencies
+   ------------
 */
-cf_get_int(cf, key, def)
-CF *cf; char *key; int def;
+#include <ctype.h>
+
+/* Get the unsigned int value of a key
+   -----------------------------------
+   Return an unsigned int, or the default value on failure.
+*/
+cf_get_uint(cf, key, def)
+CF *cf; char *key; unsigned int def;
 {
 	char *value;
+	unsigned int val;
+
+	// Setup value
+	val = 0;
 
 	// Get value
 	if((value = cf_get_key(cf, key))) {
 
-		// Return the int value
-		return atoi(value);
+		// Compute the value
+		while(isdigit(*value))
+			val = val * 10 + (*value++ - '0');
+
+		// Check end of value
+		if(!(*value))
+			return val;
+
+		// Failure
 	}
 
 	// Failure

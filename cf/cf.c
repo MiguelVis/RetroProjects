@@ -97,10 +97,12 @@
 #include "cf.h"
 #include "cf_read.h"
 #include "cf_write.h"
-#include "cf_bool.h"
-#include "cf_int.h"
-#include "cf_uint.h"
-#include "cf_str.h"
+#include "cf_gbool.h"
+#include "cf_sbool.h"
+#include "cf_gint.h"
+#include "cf_guint.h"
+#include "cf_gstr.h"
+#include "cf_sstr.h"
 
 /* Globals
    -------
@@ -119,27 +121,20 @@ main()
 	if(!(cf = cf_create(6)))
 		error("Can't create CF");
 
-	add_key("title", "That's cool!");
-	add_key("author", "Jim Brown");
+	set_key("title", "That's cool!");
+	set_key("author", "Jim Brown");
+	set_key("year", "1969");
+	set_key("pages", "150");
+	set_str("summary", "This book, blah, blah, blah...");
+	set_bool("lent", 1);
 
 	// This should cause an error
-	add_key("title", "This should cause an error: the key already exists");
-
-	add_key("year", "1969");
-	add_key("pages", "150");
-	add_key("summary", "\"This book, blah, blah, blah...\"");
-	add_key("lent", "true");
-
-	// This should cause an error
-	add_key("publisher", "This should cause an error: no more entries");
+	set_key("publisher", "This should cause an error: no more entries");
 
 	printf("\n");
 	pr_keys(cf);
 
 	set_key("year", "1977");
-
-	// This should cause an error
-	set_key("month", "This should cause an error: the key does not exists");
 
 	printf("\n");
 	pr_keys(cf);
@@ -195,16 +190,6 @@ main()
 	printf("Done\n");
 }
 
-add_key(key, value)
-char *key, *value;
-{
-	int result;
-
-	result = cf_add_key(cf, key, value);
-
-	printf("Add %s = %s%s\n", key, value, result ? " --> ERROR" : "");
-}
-
 set_key(key, value)
 char *key, *value;
 {
@@ -213,6 +198,26 @@ char *key, *value;
 	result = cf_set_key(cf, key, value);
 
 	printf("Set %s = %s%s\n", key, value, result ? " --> ERROR" : "");
+}
+
+set_bool(key, value)
+char *key; int value;
+{
+	int result;
+
+	result = cf_set_bool(cf, key, value);
+
+	printf("Set %s = %s%s\n", key, value ? "true" : "false", result ? " --> ERROR" : "");
+}
+
+set_str(key, value)
+char *key, *value;
+{
+	int result;
+
+	result = cf_set_str(cf, key, value);
+
+	printf("Set %s = \"%s\"%s\n", key, value, result ? " --> ERROR" : "");
 }
 
 pr_keys(cf)

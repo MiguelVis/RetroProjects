@@ -1,8 +1,8 @@
-/*	cf_str.h
+/*	cf_gbool.h
 
 	Management library for configuration files under MESCC.
 
-	cf_get_str() for CF.
+	cf_get_bool() for CF.
 
 	Copyright (c) 2016 Miguel I. Garcia Lopez / FloppySoftware, Spain
 
@@ -25,40 +25,25 @@
 	10 Jul 2016 : First version.
 */
 
-/* Get the string value of a key
-   -----------------------------
-   Return a string, or the default value on failure.
+/* Get the true / false value of a key
+   -----------------------------------
+   Return 1 for true, 0 for false, or the default value on failure.
 */
-cf_get_str(cf, key, def)
-CF *cf; char *key, *def;
+cf_get_bool(cf, key, def)
+CF *cf; char *key; int def;
 {
 	char *value;
-	int k;
 
 	// Get value
 	if((value = cf_get_key(cf, key))) {
 
-		// Check for quoted strings
-		if(*value == '\"') {
-			// Get the string length
-			k = strlen(value);
+		// Check for true or false
+		if(!strcmp(value, "true"))
+			return 1;
+		else if(!strcmp(value, "false"))
+			return 0;
 
-			// Check for trailing quote
-			if(k >= 2 && value[k - 1] == '\"') {
-				// Remove trailing quote
-				value[k - 1] = '\0';
-
-				// Skip quote on the left
-				++value;
-			}
-			else {
-				// Failure
-				return def;
-			}
-		}
-
-		// Return the value
-		return value;
+		// Failure
 	}
 
 	// Failure

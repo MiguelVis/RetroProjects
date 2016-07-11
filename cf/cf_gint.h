@@ -1,8 +1,8 @@
-/*	cf_bool.h
+/*	cf_gint.h
 
 	Management library for configuration files under MESCC.
 
-	cf_get_bool() for CF.
+	cf_get_int() for CF.
 
 	Copyright (c) 2016 Miguel I. Garcia Lopez / FloppySoftware, Spain
 
@@ -25,11 +25,11 @@
 	10 Jul 2016 : First version.
 */
 
-/* Get the true / false value of a key
-   -----------------------------------
-   Return 1 for true, 0 for false, or the default value on failure.
+/* Get the int value of a key
+   --------------------------
+   Return an int, or the default value on failure.
 */
-cf_get_bool(cf, key, def)
+cf_get_int(cf, key, def)
 CF *cf; char *key; int def;
 {
 	char *value;
@@ -37,13 +37,8 @@ CF *cf; char *key; int def;
 	// Get value
 	if((value = cf_get_key(cf, key))) {
 
-		// Check for true or false
-		if(!strcmp(value, "true"))
-			return 1;
-		else if(!strcmp(value, "false"))
-			return 0;
-
-		// Failure
+		// Return the int value
+		return atoi(value);
 	}
 
 	// Failure

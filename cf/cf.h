@@ -110,6 +110,7 @@ CF *cf;
    ------------------------------------------
    Return 0 on success, or -1 on failure.
 */
+/*********************************************************************************
 cf_add_key(cf, key, value)
 CF *cf; char *key, *value;
 {
@@ -136,12 +137,14 @@ CF *cf; char *key, *value;
 	// Failure
 	return -1;
 }
+*********************************************************************************/
 
-/* Set the value of an existent key
-   --------------------------------
+/* Change the value of an existent key
+   -----------------------------------
    Return 0 on success, or -1 on failure.
 */
-cf_set_key(cf, key, value)
+/********************************************************************************
+cf_chg_key(cf, key, value)
 CF *cf; char *key, *value;
 {
 	int entry;
@@ -155,6 +158,48 @@ CF *cf; char *key, *value;
 			// Success
 			return 0;
 		}
+	}
+
+	// Failure
+	return -1;
+}
+*********************************************************************************/
+
+/* Set the value of a key
+   ----------------------
+   Return 0 on success, or -1 on failure.
+*/
+cf_set_key(cf, key, value)
+CF *cf; char *key, *value;
+{
+	int entry;
+
+	// Get entry number
+	if((entry = xcf_find(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
+
+		// The key exists: change its value
+		if(xcf_set(cf[XCF_FVALUES], value, entry)) {
+
+			// Success
+			return 0;
+		}
+	}
+	else {
+		// The key doesn't exists: add it
+		if((entry = xcf_add(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
+
+			// Add the value
+			if(xcf_set(cf[XCF_FVALUES], value, entry)) {
+
+				// Success
+				return 0;
+			}
+
+			// Failure
+			xcf_del(cf[XCF_FKEYS], entry);
+		}
+
+		// Failure
 	}
 
 	// Failure
