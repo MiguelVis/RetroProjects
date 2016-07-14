@@ -24,6 +24,8 @@
 	07 Jul 2016 : Minor changes and optimizations.
 	08 Jul 2016 : Set max. # of key / value pairs on creation time.
 	15 Jul 2016 : Added supported #defines.
+	              Added '.' and '-' as valids character for key names.
+	              Added ';' as valid character for comments.
 
 	Supported #defines:
 
@@ -35,6 +37,11 @@
 	CF_GET_STR  : cf_get_str().
 	CF_SET_BOOL : cf_set_bool().
 	CF_SET_STR  : cf_set_str().
+
+	Notes:
+
+	Valid characters for key names: A..Z a..z 0..9 . _ -
+	Valid characters for comments:  # ;
 */
 
 #ifndef CF_H
@@ -49,6 +56,7 @@
 
 #ifdef CF_READ
 #include <fileio.h>
+#include <ctype.h>
 #endif
 
 #ifdef CF_WRITE
@@ -76,7 +84,6 @@
 #define XCF_DEBUG     1   // Enable or disable debug
 
 #ifdef CF_READ
-#define XCF_COMMENT '#'  // Start of comment
 #define XCF_BF_SIZE 130  // Size of buffer for file input: 128 + \n + 0
 #endif
 
@@ -308,7 +315,7 @@ CF *cf; char *fname;
 			bf = xcf_lf_spaces(xcf_buf);
 
 			// Skip comments
-			if(*bf == XCF_COMMENT)
+			if(*bf == '#' || *bf == ';')
 				continue;
 
 			// Remove spaces on the right
@@ -322,7 +329,7 @@ CF *cf; char *fname;
 			key = bf;
 
 			// Go upto the end of the name
-			while(isalnum(*bf) || *bf == '_')
+			while(isalnum(*bf) || *bf == '.' || *bf == '_' || *bf == '-')
 				++bf;
 
 			// Check if it's a legal name
@@ -650,9 +657,9 @@ CF *cf;
 
 #endif
 
-// -----------------------
-// -- PRIVATE FUNCTIONS --
-// -----------------------
+// -------------------------------
+// -- PRIVATE FUNCTIONS: ARRAYS --
+// -------------------------------
 
 /* Allocate and clear an array
    ---------------------------
@@ -786,6 +793,10 @@ unsigned int *arr; int entry;
 	// Update pointer and return NULL
 	return (arr[entry] = NULL);
 }
+
+// --------------------------------
+// -- PRIVATE FUNCTIONS: STRINGS --
+// --------------------------------
 
 /* Skip spaces on the left of a string
    -----------------------------------
