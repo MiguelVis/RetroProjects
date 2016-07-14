@@ -94,15 +94,16 @@
 /* Project libraries
    -----------------
 */
+#define CF_READ
+#define CF_WRITE
+#define CF_GET_BOOL
+#define CF_SET_BOOL
+#define CF_GET_INT
+#define CF_GET_UINT
+#define CF_GET_STR
+#define CF_SET_STR
+
 #include "cf.h"
-#include "cf_read.h"
-#include "cf_write.h"
-#include "cf_gbool.h"
-#include "cf_sbool.h"
-#include "cf_gint.h"
-#include "cf_guint.h"
-#include "cf_gstr.h"
-#include "cf_sstr.h"
 
 /* Globals
    -------

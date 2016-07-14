@@ -23,6 +23,18 @@
 	06 Jul 2016 : Work begins.
 	07 Jul 2016 : Minor changes and optimizations.
 	08 Jul 2016 : Set max. # of key / value pairs on creation time.
+	15 Jul 2016 : Added supported #defines.
+
+	Supported #defines:
+
+	CF_READ     : cf_read().
+	CF_WRITE    : cf_write().
+	CF_GET_BOOL : cf_get_bool().
+	CF_GET_INT  : cf_get_int().
+	CF_GET_UINT : cf_get_uint().
+	CF_GET_STR  : cf_get_str().
+	CF_SET_BOOL : cf_set_bool().
+	CF_SET_STR  : cf_set_str().
 */
 
 #ifndef CF_H
@@ -34,6 +46,18 @@
 */
 #include <alloc.h>
 #include <string.h>
+
+#ifdef CF_READ
+#include <fileio.h>
+#endif
+
+#ifdef CF_WRITE
+#include <fileio.h>
+#endif
+
+#ifdef CF_GET_UINT
+#include <ctype.h>
+#endif
 
 /* Public defines
    --------------
@@ -51,9 +75,21 @@
 
 #define XCF_DEBUG     1   // Enable or disable debug
 
-// ----------------------
-// -- PUBLIC FUNCTIONS --
-// ----------------------
+#ifdef CF_READ
+#define XCF_COMMENT '#'  // Start of comment
+#define XCF_BF_SIZE 130  // Size of buffer for file input: 128 + \n + 0
+#endif
+
+/* Private globals
+   ---------------
+*/
+#ifdef CF_READ
+char xcf_buf[XCF_BF_SIZE];
+#endif
+
+// --------------------
+// -- CORE FUNCTIONS --
+// --------------------
 
 /* Create a configuration buffer
    -----------------------------
@@ -229,6 +265,364 @@ CF *cf; char *key;
 	// Failure
 	return NULL;
 }
+
+// ------------------------
+// -- FILE I/O FUNCTIONS --
+// ------------------------
+
+#ifdef CF_READ
+
+/* Read a configuration buffer from a file
+   ---------------------------------------
+   Return 0 on success, or -1 on failure.
+*/
+cf_read(cf, fname)
+CF *cf; char *fname;
+{
+	FILE *fp;
+	int err, k;
+	char *bf, *key;
+
+	// Default: no errors
+	err = 0;
+
+	// Open file
+	if((fp = fopen(fname, "r"))) {
+		while(fgets(xcf_buf, XCF_BF_SIZE, fp)) {
+
+			// Get the length of the string
+			// and skip empty lines
+			if(!(k = strlen(xcf_buf)))
+				continue;
+
+			// Remove the trailing new line if any,
+			// and check for too long lines.
+			if(xcf_buf[k - 1] == '\n')
+				xcf_buf[k - 1] = '\0';
+			else if(k == XCF_BF_SIZE - 1) {
+				// Line too long
+				err = -1; break;
+			}
+
+			// Remove spaces on the left
+			bf = xcf_lf_spaces(xcf_buf);
+
+			// Skip comments
+			if(*bf == XCF_COMMENT)
+				continue;
+
+			// Remove spaces on the right
+			bf = xcf_rt_spaces(bf);
+
+			// Skip empty lines
+			if(!(*bf))
+				continue;
+
+			// Set the pointer to the key name
+			key = bf;
+
+			// Go upto the end of the name
+			while(isalnum(*bf) || *bf == '_')
+				++bf;
+
+			// Check if it's a legal name
+			// and the next character is valid.
+			if(key == bf || (*bf != ' ' && *bf != '\t' && *bf != '=')) {
+				err = -1; break;
+			}
+
+			// Get the next character
+			k = *bf;
+
+			// Set the end of the name, and skip the next character
+			*bf++ = '\0';
+
+			// Check for =
+			if(k != '=') {
+				// Skip spaces
+				bf = xcf_lf_spaces(bf);
+
+				// Check for =
+				if(*bf != '=') {
+					err = -1; break;
+				}
+
+				// Skip =
+				++bf;
+			}
+
+			// Skip spaces
+			bf = xcf_lf_spaces(bf);
+
+			// Check if there is a value
+			if(!(*bf)) {
+				err = -1; break;
+			}
+
+			// Add the key / value pair to the configuration buffer
+			if(cf_set_key(cf, key, bf)) {
+				err = -1; break;
+			}
+		}
+
+		// Close file
+		fclose(fp);
+
+		// Success or failure
+		return err;
+	}
+
+	// Failure
+	return -1;
+}
+
+#endif
+
+#ifdef CF_WRITE
+
+/* Write a configuration buffer to a file
+   --------------------------------------
+   Return 0 on success, or -1 on failure.
+*/
+cf_write(cf, fname)
+CF *cf; char *fname;
+{
+	FILE *fp;
+	unsigned int *arrk, *arrv;
+	int max, i;
+
+#ifndef FPRINTF_H
+	char *s;
+#endif
+
+	// Open file
+	if((fp = fopen(fname, "w"))) {
+
+		// Get fields
+		arrk = cf[XCF_FKEYS];
+		arrv = cf[XCF_FVALUES];
+		max  = cf[XCF_FMAX];
+
+		// Write key / value pairs
+		for(i = 0; i < max; ++i) {
+			if(arrk[i]) {
+#ifndef FPRINTF_H
+				s = arrk[i]; while(*s) fputc(*s++, fp);
+
+				fputc(' ', fp); fputc('=', fp); fputc(' ', fp);
+
+				s = arrv[i]; while(*s) fputc(*s++, fp);
+
+				fputc('\n', fp);
+#else
+				fprintf(fp, "%s = %s\n", arrk[i], arrv[i]);
+#endif
+			}
+		}
+
+		// Success or failure
+		return (fclose(fp) ? -1 : 0);
+	}
+
+	// Failure
+	return -1;
+}
+
+#endif
+
+// -------------------
+// -- GET FUNCTIONS --
+// -------------------
+
+#ifdef CF_GET_BOOL
+
+/* Get the true / false value of a key
+   -----------------------------------
+   Return 1 for true, 0 for false, or the default value on failure.
+*/
+cf_get_bool(cf, key, def)
+CF *cf; char *key; int def;
+{
+	char *value;
+
+	// Get value
+	if((value = cf_get_key(cf, key))) {
+
+		// Check for true or false
+		if(!strcmp(value, "true"))
+			return 1;
+		else if(!strcmp(value, "false"))
+			return 0;
+
+		// Failure
+	}
+
+	// Failure
+	return def;
+}
+
+#endif
+
+#ifdef CF_GET_INT
+
+/* Get the int value of a key
+   --------------------------
+   Return an int, or the default value on failure.
+*/
+cf_get_int(cf, key, def)
+CF *cf; char *key; int def;
+{
+	char *value;
+
+	// Get value
+	if((value = cf_get_key(cf, key))) {
+
+		// Return the int value
+		return atoi(value);
+	}
+
+	// Failure
+	return def;
+}
+
+#endif
+
+#ifdef CF_GET_UINT
+
+/* Get the unsigned int value of a key
+   -----------------------------------
+   Return an unsigned int, or the default value on failure.
+*/
+cf_get_uint(cf, key, def)
+CF *cf; char *key; unsigned int def;
+{
+	char *value;
+	unsigned int val;
+
+	// Setup value
+	val = 0;
+
+	// Get value
+	if((value = cf_get_key(cf, key))) {
+
+		// Compute the value
+		while(isdigit(*value))
+			val = val * 10 + (*value++ - '0');
+
+		// Check end of value
+		if(!(*value))
+			return val;
+
+		// Failure
+	}
+
+	// Failure
+	return def;
+}
+
+#endif
+
+#ifdef CF_GET_STR
+
+/* Get the string value of a key
+   -----------------------------
+   Return a string, or the default value on failure.
+*/
+cf_get_str(cf, key, def)
+CF *cf; char *key, *def;
+{
+	char *value;
+	int k;
+
+	// Get value
+	if((value = cf_get_key(cf, key))) {
+
+		// Check for quoted strings
+		if(*value == '\"') {
+			// Get the string length
+			k = strlen(value);
+
+			// Check for trailing quote
+			if(k >= 2 && value[k - 1] == '\"') {
+				// Remove trailing quote
+				value[k - 1] = '\0';
+
+				// Skip quote on the left
+				++value;
+			}
+			else {
+				// Failure
+				return def;
+			}
+		}
+
+		// Return the value
+		return value;
+	}
+
+	// Failure
+	return def;
+}
+
+#endif
+
+// -------------------
+// -- SET FUNCTIONS --
+// -------------------
+
+#ifdef CF_SET_BOOL
+
+/* Set the true / false value of a key
+   -----------------------------------
+   Return 0 on success, or -1 on failure.
+*/
+cf_set_bool(cf, key, value)
+CF *cf; char *key; int value;
+{
+	// Set the value
+	// and return the result.
+	return cf_set_key(cf, key, value ? "true" : "false");
+}
+
+#endif
+
+#ifdef CF_SET_STR
+
+/* Set the string value of a key
+   -----------------------------
+   Return 0 on success, or -1 on failure.
+*/
+cf_set_str(cf, key, value)
+CF *cf; char *key, *value;
+{
+	char *tmp;
+	int size, result;
+
+	// Compute size
+	size = strlen(value) + 2;
+
+	// Alloc memory
+	if((tmp = malloc(size))) {
+		// Setup string
+		*tmp = '\"';
+		strcpy(tmp + 1, value);
+		tmp[size - 2] = '\"';
+
+		// Set the key
+		result = cf_set_key(cf, key, tmp);
+
+		// Free allocated memory
+		free(tmp);
+
+		// Return success or failure
+		return result;
+	}
+
+	// Failure
+	return -1;
+}
+
+#endif
 
 // ---------------------
 // -- DEBUG FUNCTIONS --
@@ -426,5 +820,14 @@ char *s;
 	// Return pointer to string
 	return s;
 }
+
+#undef CF_READ
+#undef CF_WRITE
+#undef CF_GET_BOOL
+#undef CF_GET_INT
+#undef CF_GET_UINT
+#undef CF_GET_STR
+#undef CF_SET_BOOL
+#undef CF_SET_STR
 
 #endif
