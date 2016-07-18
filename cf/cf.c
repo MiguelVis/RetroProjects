@@ -96,6 +96,7 @@
 */
 #define CF_READ
 #define CF_WRITE
+#define CF_GET_ALL
 #define CF_GET_BOOL
 #define CF_SET_BOOL
 #define CF_GET_INT
@@ -170,6 +171,9 @@ main()
 
 	pr_keys(cf);
 
+	cf_get_all(cf, pr_one_key);
+	printf("\n");
+
 	printf("Title     >> %s\n", cf_get_key(cf, "title"));
 	printf("Author    >> %s\n", cf_get_str(cf, "author", "unknown"));
 	printf("Publisher >> %s\n", cf_get_str(cf, "publisher", "n/a"));
@@ -227,6 +231,14 @@ CF *cf;
 	cf_pr_keys(cf);
 
 	printf("\n");
+}
+
+pr_one_key(key, value)
+char *key, *value;
+{
+	printf("%s = %s\n", key, value);
+
+	return 0;
 }
 
 error(msg)

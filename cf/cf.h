@@ -24,13 +24,15 @@
 	07 Jul 2016 : Minor changes and optimizations.
 	08 Jul 2016 : Set max. # of key / value pairs on creation time.
 	15 Jul 2016 : Added supported #defines.
-	              Added '.' and '-' as valids character for key names.
+	              Added '.' and '-' as valid characters for key names.
 	              Added ';' as valid character for comments.
+	16 Jul 2016 : Added cf_get_all().
 
 	Supported #defines:
 
 	CF_READ     : cf_read().
 	CF_WRITE    : cf_write().
+	CF_GET_ALL  : cf_get_all().
 	CF_GET_BOOL : cf_get_bool().
 	CF_GET_INT  : cf_get_int().
 	CF_GET_UINT : cf_get_uint().
@@ -440,6 +442,33 @@ CF *cf; char *fname;
 // -------------------
 // -- GET FUNCTIONS --
 // -------------------
+
+#ifdef CF_GET_ALL
+
+/* Get all keys
+   ------------
+*/
+cf_get_all(cf, funct)
+CF *cf; unsigned int funct;
+{
+	unsigned int *arrk, *arrv;
+	int max, i;
+
+	// Get fields
+	arrk = cf[XCF_FKEYS];
+	arrv = cf[XCF_FVALUES];
+	max  = cf[XCF_FMAX];
+
+	// Iterate the array
+	for(i = 0; i < max; ++i) {
+		if(arrk[i]) {
+			if(funct(arrk[i], arrv[i]))
+				break;
+		}
+	}
+}
+
+#endif
 
 #ifdef CF_GET_BOOL
 
