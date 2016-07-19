@@ -39,6 +39,7 @@
 
 		06 Jan 2016 : Last update of template.
 		02 Jun 2016 : Added stderr support in usage(). Added error(). Added some comments.
+		20 Jul 2016 : Removed CC_FILEIO_SMALL. Added CC_FOPEN_A, CC_FREAD, CC_FWRITE, CC_FGETS.
 */
 
 /* Defines for MESCC libraries
@@ -53,7 +54,10 @@
 #define CC_FCX          // Support for user number in filenames.
 #define CC_FCX_DIR      // Support for named user numbers - needs CC_FCX and DirToDrvUsr().
 
-#define CC_FILEIO_SMALL // Exclude fread(), fwrite() and fgets().
+#define CC_FOPEN_A	// Enable modes "a" and "ab" for fopen.
+#define CC_FREAD	// Include fread().
+#define CC_FWRITE	// Include fwrite().
+#define CC_FGETS	// Include fgets().
 
 #define CC_NO_MUL       // Exclude support for MULTIPLICATION.
 #define CC_NO_DIV       // Exclude support for DIVISION and MODULUS.

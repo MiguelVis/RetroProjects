@@ -6,7 +6,7 @@
 ]     ] ]       ]     ] ]     ] ]     ]
 ]     ] ]]]]]]]  ]]]]]   ]]]]]   ]]]]]
 
-MESCC v1.11 - 04 Apr 2016
+MESCC v1.12 - 20 Jul 2016
 
 Mike's Enhanced Small C Compiler for Z80 and CP/M
 
@@ -637,13 +637,17 @@ On binary mode, no conversion is done.
 #define CC_STDIO        to support stdin, stdout & stderr.
 #define CC_FCX          to support FCX (user number in file names, see cpm.h).
 #define CC_FCX_DIR      to support named directories in file names (see cpm.h).
-#define CC_FILEIO_SMALL to exclude fread(), fwrite() and fgets().
+#define CC_FOPEN_A      to include "a" and "ab" modes for fopen().
+#define CC_FREAD        to include fread().
+#define CC_FWRITE       to include fwrite().
+#define CC_FGETS        to include fgets().
 
 FILE *fopen(char *fname, char *fmode) [S]
 
 	Open file.
 	Mode can be: 'r' for read in text mode, 'rb' for binary mode.
-                     'w' for write in text mode, 'wb' for binary mode.
+                 'w' for write in text mode, 'wb' for binary mode.
+				 'a' for append in text mode, 'ab' for binary mode.
 	Return a FILE pointer, or NULL if can't be opened.
 
 int fclose(FILE *fp) [S]

@@ -29,6 +29,7 @@
 	11 Feb 2015 : Added some BDOS #defines.
 	03 Sep 2015 : Added FCX_DIR support (names for user areas, a sort of alias).
 	08 Jan 2016 : Include ctype.h, mem.h libraries if CC_FCX is defined.
+	18 Jul 2016 : Added #defines BF_READRND and BF_WRITERND.
 
 	Public:
 
@@ -100,6 +101,8 @@
 #define BF_RENAME 23
 #define BF_CLOSE 16
 #define BF_ATTRIB 30
+#define BF_READRND 33
+#define BF_WRITERND 34
 
 /*	unsigned int bdos_hl(unsigned int bc, unsigned int de)
 

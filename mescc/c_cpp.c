@@ -27,6 +27,7 @@
 	14 Aug 2015 : Added support for simple comments: // comment.
 	26 Oct 2015 : Added included files control (removed from c_iofile.c).
 	              Removed cpp_end(). Cleaned.
+	20 Jul 2016 : Removed error message in p_macdel() if macro doesn't exists.
 
 	Notes:
 
@@ -483,8 +484,8 @@ char *name;
 
 		--cpphash[p_hash(*name)];
 	}
-	else
-		errcont(ERMACUD);
+	//else
+	//	errcont(ERMACUD);
 }
 
 /*

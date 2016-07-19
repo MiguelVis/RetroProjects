@@ -40,6 +40,8 @@
 	02 Dec 2015 : v1.10
 	08 Jan 2016 : Supported #ifs from 5 to 8.
 	04 Apr 2016 : v1.11
+	19 Jul 2016 : Removed def. ERMACUD (Macro not exist).
+	20 Jul 2016 : v1.12
 */
 
 /*	OPTIONAL DEFS
@@ -55,7 +57,7 @@
 /*	VERSION
 */
 
-#define VERSION	"Mike's Enhanced Small C Compiler v1.11 - 04 Apr 2016"
+#define VERSION	"Mike's Enhanced Small C Compiler v1.12 - 20 Jul 2016"
 #define COPYRGT "(c) 1999-2016 FloppySoftware"
 
 /*	COMMON
@@ -240,7 +242,7 @@
 #define ERASMWE "#asm without #endasm"
 #define EREASWA "#endasm without #asm"
 #define ERMACAD "Macro already defined"
-#define ERMACUD "Macro not exist"
+//#define ERMACUD "Macro not exist"
 #define ERTMIFS "Too many active #if's"
 #define ERELSEW "#else without #if"
 #define ERENDIF "#endif without #if"

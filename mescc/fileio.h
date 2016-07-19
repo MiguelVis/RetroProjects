@@ -42,6 +42,9 @@
 	24 Dec 2015 : Added CC_FILEIO_SMALL define to exclude fread(), fwrite() and fgets().
 	04 Jan 2016 : Removed some code from fread() and fwrite().
 	08 Jan 2016 : Include mem.h library.
+	19 Jul 2016 : Added "a" and "ab" modes.
+	              Added CC_FOPEN_A, CC_FREAD, CC_FWRITE, CC_FGETS defines.
+	              Removed CC_FILEIO_SMALL define.
 
 	Public:
 
@@ -68,7 +71,11 @@
 	#define CC_STDIO        To support stdin, stdout & stderr.
 	#define CC_FCX          To support FCX (user number in file names, see cpm.h).
 	#define CC_FCX_DIR      To support named directories in file names (see cpm.h).
-	#define CC_FILEIO_SMALL To exclude fread(), fwrite() and fgets().
+	#define CC_FILEIO_SMALL To exclude fread(), fwrite() and fgets(). ===DEPRECATED===
+	#define CC_FOPEN_A	To include "a" and "ab" modes for fopen().
+	#define CC_FREAD	To include fread().
+	#define CC_FWRITE	To include fwrite().
+	#define CC_FGETS	To include fgets().
 */
 
 #ifndef FILEIO_H
@@ -134,6 +141,7 @@
 #ifdef CC_FCX
 
 #define XF_ISIZ	167	/* Data block size */
+#define XF_IRND 164	/* Random record # in FCX */
 
 #define fileop bdos_fcx_a
 #define makefb setfcx
@@ -141,9 +149,19 @@
 #else
 
 #define XF_ISIZ	166	/* Data block size */
+#define XF_IRND 163	/* Random record # in FCB */
 
 #define fileop bdos_a
 #define makefb setfcb
+
+#endif
+
+/*	CC_FILEIO_SMALL is now DEPRECATED
+*/
+
+#ifdef CC_FILEIO_SMALL
+
+!!!! CC_FILEIO_SMALL is now DEPRECATED !!!!
 
 #endif
 
@@ -157,6 +175,8 @@
 		"r"	Lectura texto.
 		"wb"	Escritura binario.
 		"w"	Escritura texto.
+		"a"	Escritura texto al final.
+		"ab"	Escritura binario al final.
 
 	En lectura de texto, '\r' es ignorado, '\n' es fin de linea.
 
@@ -169,12 +189,21 @@ char *fname, *fmode;
 	int mode;
 	FILE *fp;
 
+#ifdef CC_FOPEN_A
+	int i;
+	unsigned int *wp;
+#endif
+
 	/* Establecer el modo de apertura */
 
 	if(*fmode=='r')
 		mode = XF_READ;
 	else if(*fmode=='w')
 		mode = XF_WRITE;
+#ifdef CC_FOPEN_A
+	else if(*fmode == 'a')
+		mode = XF_WRITE;
+#endif
 	else
 		return NULL;
 
@@ -215,6 +244,43 @@ char *fname, *fmode;
 
 		fp[XF_IPOS]=128;	/* No hay datos en buffer */
 	}
+#ifdef CC_FOPEN_A
+	else if(*fmode == 'a')
+	{
+		fp[XF_IPOS]=0;	/* No hay datos en buffer */
+
+		if(fileop(BF_OPEN, fp+XF_IFCX) != 255)
+		{
+			fileop(BF_FSIZE, fp+XF_IFCX);
+
+			wp = fp + XF_IRND;
+
+			if(*(fmode+1) != 'b' && *wp)
+			{
+				--(*wp);
+
+				fileop(BF_READRND, fp+XF_IFCX);
+
+				for(i = 0; i < 128; ++i)
+				{
+					if(*(fp + XF_IBUF + fp[XF_IPOS]++) == 0x1A)
+					{
+						--fp[XF_IPOS];
+						break;
+					}
+				}
+
+				if(i == 128)
+					++(*wp);
+			}
+		}
+		else if(fileop(BF_CREATE, fp+XF_IFCX) == 255)
+		{
+			free(fp);
+			return NULL;
+		}
+	}
+#endif
 	else
 	{
 		if(fileop(BF_FIND1ST, fp+XF_IFCX)!=255)
@@ -306,17 +372,28 @@ FILE *fp;
 xfgetc(fp)
 FILE *fp;
 {
+#ifdef CC_FOPEN_A
+	unsigned int *wp;
+#endif
 	/* Leer registro si hace falta */
 
 	if(fp[XF_IPOS]==128)
 	{
 		bdos_hl(BF_DMA, fp+XF_IBUF);
 
+#ifdef CC_FOPEN_A
+		if(fileop(BF_READRND, fp+XF_IFCX))
+#else
 		if(fileop(BF_READSEQ, fp+XF_IFCX))
+#endif
 		{
 			fp[XF_IMOD]|=XF_EOF;
 			return EOF;
-		}	
+		}
+
+#ifdef CC_FOPEN_A
+		wp = fp + XF_IRND; ++(*wp);
+#endif
 
 		fp[XF_IPOS]=0;
 	}
@@ -376,6 +453,9 @@ xfputc(c,fp)
 int c;
 FILE *fp;
 {
+#ifdef CC_FOPEN_A
+	unsigned int *wp;
+#endif
 
 	/* Almacenar caracter e incrementar posicion */
 
@@ -387,11 +467,19 @@ FILE *fp;
 	{
 		bdos_hl(BF_DMA, fp + XF_IBUF);
 
+#ifdef CC_FOPEN_A
+		if(fileop(BF_WRITERND, fp+XF_IFCX))
+#else
 		if(fileop(BF_WRITESEQ, fp + XF_IFCX))
+#endif
 		{
 			fp[XF_IMOD]|=XF_ERR;
 			return EOF;
 		}	
+
+#ifdef CC_FOPEN_A
+		wp = fp + XF_IRND; ++(*wp);
+#endif
 
 		fp[XF_IPOS]=0;
 	}
@@ -485,7 +573,7 @@ FILE *fp;
 	return fp[XF_IMOD] & XF_ERR;
 }
 
-#ifndef CC_FILEIO_SMALL
+#ifdef CC_FREAD
 
 /*	int fread(char *ptr, int size, int nobj, FILE *fp)
 
@@ -517,6 +605,10 @@ FILE *fp;
 	return cobj;
 }
 
+#endif
+
+#ifdef CC_FWRITE
+
 /*	int fwrite(char *ptr, int size, int nobj, FILE *fp)
 
 	Escribe nobj objetos de tamanyo size desde ptr.
@@ -544,6 +636,10 @@ FILE *fp;
 
 	return cobj;
 }
+
+#endif
+
+#ifdef CC_FGETS
 
 /*	char *fgets(char *str, int size, FILE *fp)
 

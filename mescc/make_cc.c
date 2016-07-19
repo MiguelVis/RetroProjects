@@ -36,12 +36,13 @@
 	04 Sep 2015 : Modified some comments.
 	26 Oct 2015 : Added c_defs.c. Modified some comments.
 	10 Jan 2015 : Added CC_FILEIO_SMALL def.
+	19 Jul 2016 : Removed CC_FILEIO_SMALL def.
 */
 
 /*	MESCC defs.
 */
 
-#define CC_FILEIO_SMALL  /* Exclude fread(), fwrite() and fgets(). */
+// Nothing...
 
 /*	MESCC runtime
 */
