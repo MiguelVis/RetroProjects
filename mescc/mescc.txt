@@ -646,8 +646,8 @@ FILE *fopen(char *fname, char *fmode) [S]
 
 	Open file.
 	Mode can be: 'r' for read in text mode, 'rb' for binary mode.
-                 'w' for write in text mode, 'wb' for binary mode.
-				 'a' for append in text mode, 'ab' for binary mode.
+	             'w' for write in text mode, 'wb' for binary mode.
+	             'a' for append in text mode, 'ab' for binary mode.
 	Return a FILE pointer, or NULL if can't be opened.
 
 int fclose(FILE *fp) [S]
