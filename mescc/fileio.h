@@ -43,8 +43,9 @@
 	04 Jan 2016 : Removed some code from fread() and fwrite().
 	08 Jan 2016 : Include mem.h library.
 	19 Jul 2016 : Added "a" and "ab" modes.
-	              Added CC_FOPEN_A, CC_FREAD, CC_FWRITE, CC_FGETS defines.
+	              Added support for CC_FOPEN_A, CC_FREAD, CC_FWRITE and CC_FGETS defines.
 	              Removed CC_FILEIO_SMALL define.
+	23 Jul 2016 : Added fputs() and support for CC_FPUTS define.
 
 	Public:
 
@@ -57,6 +58,7 @@
 	int fread(char *ptr, int size, int nobj, FILE *fp)
 	int fwrite(char *ptr, int size, int nobj, FILE *fp)
 	char *fgets(char *str, int size, FILE *fp)
+	int fputs(char *str, FILE *fp)
 	int remove(char *fname)
 	int rename(char *oldname, char *newname)
 
@@ -76,6 +78,7 @@
 	#define CC_FREAD	To include fread().
 	#define CC_FWRITE	To include fwrite().
 	#define CC_FGETS	To include fgets().
+	#define CC_FPUTS	To include fputs().
 */
 
 #ifndef FILEIO_H
@@ -669,6 +672,29 @@ char *str; int size; FILE *fp;
 	*cs = 0;
 
 	return str;
+}
+
+#endif
+
+#if CC_FPUTS
+
+/*	int fputs(char *str, FILE *fp)
+
+	Writes a string. Returns a non-negative number on success (the
+	number of characters written), else EOF.
+*/
+
+fputs(str, fp)
+char *str; FILE *fp;
+{
+	int i;
+
+	for(i = 0; *str; ++i) {
+		if(fputc(*str++, fp) == EOF)
+			return EOF;
+	}
+
+	return i;
 }
 
 #endif

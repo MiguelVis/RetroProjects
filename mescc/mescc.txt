@@ -32,7 +32,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 See the copying file for more details.
 
-Last update: 22:42 13/05/2016.
+Last update: 22:30 23/07/2016.
 
 
 OVERVIEW
@@ -641,6 +641,7 @@ On binary mode, no conversion is done.
 #define CC_FREAD        to include fread().
 #define CC_FWRITE       to include fwrite().
 #define CC_FGETS        to include fgets().
+#define CC_FPUTS	to include fputs().
 
 FILE *fopen(char *fname, char *fmode) [S]
 
@@ -689,6 +690,11 @@ int remove(char *fname) [S]
 int rename(char *oldname, char *newname) [S]
 
 	Rename file. Return nonzero if errors.
+
+int fputs(char *str, FILE *fp) [S]
+
+	Writes a string. Returns a non-negative number on success (the
+	number of characters written), else EOF.
 
 
 fprintf.h
