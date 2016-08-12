@@ -28,6 +28,7 @@
 	26 Oct 2015 : Added included files control (removed from c_iofile.c).
 	              Removed cpp_end(). Cleaned.
 	20 Jul 2016 : Removed error message in p_macdel() if macro doesn't exists.
+	12 Aug 2016 : Support for indented #commands.
 
 	Notes:
 
@@ -597,6 +598,10 @@ cpp_read()
 			cppincmt=0;
 		}
 
+		/* Skip blanks */
+
+		BfBlanks();
+
 		/* Es un comando del preprocesador ? */
 
 		if(BfEq('#'))
@@ -609,7 +614,7 @@ cpp_read()
 			/* Ensamblador ? */
 
 			if(cppinasm)
-				fo_line(line+lptr);
+				fo_line(line /*** +lptr ***/);
 
 			/* Codigo fuente C */
 
@@ -642,11 +647,13 @@ int sym;
 
 		if(BfEq(' ') || BfEq('\t'))
 		{
-			do
-			{
-				BfGet();
-			}
-			while(BfEq(' ') || BfEq('\t'));
+			//do
+			//{
+			//	BfGet();
+			//}
+			//while(BfEq(' ') || BfEq('\t'));
+
+			BfBlanks();
 
 			p_keepch(' ');
 		}
