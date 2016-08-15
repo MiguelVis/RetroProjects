@@ -29,13 +29,14 @@
 		14 Apr 2016 : v0.05
 		16 Apr 2016 : v0.06
 		02 Jun 2016 : v1.00
+		15 Aug 2016 : v1.01
 */
 
 /* Program data
    ------------
 */
 #define APP_NAME    "gdoc"
-#define APP_VERSION "v1.00 / 02 Jun 2016"
+#define APP_VERSION "v1.01 / 15 Aug 2016"
 #define APP_COPYRGT "(c) 2016 FloppySoftware"
 #define APP_USAGE   "gdoc [-options...] filename [> destination]\n\n\t-c for C sources (default)\n\t-a for assembler sources\n\t-t for text output (default)\n\t-h for html output"
 
@@ -85,6 +86,11 @@
 #define TAG_MAX_PARAMS  8   // Parameters
 
 #define REF_MAX_FUNCTS  32  // References for functions on index
+
+/* Prefix for lists
+   ----------------
+*/
+#define LIST_PREFIX '-'
 
 /* Error codes
    -----------

@@ -50,6 +50,8 @@
 		14 Apr 2016 : 0.05 : Modified command line. Added support for assembler sources.
 		16 Apr 2016 : 0.06 : Improved error_line().
 		02 Jun 2016 : 1.00 : First public release.
+		15 Aug 2016 : 1.01 : Solved bug: a couple of <\p> instead of </p>. Added support for simple lists.
+		                     Non proportional font for HTML output.
 
 	Implemented tags:
 
@@ -62,6 +64,7 @@
 		@param details [add more @param tags if needed]
 		@return details
 		detailed explanation...
+		- list item
 
 	To do:
 		Implement @see, @bug, @code, @endcode, @warning, @copyright,
@@ -231,7 +234,7 @@ proc_file()
 	// Header in step #1
 
 	if(g_step && g_html) {
-		printf("<!DOCTYPE html>\n<html>\n <head>\n  <title>%s</title>\n <head>\n <body>\n",
+		printf("<!DOCTYPE html>\n<html>\n <head>\n  <title>%s</title>\n <head>\n <body style='font-family: monospace'>\n",
 			ref_file != NULL ? ref_file : g_fname);
 	}
 
@@ -275,7 +278,7 @@ proc_file()
 					dump_st1();  // Step #1
 				}
 				else {
-					dump_st0();  // Step #2
+					dump_st0();  // Step #0
 				}
 			}
 			else {
@@ -292,7 +295,7 @@ proc_file()
 					proc_st1(buf);  // Step #1
 				}
 				else {
-					proc_st0(buf);  // Step #2
+					proc_st0(buf);  // Step #0
 				}
 			}
 		}
@@ -589,6 +592,7 @@ dump_st1()
 	int i;
 	char *pch;
 	char anchor[7];
+	int li, br;
 
 	// Skip last detail line if it's empty
 
@@ -617,7 +621,7 @@ dump_st1()
 
 	if(tag_brief != NULL) {
 		if(g_html) {
-			printf("  <p>%s<\p>\n", tag_brief);
+			printf("  <p>%s</p>\n", tag_brief);
 		}
 		else {
 			printf("%s\n\n", tag_brief);
@@ -645,27 +649,99 @@ dump_st1()
 	// Details
 
 	if(tag_num_details) {
+		
+		// No list, no break
+		
+		li = br = 0;
+		
+		// Open paragraph
+		
 		if(g_html) {
 			printf("  <p>\n");
 		}
+		
+		// Write lines
+		
 		for(i = 0; i < tag_num_details; ++i) {
-			if(g_html) {
-				pch = tag_details[i];
-
-				if(*pch) {
-					printf("   %s\n", tag_details[i]);
+			
+			// Pointer to line
+			
+			pch = tag_details[i];
+			
+			// List preliminaries
+			
+			if(*pch == LIST_PREFIX) {
+				if(!li) {
+					
+					// Open list
+					
+					li = 1;
+					
+					if(g_html) {
+						printf("   <ul>\n");
+					}
+				}
+			}
+			else if(li) {
+				
+				// Close list
+				
+				li = 0;
+				
+				if(g_html) {
+					printf("   </ul>\n");
+				}
+				
+				// Break
+				
+				br = 1;
+			}
+			
+			// Write line
+			
+			if(li) {
+				
+				// Entry list
+				
+				pch = blanks(++pch);
+				
+				if(g_html) {
+					printf("    <li>%s</li>\n", pch);
 				}
 				else {
-					printf("   <br>\n   <br>\n");
+					printf("   - %s\n", pch);
 				}
 			}
 			else {
-				printf("%s\n", tag_details[i]);
+				
+				// Text line
+				
+				if(g_html) {
+					if(*pch) {
+						printf("   %s\n", pch);
+					}
+					else if(!br) {
+						printf("   <br>\n   <br>\n");
+					}
+				}
+				else {
+					printf("%s\n", pch);
+				}
 			}
 		}
+		
+		// Close list
+		
+		if(li) {
+			if(g_html) {
+				printf("   </ul>\n");
+			}
+		}
+		
+		// Close paragraph
 
 		if(g_html) {
-			printf("  <\p>\n");
+			printf("  </p>\n");
 		} else {
 			putchar('\n');
 		}	
