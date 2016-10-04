@@ -50,6 +50,12 @@ GDOC
 Documentation generator from C and assembler sources. Supported output formats are plain text and html.
 
 
+KS
+--
+
+Keyboard & screen library for CP/M.
+
+
 MESCC
 -----
 
