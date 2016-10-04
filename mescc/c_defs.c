@@ -43,6 +43,7 @@
 	19 Jul 2016 : Removed def. ERMACUD (Macro not exist).
 	20 Jul 2016 : v1.12
 	12 Aug 2016 : v1.13
+	03 Oct 2016 : v1.14
 */
 
 /*	OPTIONAL DEFS
@@ -58,7 +59,7 @@
 /*	VERSION
 */
 
-#define VERSION	"Mike's Enhanced Small C Compiler v1.13 - 12 Aug 2016"
+#define VERSION	"Mike's Enhanced Small C Compiler v1.14 - 03 Oct 2016"
 #define COPYRGT "(c) 1999-2016 FloppySoftware"
 
 /*	COMMON

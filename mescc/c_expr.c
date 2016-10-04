@@ -26,6 +26,7 @@
 	16 Apr 2007 : GPL'd.
 	26 Oct 2015 : Cleaned.
 	20 Nov 2015 : Updated, function addglb() has changed.
+	03 Oct 2016 : Added '\e' to ChEsc().
 
 	Operators precedence:
 
@@ -1072,6 +1073,7 @@ ChEsc()
 			case 'b' : return 8;
 			case 'a' : return 7;
 			case 'f' : return 12;
+			case 'e' : return 27; /* No ANSI C compliant; supported by GCC and others */
 			case '0' : return 0;
 			default  : return c;
 		}
