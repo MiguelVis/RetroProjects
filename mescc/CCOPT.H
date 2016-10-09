@@ -212,7 +212,7 @@ rule19
  DEFB ' LD HL,@1', 0
  DEFB ' CALL cclgnot', 0
  DEFB 1
- DEFB ' LD HL,@=!@1', 0
+ DEFB ' LD HL,@=!1', 0
  DEFB 3
 
 rule20
@@ -220,7 +220,7 @@ rule20
  DEFB ' LD HL,@1', 0
  DEFB ' CALL ccneg', 0
  DEFB 1
- DEFB ' LD HL,@=-@1', 0
+ DEFB ' LD HL,@=-1', 0
  DEFB 3
 
 rule21
@@ -228,7 +228,7 @@ rule21
  DEFB ' LD HL,@1', 0
  DEFB ' CALL cccom', 0
  DEFB 1
- DEFB ' LD HL,@=~@1', 0
+ DEFB ' LD HL,@=~1', 0
  DEFB 3
 
 rule22
@@ -1145,4 +1145,4 @@ rules_max
 rules_saved
  DEFS 194
 #endasm
-
+
