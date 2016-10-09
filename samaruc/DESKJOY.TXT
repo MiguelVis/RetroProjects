@@ -1,0 +1,224 @@
+DESKJOY
+-------
+
+A desktop for the Amstrad PCW and the Samaruc GUI.
+
+v1.21 / 14 Apr 2015
+
++----+
+|    |
+|  +----+
++--|    |
+   |    |
+   +----+
+
+
+(c) 2013-2015 Miguel I. Garcia Lopez / FloppySoftware
+    Valencia, Spain
+    floppysoftware@gmail.com
+    www.floppysoftware.vacau.com
+    cpm-connections.blogspot.com.es
+
+
+INTRODUCTION
+------------
+
+DeskJoy is a simple desktop utility for the Amstrad PCW, that enables
+to run programs from it.
+
+It has the ability to create, modify and delete links to these programs.
+
+It has some internal programs too.
+
+It uses Samaruc, my GUI / Graphical User Interface.
+
+
+FILES
+-----
+
+DESKJOY.COM -- The program itself.
+DESKJOY.LNK -- Links information file.
+SAMARUC.CFG -- Samaruc configuration file.
+SAMARUC.KEY -- Keyboard configuration file for Samaruc (optional).
+
+The files SAMARUC.CFG and SAMARUC.KEY are shared by all Samaruc programs.
+
+
+USING THE MOUSE
+---------------
+
+If you have a mouse, you have to configure it in order to use it in this
+program.
+
+You can use the ARROW, RETURN and ESC keys too.
+
+See SAMARUC section in this document.
+
+
+HOT KEYS
+--------
+
+In addition to the options menu, there are some 'hot keys' to allow fast
+access to them:
+
+N: New link
+E: Edit link
+D: Delete link
+M: Move link
+R: Run link
+P: Link properties
+
+To use them, press the desired key.
+
+LINK PROPERTIES
+---------------
+
+A link can have the following properties:
+
+Title:
+    Link description.
+
+Icon:
+    Graphical icon.
+
+Command line:
+    Command line to run the program.
+
+Screen:
+
+    Full screen:
+        Run the program on the full PCW screen, clearing the desktop.
+
+    Window:
+        Run the program on a 24x80 window, without clearing the desktop.
+
+Before run:
+
+    Edit command line:
+        Allows to edit the command line before run the program.
+
+    Enable cursor:
+        Makes visible the screen cursor.
+
+After run:
+
+    Pause:
+        Once the program has finished, waits until the user press a key.
+
+
+INTERNAL COMMANDS
+-----------------
+
+There are a few internal commands:
+
+$FONT   -- Show character map.
+$SCRSVR -- Run screen saver.
+$CTLPAN -- Samaruc Control Panel.
+
+These commands uses only the Title, Icon and Command line properties.
+
+The other link properties are ignored.
+
+
+TECHNICAL NOTES
+---------------
+
+This program was developed using MESCC (Mike's Enhanced Small C Compiler - my
+own version of Small C), and SAMARUC libraries (my GUI / Graphical User
+Interface for the Amstrad PCW).
+
+
+SAMARUC
+-------
+
+As I said, this is my GUI / Graphical User Interface for the Amstrad PCW.
+
+It was developed using MESCC (Mike's Enhanced Small C Compiler - my
+own version of Small C) and Z80ASMUK and M80 assemblers.
+
+It supports mouse, windows, buttons, screen saver, etc.
+
+You can enter to THE SAMARUC CONTROL PANEL by selecting the "Samaruc"
+option in the menu bar, that allows to change some GUI options as mouse
+type and speed, screen saver, sound, etc.
+
+It's not necessary to have a mouse to use the GUI, and you can emulate it
+with the keyboard, if you select the option in the CONTROL PANEL:
+
+UP           -- press [ALT] + [W]
+DOWN         -- press [ALT] + [S]
+LEFT         -- press [ALT] + [Q]
+RIGHT        -- press [ALT] + [E]
+LEFT  BUTTON -- press [ALT] + [Z]
+RIGHT BUTTON -- press [ALT] + [X]
+
+Also, you can enter the CP/M command:
+
+SETKEYS SAMARUC.KEY
+
+to configure the keyboard in order to help with the mouse emulation:
+
+UP            -- press [ALT] + [UP]
+DOWN          -- press [ALT] + [DOWN]
+LEFT          -- press [ALT] + [LEFT]
+RIGHT         -- press [ALT] + [RIGHT]
+LEFT  BUTTON  -- press [ALT] + [SHIFT] + [LEFT] or [ALT] + [RETURN]
+RIGHT BUTTON  -- press [ALT] + [SHIFT] + [RIGHT]
+
+Some programs (like DeskJoy, The Same Game or Find that mine!) can allow
+to use the MOUSE with the keyboard in a more simple way (normally, by
+pressing the ARROW, RETURN and ESC keys).
+
+To select an item (a button, a menu option, a check box...), press the
+underlined letter, or the left mouse button while the pointer is over it.
+
+In a menu, you can use also the UP, DOWN and RETURN keys to select an
+option, or EXIT to quit.
+
+Special buttons in windows and dialog boxes:
+
+(Ok    ) -- press RETURN
+(Cancel) -- press EXIT
+
+
+SPECIAL THANKS TO...
+--------------------
+
++ JOHN ELLIOTT, for his JOYCE emulator.
+
++ HABI SOFT, for his CP/M BOX emulator.
+
++ C. A. BERRY, for his PCW MUSIC program, originaly published in 8000 Plus
+  issue 19, page 72 (and John Elliott, who retyped and offered it in
+  the AMSTRAD newsgroup).
+
+
+COPYRIGHT AND LEGAL NOTES
+-------------------------
+
+This program is copyright of FLOPPY SOFTWARE (Miguel Garcia) from VALENCIA, SPAIN.
+
+This program may be distributed freely, provided that no charge is made for it,
+other than a nominal copying and administration fee.
+
+It may not be sold, or included with commercial material, without my
+written agreement in advance.
+
+I am not able to guarantee to provide technical support or to fix
+programming errors. 
+
+I accept no liability whatsoever for non-operation of this program
+or any loss or damage resulting from their use.
+
+Run it at your risk, there is not warranty of any type. 
+
+
+(c) 2012-2015 FLOPPY SOFTWARE (Miguel Garcia)
+    VALENCIA, SPAIN
+    floppysoftware@gmail.com
+    www.floppysoftware.vacau.com
+    cpm-connections.blogspot.com.es
+
+
+END OF DOCUMENT
+

@@ -1,0 +1,204 @@
+ROSWELL, p'habernos matao
+-------------------------
+
+A game for the Amstrad PCW and the Samaruc GUI.
+
+v1.31 / 15 Apr 2015
+
+Preview Edition
+
+  ___   Preview Edition
+ (o o)
+  \'/       Preview Edition
+ +-|-+
+ ! | !   Preview Edition
+  .-.
+  | |               Preview Edition
+ -- --
+
+(c) 2015 Miguel Garcia / FloppySoftware
+    Valencia Spain
+    floppysoftware@gmail.com
+    www.floppysoftware.vacau.com
+    cpm-connections.blogspot.com.es
+
+
+INTRODUCTION
+------------
+
+This is a game for the Amstrad PCW and the Samaruc GUI.
+
+It's a preview edition, in the sense that it's fully playable, but
+there aren't a lot of levels.
+
+Maybe, someday, I will find the time to write more levels...
+
+
+GAME FILES
+----------
+
+ROSWELL .COM -- The game itself.
+SAMARUC .CFG -- Samaruc configuration file.
+SAMARUC .KEY -- Keyboard configuration file for Samaruc (optional).
+
+The files SAMARUC.CFG and SAMARUC.KEY are shared by all Samaruc programs.
+
+USING THE MOUSE
+---------------
+
+If you have a mouse, you have to configure it in order to use it in this
+program.
+
+See SAMARUC section in this document.
+
+
+THE GAME
+--------
+
+Roswell, July 1947.
+
+One night, an U.F.O. crashed near a farm in New Mexico.
+
+Soldiers and O.S.S. agents got there soon.
+
+The only U.F.O. survivor was arrested and taken to a
+top secret underground military base.
+
+The government told the public opinion that the crashed
+object was a weather balloon...
+
+You are the alien, my friend.
+
+
+HOW TO PLAY
+-----------
+
+Keys to play the game:
+
+[LEFT ] To move to the left
+        or to activate something.
+
+[RIGHT] To move to the right
+        or to activate something.
+
+[UP   ] To move up through a TUBE
+        to eat something,
+        to activate a TRIP transporter
+        or to EXIT to another level.
+
+[DOWN ] To move down through a TUBE.
+
+You have to get (or eat?) the... uh? rounded things? before you
+can go to another level.
+
+Why, ask you? Well... I don't know yet. 
+
+The level name is printed on the panel.
+
+Do you want more information? Well, it's time
+to learn along the way...
+
+Good luck!
+
+
+TECHNICAL NOTES
+---------------
+
+This program was developed using MESCC (Mike's Enhanced Small C Compiler - my
+own version of Small C), and SAMARUC libraries (my GUI / Graphical User
+Interface for the Amstrad PCW).
+
+
+SAMARUC
+-------
+
+Samaruc is my GUI / Graphical User Interface project for the Amstrad PCW.
+
+It was developed using MESCC (Mike's Enhanced Small C Compiler - my
+own version of Small C) and Z80ASMUK and M80 assemblers.
+
+It supports mouse, windows, buttons, screen saver, etc.
+
+You can enter to THE SAMARUC CONTROL PANEL by selecting the "Samaruc"
+option in the menu bar, that allows to change some GUI options as mouse
+type and speed, screen saver, sound, etc.
+
+It's not necessary to have a mouse to use the GUI, and you can emulate it
+with the keyboard, if you select the option in the CONTROL PANEL:
+
+UP           -- press [ALT] + [W]
+DOWN         -- press [ALT] + [S]
+LEFT         -- press [ALT] + [Q]
+RIGHT        -- press [ALT] + [E]
+LEFT  BUTTON -- press [ALT] + [Z]
+RIGHT BUTTON -- press [ALT] + [X]
+
+Also, you can enter the CP/M command:
+
+SETKEYS SAMARUC.KEY
+
+to configure the keyboard in order to help with the mouse emulation:
+
+UP            -- press [ALT] + [UP]
+DOWN          -- press [ALT] + [DOWN]
+LEFT          -- press [ALT] + [LEFT]
+RIGHT         -- press [ALT] + [RIGHT]
+LEFT  BUTTON  -- press [ALT] + [SHIFT] + [LEFT] or [ALT] + [RETURN]
+RIGHT BUTTON  -- press [ALT] + [SHIFT] + [RIGHT]
+
+Some programs (like DeskJoy, The Same Game or Find that mine!) can allow
+to use the MOUSE with the keyboard in a more simple way (normally, by
+pressing the ARROW, RETURN and ESC keys).
+
+To select an item (a button, a menu option, a check box...), press the
+underlined letter, or the left mouse button while the pointer is over it.
+
+In a menu, you can use also the UP, DOWN and RETURN keys to select an
+option, or EXIT to quit.
+
+Special buttons in windows and dialog boxes:
+
+(Ok    ) -- press RETURN
+(Cancel) -- press EXIT
+
+
+SPECIAL THANKS TO...
+--------------------
+
++ JOHN ELLIOTT, for his JOYCE emulator.
+
++ HABI SOFT, for his CP/M BOX emulator.
+
++ C. A. BERRY, for his PCW MUSIC program, originaly published in 8000 Plus
+  issue 19, page 72 (and John Elliott, who retyped and offered it in
+  the AMSTRAD newsgroup).
+
+
+COPYRIGHT AND LEGAL NOTES
+-------------------------
+
+This program is copyright of FLOPPY SOFTWARE (Miguel Garcia) from VALENCIA, SPAIN.
+
+This program may be distributed freely, provided that no charge is made for it,
+other than a nominal copying and administration fee.
+
+It may not be sold, or included with commercial material, without my
+written agreement in advance.
+
+I am not able to guarantee to provide technical support or to fix
+programming errors. 
+
+I accept no liability whatsoever for non-operation of this program
+or any loss or damage resulting from their use.
+
+Run it at your risk, there is not warranty of any type. 
+
+
+(c) 2012-2015 FLOPPY SOFTWARE (Miguel Garcia)
+    VALENCIA, SPAIN
+    floppysoftware@gmail.com
+    www.floppysoftware.vacau.com
+    cpm-connections.blogspot.com.es
+
+END OF DOCUMENT
+

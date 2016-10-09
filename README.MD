@@ -74,6 +74,12 @@ ROBOTS
 A game for CP/M (including CP/M-86).
 
 
+SAMARUC
+-------
+
+My GUI and related programs for the Amstrad PCW. Binaries only.
+
+
 SAMARUX
 -------
 

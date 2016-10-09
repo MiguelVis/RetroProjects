@@ -1,0 +1,163 @@
+QJT
+---
+
+HTML reader for the Amstrad PCW (formerly know as Quijote).
+
+v2.02 / 29 Apr 2015
+
++----+
+|    |
+|  +----+
++--|    |
+   |    |
+   +----+
+
+
+(c) 2004-2015 Miguel Garcia / FloppySoftware
+    Valencia, Spain
+    floppysoftware@gmail.com
+    www.floppysoftware.vacau.com
+    cpm-connections.blogspot.com.es
+
+
+INTRODUCTION
+------------
+
+QJT can read an HTML file and print its contents on the screen.
+
+It supports text justification, bold, underline and italic, but no graphics.
+
+It runs under Samaruc, my GUI project for the Amstrad PCW.
+
+
+FILES
+-----
+
+QJT     .COM -- The program itself.
+QJT     .HTM -- A small test.
+QJT     .TXT -- This file.
+SAMARUC .CFG -- Samaruc configuration file.
+SAMARUC .KEY -- File for SETKEYS to help with the mouse emulation
+                by keyboard in Samaruc (optional).
+
+The files SAMARUC.CFG and SAMARUC.KEY are shared by all Samaruc programs.
+
+
+USE
+---
+
+In the CP/M command line, enter:
+
+        QJT filename.htm   -- to read the HTML file.
+
+or:
+
+        QJT                -- to enter to the QJT main screen.
+
+For example:
+
+        QJT QJT.HTM
+
+
+TECHNICAL NOTES
+---------------
+
+This program was developed using MESCC (Mike's Enhanced Small C Compiler - my
+own version of Small C), and SAMARUC libraries (my GUI / Graphical User
+Interface for the Amstrad PCW).
+
+
+SAMARUC
+-------
+
+Samaruc is my GUI / Graphical User Interface project for the Amstrad PCW.
+
+It was developed using MESCC (Mike's Enhanced Small C Compiler - my
+own version of Small C) and Z80ASMUK and M80 assemblers.
+
+It supports mouse, windows, buttons, screen saver, etc.
+
+You can enter to THE SAMARUC CONTROL PANEL by selecting the "Samaruc"
+option in the menu bar, that allows to change some GUI options as mouse
+type and speed, screen saver, sound, etc.
+
+It's not necessary to have a mouse to use the GUI, and you can emulate it
+with the keyboard, if you select the option in the CONTROL PANEL:
+
+UP           -- press [ALT] + [W]
+DOWN         -- press [ALT] + [S]
+LEFT         -- press [ALT] + [Q]
+RIGHT        -- press [ALT] + [E]
+LEFT  BUTTON -- press [ALT] + [Z]
+RIGHT BUTTON -- press [ALT] + [X]
+
+Also, you can enter the CP/M command:
+
+        SETKEYS SAMARUC.KEY
+
+to configure the keyboard in order to help you with the mouse emulation:
+
+UP            -- press [ALT] + [UP]
+DOWN          -- press [ALT] + [DOWN]
+LEFT          -- press [ALT] + [LEFT]
+RIGHT         -- press [ALT] + [RIGHT]
+LEFT  BUTTON  -- press [ALT] + [SHIFT] + [LEFT] or [ALT] + [RETURN]
+RIGHT BUTTON  -- press [ALT] + [SHIFT] + [RIGHT]
+
+Some programs (like DeskJoy, The Same Game or Find that mine!) can allow
+to use the MOUSE POINTER with the keyboard in a more simple way (normally,
+by pressing the ARROW, RETURN and ESC keys).
+
+To select an item (a button, a menu option, a check box...), press the
+underlined letter, or the left mouse button while the pointer is over it.
+
+In a menu, you can use also the UP, DOWN and RETURN keys to select an
+option, or EXIT to quit.
+
+Special buttons in windows and dialog boxes:
+
+(Ok    ) -- press RETURN
+(Cancel) -- press EXIT
+
+
+SPECIAL THANKS TO...
+--------------------
+
++ JOHN ELLIOTT, for his JOYCE emulator.
+
++ HABI SOFT, for his CP/M BOX emulator.
+
++ C. A. BERRY, for his PCW MUSIC program, originaly published in 8000 Plus
+  issue 19, page 72 (and John Elliott, who retyped and offered it in
+  the AMSTRAD newsgroup).
+
+
+COPYRIGHT AND LEGAL NOTES
+-------------------------
+
+This program is copyright of FLOPPY SOFTWARE (Miguel Garcia) from VALENCIA, SPAIN.
+
+This program may be distributed freely, provided that no charge is made for it,
+other than a nominal copying and administration fee.
+
+It may not be sold, or included with commercial material, without my
+written agreement in advance.
+
+I am not able to guarantee to provide technical support or to fix
+programming errors. 
+
+I accept no liability whatsoever for non-operation of this program
+or any loss or damage resulting from their use.
+
+Run it at your risk, there is not warranty of any type. 
+
+
+(c) 2004-2015 Miguel Garcia / FloppySoftware
+
+    floppysoftware@gmail.com
+    www.floppysoftware.vacau.com
+    cpm-connections.blogspot.com.es
+
+
+END OF DOCUMENT
+
