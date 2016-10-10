@@ -16,6 +16,7 @@
 ; 12 Aug 2015 : v1.01 : Minor changes
 ; 17 Aug 2015 : v1.02 : Added SIGNATURE
 ; 27 Sep 2015 : v1.03 : Solved bug in CalcBmpRC
+; 10 Oct 2016 : v1.04 : Ensure character # is 0..255 in OutRpt.
 ;
 ; Call format:
 ;
@@ -538,9 +539,10 @@ OutCh:
 
 OutRpt:
 	ld   hl,(par1)   ; hl = Character #
+	ld   h,0         ; Ensure hl = 0..255
 	add  hl,hl
 	add  hl,hl
-	add  hl,hl      ; hl = hl * 8 = Char. offset in font map
+	add  hl,hl       ; hl = hl * 8 = Char. offset in font map
 
 	ld   de,(txfnt)  ; de = font address or 0 for internal font
 	ld   a,e
