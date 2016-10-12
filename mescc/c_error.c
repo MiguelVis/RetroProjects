@@ -26,96 +26,176 @@
 	16 Apr 2007 : GPL'd.
 	26 Oct 2015 : Cleaned.
 	27 Nov 2015 : Modified some text messages.
+	11 Oct 2016 : Documented and slightly optimized. Errors by id or message.
 */
+
+// Need a character (it's missing)
 
 errndch(c)
 char c;
 {
-	char *s;
+	char s[8];  // "Need: ?" + '\0'
 
-	s="Need: ?";
+	strcpy(s, "Need: ?");
+	s[6] = c;
 
-	*(s+strlen(s)-1)=c;
-
-	errcont(s);
+	errcont_str(s);
 }
 
-errcmdl(msg)
-char *msg;
+// Command line error
+
+errcmdl(id)
+int id;
 {
-	co_nl();
-	co_str(ERERROR);co_line(msg);
+	co_str("\nError! "); co_line(errmsg(id));
 	exit(1);
 }
 
-errfile(msg,fname)
-char *msg,*fname;
+// File error
+
+errfile(id, fname)
+int id; char *fname;
 {
-	co_nl();
-	co_str(ERERROR);
-	co_str(ERFILE);
-	co_str(fname);
-	co_str(" -- ");
-	co_line(msg);
+	co_str("\nError! File: "); co_str(fname); co_str(" - "); co_line(errmsg(id));
 	exit(1);
 }
 
-errcont(msg)
+// Print error and continue
+
+errcont(id)
+int id;
+{
+	errcont_str(errmsg(id));
+}
+
+// Print error and continue
+
+errcont_str(msg)
 char *msg;
 {
-	errshow(msg);
+	errshow_str(msg);
 
-	if(errcnt==errmax)
+	if(errcnt == errmax)
 	{
-		co_nl();
-		co_line("Too many errors, compilation aborted.");
+		co_line("\nToo many errors, compilation aborted!");
 		exit(1);
 	}
 
 	if(errstop)
 	{
-		if(getch()=='.')
-			errstop=0;
+		if(getch() == '.')
+			errstop = 0;
 	}
 }
 
-errexit(msg)
-char *msg;
+// Print error and exit
+
+errexit(id)
+int id;
 {
-	errshow(msg);
+	errshow(id);
 	exit(1);
 }
 
-errshow(msg)
+// Print error
+
+errshow(id)
+int id;
+{
+	errshow_str(errmsg(id));	
+}
+
+// Print error
+
+errshow_str(msg)
 char *msg;
 {
 	int i;
 
-	++errcnt;
-
-	fo_nl();co_nl();
+	fo_nl(); co_nl();
+	
 	comment();
-	fo_str(co_str(ERERROR));fo_dec(co_dec05(errcnt));fo_ch(co_ch(' '));
-	fo_str(co_str(ERLINE));fo_dec(co_dec05(fi_line));fo_ch(co_ch(' '));
-	fo_str(co_str(ERFILE));fo_line(co_line(fi_name));
+	fo_str(co_str("Error!")); fo_dec(co_dec05(++errcnt)); fo_ch(co_ch(' '));
+	fo_str(co_str("Line: ")); fo_dec(co_dec05(fi_line));  fo_ch(co_ch(' '));
+	fo_str(co_str("File: ")); fo_line(co_line(fi_name));
 
 	comment();
 	fo_line(co_line(msg));
 
 	comment();
-	for(i=0;line[i];++i)
+	for(i = 0; line[i]; ++i)
 	{
-		if(line[i]=='\t')
-			fo_ch(co_ch(' '));
-		else
-			fo_ch(co_ch(line[i]));
+		fo_ch(co_ch(line[i] == '\t' ? ' ' : line[i]));
 	}
 
-	fo_nl();co_nl();
+	fo_nl(); co_nl();
 
 	comment();
-	for(i=0;i<lptr;++i)
+	for(i = 0; i < lptr; ++i)
+	{
 		fo_ch(co_ch(' '));
+	}
+	
 	fo_ch(co_ch('^'));
-	fo_nl();co_nl();
+	fo_nl(); co_nl();
+}
+
+// Return error message
+
+errmsg(id)
+int id;
+{
+	switch(id)
+	{
+		// Compiler
+		case ERCONST : return "Must be constant";
+		case ERARRPT : return "Illegal *[]";
+		case ERARRSZ : return "Illegal array size";
+		case ERCNTAS : return "Can't assign";
+		case ERARGNB : return "Illegal number of arguments";
+		case ERARGNM : return "Need name of argument";
+		case ERFUNDE : return "Illegal function declaration";
+		case ERSYMNM : return "Illegal symbol name";
+		case ERALDEF : return "Already defined";
+		case EROFGLB : return "Global symbol table is full";
+		case EROFLOC : return "Local symbol table is full";
+		case ERTMWHI : return "Too many whiles";
+		case ERNOWHI : return "No active whiles";
+		case EREXWHI : return "Need a while";
+		case ERLTLNG : return "Line too long";
+		case ERTMCAS : return "Too many cases";
+		
+		// Expression parser
+		case ERSIZOF : return "Illegal use of sizeof";
+		case EROFSTR : return "String table is full";
+		case ERILADR : return "Illegal address";
+		case ERCTSUB : return "Can't index";
+		case ERINVEX : return "Illegal expression";
+		case ERMBLVL : return "Must be lvalue";
+		
+		// Preprocessor
+		case ERASMWE : return "#asm without #endasm";
+		case EREASWA : return "#endasm without #asm";
+		case ERMACAD : return "Macro already defined";
+		case ERTMIFS : return "Too many active #ifs";
+		case ERELSEW : return "#else without #if";
+		case ERENDIF : return "#endif without #if";
+		case ERBADCM : return "Illegal # command";
+		case EROFMAC : return "Macro table if full";
+		case ERTMINC : return "Too many active includes";
+		
+		// File I/O
+		case EROPEN  : return "Can't open";
+		case ERWRITE : return "Can't write";
+		case ERCLOSE : return "Can't close";
+		
+		// Command line
+		case ERCMDLN : return "Illegal option";
+		case ERCMDER : return "Illegal max. number of errors";
+		case ERCMDLB : return "Illegal label";
+		case ERCMDST : return "Illegal size of stack";
+	}
+	
+	// Unknown error id
+	return "Unknown error";
 }

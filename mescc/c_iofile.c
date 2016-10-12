@@ -29,59 +29,70 @@
 	26 Oct 2015 : Moved included files control to c_cpp.c. Cleaned.
 	07 Nov 2015 : Modified fo_dec(). Now prints negative numbers as -32, instead of 0-32.
 	18 Dec 2015 : Modified fo_dec() to print -32768 correctly.
+	11 Oct 2016 : Documented and slightly optimized.
 
 	Notes:
 
 	Filenames are stored in the form: A:FILENAME.TYP + ZERO
 */
 
+// Open file for input
+
 fi_open(fname)
 char *fname;
 {
-	if((fi_fp=fopen(fname,"r"))==0)
-		errfile(EROPEN,fname);
+	if(!(fi_fp = fopen(fname, "r")))
+		errfile(EROPEN, fname);
 
-	strcpy(fi_name,fname);
-	fi_line=fi_eof=0;
+	strcpy(fi_name, fname);
+	fi_line = fi_eof = 0;
 }
+
+// Input character from file
+// out: character on success, or EOF on end of file
 
 fi_ch()
 {
-	if(fi_eof != EOF)
-		return (fi_eof = fgetc(fi_fp));
-
-	return EOF;
+	return fi_eof != EOF ? (fi_eof = fgetc(fi_fp)) : EOF;
 }
+
+// Close input file
 
 fi_close()
 {
 	if(fclose(fi_fp))
-		errfile(ERCLOSE,fi_name);
+		errfile(ERCLOSE, fi_name);
 }
+
+// Open file for output
 
 fo_open(fname)
 char *fname;
 {
-	if((fo_fp=fopen(fname,"w"))==0)
-		errfile(EROPEN,fname);
+	if(!(fo_fp=fopen(fname, "w")))
+		errfile(EROPEN, fname);
 
-	strcpy(fo_name,fname);
+	strcpy(fo_name, fname);
 }
+
+// Close output file
 
 fo_close()
 {
 	if(fclose(fo_fp))
-		errfile(ERCLOSE,fo_name);
+		errfile(ERCLOSE, fo_name);
 }
+
+// Output character to file
 
 fo_ch(c)
 int c;
 {
-	if(fputc(c,fo_fp)==EOF)
-		errfile(ERWRITE,fo_name);
-
-	return c;
+	if(fputc(c, fo_fp) == EOF)
+		errfile(ERWRITE, fo_name);
 }
+
+// Output string to file
 
 fo_str(s)
 char *s;
@@ -90,45 +101,48 @@ char *s;
 		fo_ch(*s++);
 }
 
+// Output newline to file
+
 fo_nl()
 {
 	fo_ch('\n');
 }
+
+// Output colon to file
 
 fo_colon()
 {
 	fo_ch(':');
 }
 
+// Output string + newline to file
+
 fo_line(s)
 char *s;
 {
-	fo_str(s);fo_nl();
+	fo_str(s); fo_nl();
 }
+
+// Output signed decimal number to file
 
 fo_dec(n)
 int n;
 {
 #ifdef C_USEPRINTF
-	//if(n < 0) {
-	//	fo_str("0-");
-	//	n = -n;
-	//}
-
 	fprintf(fo_fp, "%d", n);
 #else
 	int i;
 
 	if(n < 0)
 	{
-		/* Possible $8000 can't be negatived */
-		/*if((number^0xFFFF)==0x7FFF){outstr("0-32768");return;}*/
+		// Possible $8000 can't be negatived
+		// if((number^0xFFFF)==0x7FFF){outstr("0-32768");return;}*/
 
 		fo_ch('-');
 
-		if(n == -32768) {
-			fo_str("32768");
-			return;
+		if(n == -32768)
+		{
+			fo_str("32768"); return;
 		}
 
 		n = -n;

@@ -37,6 +37,7 @@
 	26 Oct 2015 : Added c_defs.c. Modified some comments.
 	10 Jan 2015 : Added CC_FILEIO_SMALL def.
 	19 Jul 2016 : Removed CC_FILEIO_SMALL def.
+	11 Oct 2016 : Added c_parser.c.
 */
 
 /*	MESCC defs.
@@ -63,6 +64,7 @@
 
 #include "c_defs.c"
 #include "c_main.c"
+#include "c_parser.c"
 #include "c_cpp.c"
 #include "c_expr.c"
 #include "c_asm.c"

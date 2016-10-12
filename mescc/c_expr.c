@@ -27,6 +27,7 @@
 	26 Oct 2015 : Cleaned.
 	20 Nov 2015 : Updated, function addglb() has changed.
 	03 Oct 2016 : Added '\e' to ChEsc().
+	13 Oct 2016 : Documented and optimized a bit.
 
 	Operators precedence:
 
@@ -680,15 +681,17 @@ int lval[];
 	return 0;
 }
 
+// Level 11: [], function calls
+
 heir11(lval)
 int *lval;
 {
 	int k;
 	char *ptr;
 
-	k=primary(lval);
+	k = primary(lval);
 
-	ptr=lval[0];
+	ptr = lval[0];
 
 	InBlanks();
 
@@ -703,38 +706,43 @@ int *lval;
 					errcont(ERCTSUB);
 					junk();
 					ndch(']');
+
 					return 0;
 				}
-				else if(ptr[SY_IDENT]==ID_PTR)
+				else if(ptr[SY_IDENT] == ID_PTR)
 					rvalue(lval);
-				else if(ptr[SY_IDENT]!=ID_ARR)
+				else if(ptr[SY_IDENT] != ID_ARR)
 				{
 					errcont(ERCTSUB);
-					k=0;
+					k = 0;
 				}
+
 				fpush();
 				expresn();
 				ndch(']');
+
 				if(ptr[SY_TYPE] & TY_INT)
 					doubreg();
+
 				fpop();
 				addfn();
-				lval[0]=0;
-				lval[1]=ptr[SY_TYPE];
+
+				lval[0] = 0;
+				lval[1] = ptr[SY_TYPE];
 				k=1;
 			}
 			else if(InChEq('('))
 			{
 				if(!ptr)
 					callfnc(0);
-				else if(ptr[SY_IDENT]!=ID_FUN)
+				else if(ptr[SY_IDENT] != ID_FUN)
 				{
 					rvalue(lval);
 					callfnc(0);
 				}
 				else callfnc(ptr);
 
-				k=lval[0]=0;
+				k = lval[0] = 0;
 			}
 			else
 				return k;
@@ -743,69 +751,75 @@ int *lval;
 
 	if(ptr)
 	{
-		if(ptr[SY_IDENT]==ID_FUN)
+		if(ptr[SY_IDENT] == ID_FUN)
 		{
 			immed_str(ptr);
-			k=0;
+			k = 0;
 		}
 	}
 
 	return k;
 }
 
+// Primary level: parenthesis, symbols, constants
+
 primary(lval)
 int *lval;
 {
-	char *ptr,sname[NAME_SIZ];
-	int num[1],k,szof;
+	char *ptr, sname[NAME_SIZ];
+	int num[1], k, szof;
 
-	lval[2]=0;
+	lval[2] = 0;
 
+	// Parenthesis
 	if(InChEq('('))
 	{
-		k=heir1(lval);
+		k = heir1(lval);
 		ndch(')');
 		return k;
 	}
 
+	// Symbol name
 	if(symname(sname))
 	{
-		if(ptr=findloc(sname))
+		// Local symbol
+		if(ptr = findloc(sname))
 		{
-			lval[0]=ptr;
+			lval[0] = ptr;
 
-			if(ptr[SY_IDENT]==ID_ARR)
+			if(ptr[SY_IDENT] == ID_ARR)
 			{
 				getloc(ptr);
-				lval[1]=lval[2]=ptr[SY_TYPE];
+				lval[1] = lval[2] = ptr[SY_TYPE];
 				return 0;
 			}
 
-			lval[1]=0;
+			lval[1] = 0;
 
-			if(ptr[SY_IDENT]==ID_PTR)
-				lval[2]=ptr[SY_TYPE];
+			if(ptr[SY_IDENT] == ID_PTR)
+				lval[2] = ptr[SY_TYPE];
 
 			return 1;
 		}
 
-		if(ptr=findglb(sname))
+		// Global symbol
+		if(ptr = findglb(sname))
 		{
-			if(ptr[SY_IDENT]!=ID_FUN)
+			if(ptr[SY_IDENT] != ID_FUN)
 			{
-				lval[0]=ptr;
+				lval[0] = ptr;
 
-				if(ptr[SY_IDENT]==ID_ARR)
+				if(ptr[SY_IDENT] == ID_ARR)
 				{
 					immed_str(ptr);
-					lval[1]=lval[2]=ptr[SY_TYPE];
+					lval[1] = lval[2] = ptr[SY_TYPE];
 					return 0;
 				}
 
-				lval[1]=0;
+				lval[1] = 0;
 
-				if(ptr[SY_IDENT]==ID_PTR)
-					lval[2]=ptr[SY_TYPE];
+				if(ptr[SY_IDENT] == ID_PTR)
+					lval[2] = ptr[SY_TYPE];
 
 				return 1;
 			}
@@ -814,50 +828,58 @@ int *lval;
 		{
 			ndch('(');
 			if(InSymEq("char"))
-				szof=1;
+				szof = 1;
 			else if(InSymEq("int"))
-				szof=2;
+				szof = 2;
 			else
 				errcont(ERSIZOF);
+
 			if(InChEq('*'))
-				szof=2;
+				szof = 2;
 			ndch(')');
 
 			immed_dec(szof);
 
-			return lval[0]=lval[1]=0;
+			return lval[0] = lval[1] = 0;
 		}
-		else	/* If undefined symbol, function is assumed */
-			ptr=addglb(sname,ID_FUN,TY_INT,0,0,0);
+		else
+		{
+			// Undefined symbol, function assumed
+			ptr = addglb(sname, ID_FUN, TY_INT, 0, 0, 0);
+		}
 
-		/* It's a function */
+		// It's a function
 
-		lval[0]=ptr;
-		lval[1]=0;
+		lval[0] = ptr;
+		lval[1] = 0;
+
 		return 0;
 	}
 
 	if(cnstant(num))
-		return lval[0]=lval[1]=0;
+		return lval[0] = lval[1] = 0;
 
+	// Error: invalid expression
 	errcont(ERINVEX);
+
 	immed_dec(0);
 	junk();
+
 	return 0;
 }
 
-/*True if val1 -> int pointer or int array and val2 not ptr or array*/
+// Check if val1 is int pointer or int array and val2 it's not pointer or array
 
-dbltest(val1,val2)
-int val1[],val2[];
+dbltest(val1, val2)
+int val1[], val2[];
 {
 	char *ptr;
 
 	if(val1[2] & TY_INT)
 	{
-		ptr=val1[0];
+		ptr = val1[0];
 
-		if(ptr[SY_IDENT]==ID_PTR || ptr[SY_IDENT]==ID_ARR)
+		if(ptr[SY_IDENT] == ID_PTR || ptr[SY_IDENT] == ID_ARR)
 		{
 			if(!val2[2])
 				return 1;
@@ -867,18 +889,20 @@ int val1[],val2[];
 	return 0;
 }
 
-/* TRUE if signed, else FALSE */
+// Check if signed
 
 signtest(lval)
 int lval[];
 {
 	char *ptr;
 
-	if(lval[2] || lval[1]==TY_UINT || ((ptr=lval[0]) && ptr[SY_TYPE]==TY_UINT))
+	if(lval[2] || lval[1] == TY_UINT || ((ptr = lval[0]) && ptr[SY_TYPE] == TY_UINT)) // FIXME -- Optimize this ??
 		return 0;
 
 	return 1;
 }
+
+// Store value
 
 store(lval)
 int *lval;
@@ -889,25 +913,27 @@ int *lval;
 		putstk(lval[1]);
 	else
 	{
-		ptr=lval[0];
+		ptr = lval[0];
 
-		if(ptr[SY_STORAGE]==ST_STKLOC)
+		if(ptr[SY_STORAGE] == ST_STKLOC)
 			putvloc(ptr);
 		else
 			putmem(ptr);
 	}
 }
 
+// Read value
+
 rvalue(lval)
 int *lval;
 {
 	char *ptr;
 
-	if(lval[0] && lval[1]==0)
+	if(lval[0] && !lval[1])
 	{
-		ptr=lval[0];
+		ptr = lval[0];
 
-		if(ptr[SY_STORAGE]==ST_STKLOC)
+		if(ptr[SY_STORAGE] == ST_STKLOC)
 			getvloc(ptr);
 		else
 			getmem(ptr);
@@ -916,14 +942,16 @@ int *lval;
 		indrct(lval[1]);
 }
 
+// Test expression
+
 test(label)
 int label;
 {
-	ndch('(');
-	expresn();
-	ndch(')');
+	ndch('('); expresn(); ndch(')');
 	testjmp(label);
 }
+
+// Get constant
 
 cnstant(val)
 int val[];
@@ -934,70 +962,89 @@ int val[];
 		immed();
 	else if(qstr(val))
 	{
-		immed();a_label(litlab);fo_ch('+');
+		immed(); a_label(litlab); fo_ch('+');
 	}
 	else
 		return 0;
 
-	fo_dec(val[0]);fo_nl();
+	fo_dec(val[0]); fo_nl();
+
 	return 1;
 }
+
+// Get number
 
 number(val)
 int val[];
 {
-	int k,minus;
-	char c;
+	int k, sign, c;
 
-	k=minus=1;
+	k = sign = 1;
 
 	while(k)
 	{
-		k=0;
+		k = 0;
+
 		if(InChEq('+'))
-			k=1;
+			k = 1;
+
 		if(InChEq('-'))
 		{
-			minus=(-minus);
-			k=1;
+			sign = (-sign);
+			k = 1;
 		}
 	}
 
-	/* check for hex no */
+	// Check for hexadecimal number
 
-	if(BfEq('0') && (BfNextEq('X') || BfNextEq('x')))
+	if(BfEq('0'))
 	{
-		if(BfEq('0'))
-			BfGet();
-		BfGet();
-		if(!isxdigit(Bf()))
-			return 0;
-		while(isxdigit(Bf()))
+		if(BfNextEq('x') || BfNextEq('X'))
 		{
-			c=inbyte();
-			if(c<='9')
-				k=k * 16 + (c - '0');
-			else
-				k=k * 16 + ((c & 95) - '7');
+			BfGet();
+			BfGet();
+
+			//if(!isxdigit(Bf()))
+			//	return 0;
+
+			// FIXME -- What if 0xT ??
+
+			while(isxdigit(Bf()))
+			{
+				if((c = BfGet() /*inbyte()*/) <= '9')
+					k = k * 16 + (c - '0');
+				else
+					k = k * 16 + ((c & 95) - '7');
+			}
+
+			val[0] = k;
+
+			return 1;
 		}
-		val[0]=k;
+	}
+
+	// Check for decimal number
+
+	if(isdigit(Bf()))
+	{
+		do
+		{
+			/*c = inbyte();*/
+			k = k * 10 + (BfGet() - '0');
+		} while(isdigit(Bf()));
+
+		if(sign < 0)
+			k = (-k);
+		val[0] = k;
+
 		return 1;
 	}
 
-	/* decimal? */
-
-	if(!isdigit(Bf()))
-		return 0;
-	while(isdigit(Bf()))
-	{
-		c=inbyte();
-		k=k * 10 + (c - '0');
-	}
-	if(minus<0)
-		k=(-k);
-	val[0]=k;
-	return 1;
+	// Not a number
+	return 0;
 }
+
+// Get single quoted strings
 
 pstr(val)
 int *val;
@@ -1005,25 +1052,21 @@ int *val;
 	if(!InChEq('\''))
 		return 0;
 
-	*val=0;
+	*val = 0;
 
-	while(BfNeq('\''))
+	while(Bf() && BfNeq('\''))
 	{
-		if(Bf())
-			*val=(*val << 8) + (ChEsc() & 0xFF);
-		else
-			break;
+		*val = (*val << 8) + (ChEsc() & 0xFF);
 	}
 
-	if(!BfGet())
-		errndch('\'');
+	if(BfGet())
+		return 1;
 
-	return 1;
+	// Missing trailing quote
+	errndch('\'');
 }
 
-/*
-	MGL - GET STRING FROM BUFFER. \x SIMPLE CHARS. SUPPORTED
-*/
+// Get double quoted strings
 
 qstr(val)
 int *val;
@@ -1031,56 +1074,59 @@ int *val;
 	if(!InChEq('"'))
 		return 0;
 
-	*val=litptr;
+	*val = litptr;
 
-	while(BfNeq('"'))
+	while(Bf() && BfNeq('"'))
 	{
-		if(Bf())
-		{
-			if(litptr!=STRBUF_SIZ)
-				litq[litptr++]=ChEsc();
-			else
-				ChEsc();
-		}
+		if(litptr != STRBUF_SIZ)
+			litq[litptr++] = ChEsc();
 		else
-			break;
+			ChEsc();
 	}
 
-	if(!BfGet())
-		errndch('"');
+	if(BfGet())
+	{
+		if(litptr != STRBUF_SIZ)
+		{
+			litq[litptr++] = 0; return 1;
+		}
 
-	if(litptr==STRBUF_SIZ)
+		// String buffer exhausted
 		errexit(EROFSTR);
+	}
 
-	litq[litptr++]=0;
-
-	return 1;
+	// Missing trailing quote
+	errndch('"');
 }
+
+// Get (possibly escaped) character
 
 ChEsc()
 {
 	char c;
 
-	if(BfEq('\\'))
-	{
-		BfGet();
+	if(BfNEq('\\'))
+		return BfGet();
 
-		switch((c=BfGet()))
-		{
-			case 'n' : return 10;
-			case 't' : return 9;
-			case 'r' : return 13;
-			case 'b' : return 8;
-			case 'a' : return 7;
-			case 'f' : return 12;
-			case 'e' : return 27; /* No ANSI C compliant; supported by GCC and others */
-			case '0' : return 0;
-			default  : return c;
-		}
+	// It's \x
+	BfGet();
+
+	switch((c = BfGet()))
+	{
+		case 'n' : return 10;
+		case 't' : return 9;
+		case 'r' : return 13;
+		case 'b' : return 8;
+		case 'a' : return 7;
+		case 'f' : return 12;
+		case 'e' : return 27; /* No ANSI C compliant; supported by GCC and others */
+		case '0' : return 0;
 	}
 
-	return BfGet();
+	return c;
 }
+
+// Error: need lvalue
 
 ndlval()
 {

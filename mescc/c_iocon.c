@@ -25,142 +25,128 @@
 	16 Jan 2001 : Last revision.
 	16 Apr 2007 : GPL'd.
 	26 Oct 2015 : Cleaned.
+	11 Oct 2016 : Documented and slightly optimized.
 */
 
-/*	int co_ch(char c)
-
-	Character output.
-        '\n' must output '\r' & '\n'.
-	Return character value.
-*/
+// Print a character
+// out: character value
 
 co_ch(c)
 char c;
 {
-	return putchar(c);
+	putchar(c); return c;
 }
 
-
-/*	char *co_str(char *s)
-
-	String output. Return pointer to string.
-*/
+// Print a string
+// out: string address
 
 co_str(s)
 char *s;
 {
 
 #if C_USEPRINTF
-	printf("%s",s);
+	printf("%s", s);
 #else
+	/********************
 	char *p;
 
-        p=s;
+	p = s;
 
 	while(*p)
 		co_ch(*p++);
+	*********************/
+	putstr(s);
 #endif
+
 	return s;
 }
 
-
-/*	char *co_line(char *s)
-
-	String & '\n' output. Return string pointer.
-*/
+// Print a string + '\n'
+// out: string address
 
 co_line(s)
 char *s;
 {
-	co_str(s);co_ch('\n');
+#if C_USEPRINTF
+	printf("%s\n", s);
+#else
+	/***********************
+	co_str(s); co_ch('\n');
+	***********************/
+	puts(s);
+#endif
 
-        return s;
+	return s;
 }
 
-/*	int co_nl(void)
-
-	Outputs '\n'. Return '\n' value.
-*/
+// Print '\n'
 
 co_nl()
 {
-	return co_ch('\n');
+	co_ch('\n');
 }
 
-/*	int co_dec(int n)
-
-	Signed integer output. Return value.
-*/
+// Print signed decimal number
+// out: value
 
 co_dec(n)
 int n;
 {
 #ifdef C_USEPRINTF
-	printf("%d",n);
-
-	return n;
+	printf("%d", n);
 #else
 	int i;
 
-	i=n;
-
-	if(i<0)
+	if(n < 0)
 	{
+		// Possible $8000 can't be negatived
+		// if((number^0xFFFF)==0x7FFF){outstr("0-32768");return;}*/
+
 		co_ch('-');
-		i=-i;
+
+		if(n == -32768)
+		{
+			co_str("32768"); return;
+		}
+
+		n = -n;
 	}
 
-	xco_dec2(i);
-
-	return n;
-}
-
-xco_dec2(n)
-int n;
-{
-	int i;
-
-	if(i=n/10)
-		xco_dec2(i);
+	if(i = n / 10)
+		co_dec(i);
 
 	co_ch(n % 10 + '0');
 #endif
 
+	return n;
 }
 
-/*	int co_dec05(int n)
-
-	Signed integer output.
-	Five digits left filled with zeros.
-	Return value.
-*/
+// Print signed decimal number
 
 co_dec05(n)
 int n;
 {
 #ifdef C_USEPRINTF
-	printf("%05d",n);
+	printf("%05d", n);
 #else
-	int i;
-
-	i=n;
-
-	if(i < 10000)
+	if(n < 10000)
 	{
 		co_ch('0');
-		if(i < 1000)
+		
+		if(n < 1000)
 		{
 			co_ch('0');
-			if(i < 100)
+			
+			if(n < 100)
 			{
 				co_ch('0');
-				if(i < 10)
+				
+				if(n < 10)
 					co_ch('0');
 			}
 		}
 	}
 
-	co_dec(i);
+	co_dec(n);
 #endif
-        return n;
 }

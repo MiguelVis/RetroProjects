@@ -33,6 +33,7 @@
 	28 Oct 2015 : Now ;[ is for optimizer off and ;] for optimizer on.
 	22 Nov 2015 : New function wrtequ().
 	01 Dec 2015 : Print a SPACE on line starts, instead of a TAB.
+	13 Oct 2016 : Documented a bit.
 */
 
 /*	void a_start(void)
@@ -644,30 +645,25 @@ int lval[], inc, post;
 	}
 }
 
-/*	void addfn(void)
+// ---------------------
+// Arithmetic operations
+// ---------------------
 
-	HL = DE + HL
-*/
+// Addition: HL = DE + HL
 
 addfn()
 {
 	a_code("ADD HL,DE");
 }
 
-/*	void subfn(void)
-
-	HL = DE - HL
-*/
+// Subtraction: HL = DE - HL
 
 subfn()
 {
 	callrt("sub");
 }
 
-/*	void a_mul(int sign)
-
-	HL = DE * HL
-*/
+// Multiplication: HL = DE * HL
 
 a_mul(sign)
 int sign;
@@ -675,10 +671,7 @@ int sign;
 	callrt(sign ? "mul" : "umul");
 }
 
-/*	void a_div(int sign)
-
-	HL = DE / HL
-*/
+// Division: HL = DE / HL
 
 a_div(sign)
 int sign;
@@ -686,10 +679,7 @@ int sign;
 	callrt(sign ? "div" : "udiv");
 }
 
-/*	void a_mod(int sign)
-
-	HL = DE % HL
-*/
+// Modulus: HL = DE % HL
 
 a_mod(sign)
 int sign;
@@ -697,40 +687,32 @@ int sign;
 	callrt(sign ? "mod" : "umod");
 }
 
-/*	void orfn(void)
+// -----------------
+// Binary operations
+// -----------------
 
-	HL = DE | HL	(BINARY OR)
-*/
+// Binary or: HL = DE | HL
 
 orfn()
 {
 	callrt("or");
 }
 
-/*	void xorfn(void)
-
-	HL = DE ^ HL	(BINARY XOR)
-*/
+// Binary xor: HL = DE ^ HL
 
 xorfn()
 {
 	callrt("xor");
 }
 
-/*	void andfn(void)
-
-	HL = DE & HL	(BINARY AND)
-*/
+// Binary and: HL = DE & HL
 
 andfn()
 {
 	callrt("and");
 }
 
-/*	void a_sr(int sign)
-
-	HL = DE >> HL
-*/
+// Right shift: HL = DE >> HL
 
 a_sr(sign)
 int sign;
@@ -738,10 +720,7 @@ int sign;
 	callrt(sign ? "asr" : "uasr");
 }
 
-/*	void a_sl(int sign)
-
-	HL = DE << HL
-*/
+// Left shift: HL = DE << HL
 
 a_sl(sign)
 int sign;
@@ -749,78 +728,54 @@ int sign;
 	callrt(sign ? "asl" : "uasl");
 }
 
-/*	void negfn(void)
-
-	HL = -HL	(TWO COMPLEMENT)
-*/
+// Two complement: HL = -HL
 
 negfn()
 {
 	callrt("neg");
 }
 
-/*	void comfn(void)
-
-	HL = ~HL	(ONE COMPLEMENT)
-*/
+// One complement: HL = ~HL
 
 comfn()
 {
 	callrt("com");
 }
 
-/*	void finc(void)
-
-	HL = HL + 1
-*/
+// Increment: HL = HL + 1
 
 finc()
 {
 	a_code("INC HL");
 }
 
-/*	void fdec(void)
-
-	HL = HL - 1
-*/
+// Decrement: HL = HL - 1
 
 fdec()
 {
 	a_code("DEC HL");
 }
 
-/*	Logical and conditional operators.
+// ------------------------------------------------
+// Logical and comparison operators
+// out: non zero value if true; zero falue if false
+// ------------------------------------------------
 
-	Perform DE with HL comparison, returning in HL:
-
-	Non zero value on true condition.
-	Zero value on false condition.
-*/
-
-/*	void eq(void)
-
-	HL = DE == HL
-*/
+// Equal: HL = DE == HL
 
 eq()
 {
 	callrt("eq");
 }
 
-/*	void ne(void)
-
-	HL = DE != HL
-*/
+// Not equal: HL = DE != HL
 
 ne()
 {
 	callrt("ne");
 }
 
-/*	void a_lt(int sign)
-
-	HL = DE < HL
-*/
+// Less: HL = DE < HL
 
 a_lt(sign)
 int sign;
@@ -828,10 +783,7 @@ int sign;
 	callrt(sign ? "lt" : "ult");
 }
 
-/*	void a_le(int sign)
-
-	HL = DE <= HL
-*/
+// Less or equal: HL = DE <= HL
 
 a_le(sign)
 int sign;
@@ -839,10 +791,7 @@ int sign;
 	callrt(sign ? "le" : "ule");
 }
 
-/*	void a_gt(int sign)
-
-	HL = DE > HL
-*/
+// Greather: HL = DE > HL
 
 a_gt(sign)
 int sign;
@@ -850,10 +799,7 @@ int sign;
 	callrt(sign ? "gt" : "ugt");
 }
 
-/*	void a_ge(int sign)
-
-	HL = DE >= HL
-*/
+// Greather or equal: HL = DE >= HL
 
 a_ge(sign)
 int sign;
@@ -861,30 +807,21 @@ int sign;
 	callrt(sign ? "ge" : "uge");
 }
 
-/*	void lgandfn(void)
-
-	HL = DE && HL	(LOGIC AND)
-*/
+// Logical and: HL = DE && HL
 
 lgandfn()
 {
 	callrt("lgand");
 }
 
-/*	void lgorfn(void)
-
-	HL = DE || HL	(LOGIC OR)
-*/
+// Logical or: HL = DE || HL
 
 lgorfn()
 {
 	callrt("lgor");
 }
 
-/*	void lgnotfn(void)
-
-	HL = ! HL		(LOGIC NOT)
-*/
+// Logical not: HL = !HL
 
 lgnotfn()
 {

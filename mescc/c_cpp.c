@@ -29,53 +29,47 @@
 	              Removed cpp_end(). Cleaned.
 	20 Jul 2016 : Removed error message in p_macdel() if macro doesn't exists.
 	12 Aug 2016 : Support for indented #commands.
+	11 Oct 2016 : Documented and slightly optimized.
+	12 Oct 2016 : Change input '\t' to ' ' in cpp_read().
 
 	Notes:
 
 	Filenames are stored in the form: A:FILENAME.TYP + ZERO
 */
 
-/*
-	void cpp_start(void)
-
-	Inicializa el cpp.
-	Esta funcion es llamada por el nucleo del compilador.
-*/
+// Setup CPP
 
 cpp_start()
 {
+	/* NOT NEEDED: ALL INITIAL VALUES ARE 0 ****************
 	int i;
 
-	/* Inicializacion de variables */
+	// Setup initial values
 
-	cppinasm=
-	cppincmt=
-	cppinign=
-	cppiflev=
-	cppifact=
-	cppmacx=
-	cppincs = 0;
+	cppinasm =
+	cppincmt =
+	cppinign =
+	cppiflev =
+	cppifact =
+	cppmacx  =
+	cppincs  = 0;
 
-	for(i=0; i<CPPHASHSIZ; ++i)
-		cpphash[i]=0;
+	for(i = 0; i < CPPHASHSIZ; ++i)
+		cpphash[i] = 0;
+	********************************************************/
 }
 
-/*
-	void p_cmd(void)
-
-	Ejecuta un comando del preprocesador.
-*/
+// Execute a #command
 
 p_cmd()
 {
-	/* Quitamos el simbolo # */
-
+	// Skip #
 	BfGet();
 
-	/* #asm esta activo ? */
-
+	// Check if #asm is active
 	if(cppinasm)
 	{
+		// Check if it's #endasm
 		if(InSymEq("endasm"))
 		{
 			p_endasm();
@@ -83,13 +77,13 @@ p_cmd()
 			return;
 		}
 
+		// Error: #endasm expected
 		errcont(ERASMWE);
 
-		cppinasm=0;
+		cppinasm = 0;
 	}
 
-	/* Estos comandos se ejecutan siempre */
-
+	// Following commands are executed always
 	if(InSymEq("if"))
 		p_if(0);
 	else if(InSymEq("else"))
@@ -101,13 +95,10 @@ p_cmd()
 	else if(InSymEq("ifndef"))
 		p_if(2);
 
-	/* Si estamos dentro de un bloque de codigo que no se */
-	/* compila, los siguientes comandos no se ejecutan.   */
-
+	// Don't execute following commands if we are in a 'false' if or else
 	else if(cppinign)
 	{
-		BfKill();
-		return;
+		BfKill(); return;
 	}
 	else if(InSymEq("define"))
 		p_define();
@@ -120,205 +111,158 @@ p_cmd()
 	else if(InSymEq("endasm"))
 		p_endasm();
 
-	/* Error, comando desconocido */
-
+	// Unknown #command
 	else
 		errcont(ERBADCM);
 
-	/* Invalidar la linea actual en cualquier caso */
-
+	// Discard remain contents
 	BfKill();
 }
 
-/*
-	void p_define(void)
-
-	Comando: #define nombre definicion
-*/
+// Define a macro: #define name value
 
 p_define()
 {
 	char s[NAME_SIZ];
 
-	/* Ignorar los espacios hasta el nombre */
-
+	// Skip blanks
 	BfBlanks();
 
-	/* Tomar el nombre */
-
+	// Get name
 	if(!symname(s))
 	{
-		errcont(ERSYMNM);
-		return;
+		errcont(ERSYMNM); return;
 	}
 
-	/* Ignorar los espacios hasta la definicion */
-
+	// Skip blanks
 	BfBlanks();
 
-	/* Preprocesar la definicion */
-
+	// Preprocess the value
 	p_prep(1);
 
-	/* Almacenar macro */
-
-	p_macput(s,line);
+	// Add macro
+	p_macput(s, line);
 }
 
-/*
-	void p_undef(void)
-
-	Comando: #undef nombre
-*/
+// Undefine a macro: #undef name
 
 p_undef()
 {
 	char s[NAME_SIZ];
 
-	/* Ignorar los espacios hasta el nombre */
-
+	// Skip blanks
 	BfBlanks();
 
-	/* Tomar el nombre */
-
+	// Get name
 	if(!symname(s))
 	{
-		errcont(ERSYMNM);
-		return;
+		errcont(ERSYMNM); return;
 	}
 
-	/* Borrar macro */
-
+	// Delete macro
 	p_macdel(s);
 }
 
-/*
-	void p_include(void)
-
-	Comando: #include <archivo> | "archivo"
-*/
+// Include file: #include <filename> | "filename"
 
 p_include()
 {
 	char chend;
 
-	/* Avanzar hasta archivo */
-
+	// Skip blanks
 	BfBlanks();
 
-	/* Preprocesar */
-
+	// Preprocess the value
 	p_prep(1);
 
-	/* Mensaje en pantalla */
+	// Print message
+	msgindent(); co_str("#include "); co_line(line);
 
-	msgindent();
-	co_str("#include ");co_line(line);
-
-	/* Tomar nombre de archivo */
-
-	if(*line=='"')
-		chend='"';
-	else if(*line=='<')
+	// Get filename
+	if(*line=='<')        // <filename>
 		chend='>';
+	else if(*line=='"')   // "filename"
+		chend='"';
 	else
-		errcont(ERBADCM);
+		errcont(ERBADCM); // Bad syntax
 
+	// Skip < or "
 	BfGet();
 
+	// Get filename
 	while(BfNeq(chend))
 	{
 		if(!BfGet())
 		{
-			errcont(ERBADCM);
-			return;
+			// Error: > or " missing
+			errcont(ERBADCM); return;
 		}
 	}
 
-	*(line+lptr)=0;
+	// Set end of filename
+	*(line + lptr) = 0;
 
-	/* Abrir archivo */
-
+	// Open file
 	if(cppincs == CPPMAXINC) 
 		errfile(ERTMINC,line+1);
 
-	cppfps[cppincs] = fi_fp;
+	cppfps[cppincs]   = fi_fp;
 	cpplines[cppincs] = fi_line;
-	strcpy(cppfnames + cppincs * 15, fi_name);
+	strcpy(cppfnames + cppincs * 15, fi_name); // A:12345678.123 + zero
 
 	++cppincs;
 
-	fi_open(line+1);
+	fi_open(line + 1);
 }
 
-/*
-	void p_endinc(void)
-
-	Comando: Fin de #include.
-*/
+// End included file
 
 p_endinc()
 {
 	fi_close();
 
-	fi_fp = cppfps[--cppincs];
+	fi_fp   = cppfps[--cppincs];
 	fi_line = cpplines[cppincs];
-	strcpy(fi_name, cppfnames + cppincs * 15);
+	strcpy(fi_name, cppfnames + cppincs * 15); // A:12345678.123 + zero
 
 	fi_eof = 0;
 
-	msgindent();
-        co_line("#end include");
+	// Print message
+	msgindent(); co_line("#end include");
 }
-/*
-	void p_asm(void)
 
-	Comando: #asm
-*/
+// Assembler code: #asm
 
 p_asm()
 {
-	/* Mensaje en archivo */
-
+	// Print message on output file for the optimizer
 	a_opt(0);
 
-	/* Activar indicador */
-
-	cppinasm=1;
+	// Set flag
+	cppinasm = 1;
 }
 
-/*
-	void p_endasm(void)
-
-	Comando: #endasm
-*/
+// End assembler code
 
 p_endasm()
 {
-	/* #asm esta activo ? */
-
+	// Check if #asm is active
 	if(cppinasm)
 	{
-
-		/* Mensaje en archivo */
-
+		// Print message on output file for the optimizer
 		a_opt(1);
 
-		/* Borrar indicador */
-
-		cppinasm=0;
+		// Unset flag
+		cppinasm = 0;
 	}
 	else
 		errcont(EREASWA);
 }
 
-/*
-	void p_if(iftype)
-
-	iftype = 0 -- #if	constante
-	iftype = 1 -- #ifdef	macro
-	iftype = 2 -- #ifndef	macro
-*/
+// Test command:
+// iftype = 0 -> #if     constantValue
+// iftype = 1 -> #ifdef  macroName
+// iftype = 2 -> #ifndef macroName
 
 p_if(iftype)
 int iftype;
@@ -326,105 +270,93 @@ int iftype;
 	char s[NAME_SIZ];
 	int val;
 
-	/* Demasiados #if's anidados ? */
-
+	// Check for too many active #ifs
 	if(cppiflev == CPPMAXIFS)
 	{
-		errcont(ERTMIFS);
-		return;
+		errcont(ERTMIFS); return;
 	}
 
-	/* Se debe ejecutar ? */
-
-	if(!(cppiflev==cppifact && cppinign==0))
+	// Check if we have to execute this #if
+	if(!(cppiflev == cppifact && cppinign == 0))
 	{
-		++cppiflev;
-		return;
+		// Ignore it
+		++cppiflev;	return;
 	}
 
-	/* Avanzar hasta el valor */
-
+	// Skip blanks
 	BfBlanks();
 
-	/* Tomar valor segun tipo de #if */
-
+	// Add #if level
 	++cppiflev;
 	++cppifact;
 
+	// Execute it
 	if(iftype)
 	{
+		// Get macro name
 		if(!symname(s))
 		{
+			// Error: bad macro name
 			errcont(ERSYMNM);
-			cppinign=1;
+			cppinign = 1;
 			return;
 		}
 
-		cppinign=p_macfind(s)!=-1 ? 0 : 1;
+		// Check if the macro exists
+		cppinign = p_macfind(s) != -1 ? 0 : 1; // FIXME -- cppinign = p_macfind(s) == -1 ???
 
-		if(iftype==2)
-			cppinign=1-cppinign;
+		// Reverse result on #ifndef
+		if(iftype == 2)
+			cppinign = 1 - cppinign; // FIXME -- Would it be better 'cppinign = !cppinign'?
 	}
 	else
 	{
+		// Preprocess the value
 		p_prep(1);
 
-		val=0;
+		// Get value
+		val = 0; number(&val);
 
-		number(&val);
-
-		cppinign=val ? 0 : 1;
+		cppinign = val ? 0 : 1; // FIXME -- cppinign = !val ???
 	}
 }
 
-/*
-	void p_else(void)
-
-	Comando: #else
-*/
-
+// Test commando: #else
+	
 p_else()
 {
-	/* #if esta activo ? */
-
+	// Check if there are active #ifs
 	if(!cppiflev)
 		errcont(ERELSEW);
-	else if(cppiflev==cppifact)
+	else if(cppiflev == cppifact)
 	{
-		/* Alternar indicador */
-
-		cppinign=1-cppinign;
+		// Toggle flag
+		cppinign = 1 - cppinign; // FIXME -- cppinign = !cppinign ???
 	}
 }
 
-/*
-	void p_endif(void)
-
-	Comando: #endif
-*/
+// End test command: #endif
 
 p_endif()
 {
-	/* #if esta activo ? */
-
+	// Check if there are active #ifs
 	if(!cppiflev)
 	{
-		errcont(ERENDIF);
-		return;
+		errcont(ERENDIF); return;
 	}
 
-	if(cppiflev==cppifact)
+	// Check if we have to execute this #endif
+	if(cppiflev == cppifact)
 	{
 		--cppifact;
-		cppinign=0;
+		cppinign = 0;
 	}
 
+	// Decrement #if level
 	--cppiflev;
 }
 
-/*
-	GESTION DE MACROS
-*/
+// Compute hash for macro name
 
 p_hash(c)
 char c;
@@ -438,31 +370,30 @@ char c;
 	return 52;
 }
 
-/*
-	void p_macput(char *sname, char *def)
+// Add macro
 
-	Almacenar macro.
-*/
-
-p_macput(name,def)
-char *name,*def;
+p_macput(name, def)
+char *name, *def;
 {
-	int ln,ld;
+	int ln, ld;
 
-	if(p_macfind(name)==-1)
+	// Check if there is a macro with that name
+	if(p_macfind(name) == -1)
 	{
-		ln=strlen(name);
-		ld=strlen(def);
+		ln = strlen(name);
+		ld = strlen(def);
 
-		if((cppmacx+ln+ld+2) <= CPPMACSIZ)
+		if((cppmacx + ln + ld + 2) <= CPPMACSIZ)
 		{
-			cppmac[cppmacx++]=ln;
-			cppmac[cppmacx++]=ld;
-			memcpy(cppmac+cppmacx,name,ln);
-			cppmacx+=ln;
-			memcpy(cppmac+cppmacx,def,ld);
-			cppmacx+=ld;
+			// Store macro name and value
+			cppmac[cppmacx++] = ln;
+			cppmac[cppmacx++] = ld;
+			memcpy(cppmac + cppmacx, name, ln);
+			cppmacx += ln;
+			memcpy(cppmac + cppmacx, def, ld);
+			cppmacx += ld;
 
+			// Increment hash counter
 			++cpphash[p_hash(*name)];
 		}
 		else
@@ -472,30 +403,25 @@ char *name,*def;
 		errcont(ERMACAD);
 }
 
+// Delete macro if exists
+
 p_macdel(name)
 char *name;
 {
 	int i, size;
 
-	if((i=p_macfind(name))!=-1)
+	if((i = p_macfind(name)) != -1)
 	{
-		size=cppmac[i]+(cppmac[i+1] & 0xFF)+2;
-		memcpy(cppmac+i,cppmac+i+size,cppmacx-(i+size));
-		cppmacx-=size;
+		size = cppmac[i] + (cppmac[i + 1] & 0xFF) + 2;
+		memcpy(cppmac + i, cppmac + i + size, cppmacx - (i + size));
+		cppmacx -= size;
 
 		--cpphash[p_hash(*name)];
 	}
-	//else
-	//	errcont(ERMACUD);
 }
 
-/*
-	int p_macfind(char *name)
-
-	Busca el nombre de una macro.
-	Si lo encuentra, devuelve el indice.
-	Si no, devuelve -1.
-*/
+// Find macro
+// out: index on success; else -1
 
 p_macfind(name)
 char *name;
@@ -504,22 +430,25 @@ char *name;
 
 	if(cpphash[p_hash(*name)])
 	{
-		ln=strlen(name);
+		ln = strlen(name);
 
-		for(i=0; i<cppmacx; i+=size)
+		for(i = 0; i < cppmacx; i += size)
 		{
-			if(ln==cppmac[i])
+			if(ln == cppmac[i])
 			{
-				if(!memcmp(name, cppmac+i+2, ln))
+				if(!memcmp(name, cppmac + i + 2, ln))  // FIXME -- Optimize this
 					return i;
 			}
 
-			size=cppmac[i]+(cppmac[i+1] & 0xFF)+2;
+			size = cppmac[i] + (cppmac[i + 1] & 0xFF) + 2;
 		}
 	}
 
 	return -1;
 }
+
+// Get line and preprocess it
+// out: 0 on success; 1 on EOF
 
 cpp_read()
 {
@@ -527,61 +456,79 @@ cpp_read()
 
 	while(1)
 	{
-		lptr=lastc=0;
+		lptr = lastc = 0;
 
-		/* Leer una linea */
-
+		// Read a line
 		while(1)
 		{
-			while(lptr!=LN_SIZ)
+			while(lptr != LN_SIZ)
 			{
-				c=fi_ch();
+				/**************************************************
+				c = fi_ch();
 
-				if(c=='\n' || c==EOF)
+				if(c == '\n' || c == EOF) // FIXME -- Optimize this
+					break;
+				***************************************************/
+
+				if((c = fi_ch()) == '\n')
 					break;
 
-				line[lptr++]=lastc=c;
+				if(c == EOF)
+					break;
+
+				if(c == '\t')
+					c = ' ';
+
+				line[lptr++] = lastc = c;
 			}
 
-			if(lastc!='\\' || c!='\n' || cppinasm)
+			// source \ <nl>        -> join with next line
+			// source <nl>          -> eol
+			// source <eof>         -> eol
+			// too-long-source <nl> -> eol
+			// <nl>                 -> eol
+			
+			if(lastc != '\\' || c != '\n' || cppinasm) // FIXME -- Optimize this
 				break;
 
 			--lptr;
 			++fi_line;
 		}
 
-		/* Fin de archivo ? */
-
-		if(!lptr && c==EOF)
+		// Check EOF
+		if(c == EOF)
 		{
-			if(!cppincs)
-				return 1;
+			if(!lptr)
+			{
+				// Check if there are pending included files
+				if(cppincs)
+				{
+					// Continue with previous included file
+					p_endinc(); continue;
+				}
 
-			p_endinc();
-			continue;
+				// EOF
+				return 1;
+			}
 		}
 
-		/* Incrementar numero de linea */
-
+		// Increment line number
 		++fi_line;
 
-		/* Byte terminal */
-
-		if(lptr!=LN_SIZ)
-			line[lptr]=0;
+		// End of string
+		if(lptr != LN_SIZ)
+			line[lptr] = '\0';
 		else
 		{
-			line[LN_MAX]=0;
-
+			// Line too long
+			line[LN_MAX] = '\0';
 			errcont(ERLTLNG);
 		}
 
-		/* Comenzar a partir del primer caracter en la linea */
+		// Start from first character in the line
+		lptr = 0;
 
-		lptr=0;
-
-		/* Hay un comentario pendiente de cerrar ? */
-
+		// Check for multi-line comments not closed yet
 		if(cppincmt)
 		{
 			while(BfWordNeq('*/'))
@@ -595,43 +542,47 @@ cpp_read()
 
 			BfGet();
 
-			cppincmt=0;
+			// Close multi-line comment
+			cppincmt = 0;
 		}
 
-		/* Skip blanks */
-
+		// Skip blanks
 		BfBlanks();
 
-		/* Es un comando del preprocesador ? */
-
+		// Check if it's a #command
 		if(BfEq('#'))
 		{
+			// Preprocess #command line and execute it
 			p_prep(0);
 			p_cmd();
 		}
 		else if(!cppinign)
 		{
-			/* Ensamblador ? */
-
+			// Check if it's an assembler line
 			if(cppinasm)
-				fo_line(line /*** +lptr ***/);
-
-			/* Codigo fuente C */
-
+			{
+				fo_line(line /* + lptr */);
+			}
 			else if(Bf())
 			{
+				// Check it the option 'output C source code as comments' is active
 				if(ctext)
 				{
-					comment();fo_line(line);
+					comment(); fo_line(line);
 				}
 
+				// Preprocess C source code
 				p_prep(1);
 
+				// Success
 				return 0;
 			}
 		}
 	}
 }
+
+// Preprocess input line
+// in:  sym = 1 to preprocess macros; else 0
 
 p_prep(sym)
 int sym;
@@ -639,141 +590,149 @@ int sym;
 	int i, x;
 	char s[NAME_SIZ];
 
-	cpptmpx=0;
+	cpptmpx = 0;
 
 	while(Bf())
 	{
-		/* Compactar espacios */
-
-		if(BfEq(' ') || BfEq('\t'))
+		if(BfEq(' ') /*|| BfEq('\t')*/)    // Compact blanks to 1 space -- FIXME -- Optimize this
 		{
-			//do
-			//{
-			//	BfGet();
-			//}
-			//while(BfEq(' ') || BfEq('\t'));
-
+			// Skip blanks
 			BfBlanks();
 
+			// Put 1 space
 			p_keepch(' ');
 		}
-
-		/* Es una cadena ? */
-
-		else if(BfEq('"'))
+		else if(BfEq('"'))             // Check for double quoted strings
+		{
 			p_preps('"');
-
-		/* Es una comilla simple ? */
-
-		else if(BfEq('\''))
+		}
+		else if(BfEq('\''))            // Check for single quoted strings
+		{
 			p_preps('\'');
-
-		/* Es un comentario ? */
-
-		else if(BfWordEq('/*'))
+		}
+		else if(BfWordEq('/*'))        // Check for multi-line comments
 		{
 			BfGet();
 			BfGet();
 
+			// Check for end of multi-line comment
 			while(BfWordNeq('*/'))
 			{
 				if(!BfGet())
 				{
-					cppincmt=1;
+					// Unclosed multi-line comment
+					cppincmt = 1;
 					break;
 				}
 			}
 
+			// Close multi-line comment
 			BfGet();
 			BfGet();
 		}
-
-		/* Es un comentario simple ? */
-
-		else if(BfWordEq('//'))
-			break;
-
-		/* Es un simbolo ? */
-
-		else if(sym && issym1st(Bf()))
+		else if(BfWordEq('//'))        // Check for single-line comments
 		{
-			i=0;
+			break;
+		}
+		else if(sym && issym1st(Bf())) // Check for symbol names
+		{
+			// Get symbol name -- FIXME -- Optimize this (but note that 'i' is used later in p_keepstr!)
+			i = 0;
 			do
 			{
-				if(i<NAME_MAX)
-					s[i++]=BfGet();
+				if(i < NAME_MAX)
+					s[i++] = BfGet();
 				else
 					BfGet();
 			}
 			while(issym(Bf()));
 
-			s[i]=0;
+			s[i] = 0;
 
-			if((x=p_macfind(s))==-1)
+			// Search for a macro name
+			if((x = p_macfind(s)) == -1)
+			{
+				// Not found: keep as it is
 				p_keepstr(s, i);
+			}
 			else
-				p_keepstr(cppmac+x+2+cppmac[x],cppmac[x+1] & 0xFF);
+			{
+				// Found: substitute it by its value
+				p_keepstr(cppmac + x + 2 + cppmac[x], cppmac[x + 1] & 0xFF);
+			}
 		}
 		else
+		{
+			// Keep character as it is
 			p_keepch(BfGet());
+		}
 	}
 
-	/* Se ha excedido la longitud de linea ? */
-
-	if(cpptmpx==LN_SIZ)
+	// Check for line buffer overlow
+	if(cpptmpx == LN_SIZ)
 	{
 		errcont(ERLTLNG);
 
 		--cpptmpx;
 	}
 
-	/* Poner terminal */
-
+	// EOS
 	p_keepch(0);
 
-	/* Copiar buffer temporal en linea a procesar */
+	// Copy temporary buffer to line buffer -- FIXME -- Try to optimize this
+	memcpy(line, cpptmp, cpptmpx);
 
-	memcpy(line,cpptmp,cpptmpx);
-
-	lptr=0;
+	lptr = 0;
 }
 
+// Preprocess quoted string
+
 p_preps(c)
-char c;
+int c;
 {
-	do
+	// Get first quote
+	p_keepch(BfGet());
+	
+	while(BfNeq(c))
 	{
+		// Get \?, including \" and \'
 		if(BfEq('\\'))
 			p_keepch(BfGet());
 
+		// Get character
 		if(Bf())
 			p_keepch(BfGet());
 		else
 			break;
 	}
-	while(BfNeq(c));
 
+	// Get last quote if any -- FIXME -- What if the line has not a trailing quote?
 	if(BfGet())
 		p_keepch(c);
 }
 
-p_keepstr(s, len)
-char *s;
-int len;
-{
-	if(cpptmpx+len>LN_SIZ)
-		len=LN_SIZ-cpptmpx;
+// Keep string
 
-	memcpy(cpptmp+cpptmpx,s,len);
-	cpptmpx+=len;
+p_keepstr(s, len)
+char *s; int len;
+{
+	if(cpptmpx + len > LN_SIZ)
+		len = LN_SIZ - cpptmpx;
+
+	memcpy(cpptmp + cpptmpx, s, len);
+	cpptmpx += len;
 }
+
+// Keep character
 
 p_keepch(c)
-char c;
+int c;
 {
-	if(cpptmpx!=LN_SIZ)
-		cpptmp[cpptmpx++]=c;
+	if(cpptmpx != LN_SIZ)
+		cpptmp[cpptmpx++] = c;
 }
+
+// Indent message according to the number of active #includes
 
 msgindent()
 {
@@ -782,4 +741,3 @@ msgindent()
 	for(i = 0; i < cppincs; ++i)
 		co_str("  ");
 }
-
