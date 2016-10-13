@@ -4,7 +4,7 @@
 
 	Definitions.
 
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez, FloppySoftware.
+	Copyright (c) 1999-2016 Miguel I. Garcia Lopez, FloppySoftware.
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -45,6 +45,7 @@
 	12 Aug 2016 : v1.13
 	03 Oct 2016 : v1.14
 	11 Oct 2016 : Errors by id, instead by string. Removed #defines for help text. Documented.
+	13 Oct 2016 : v1.15
 */
 
 // Optional #defines
@@ -55,7 +56,7 @@
 // Version
 // -------
 
-#define VERSION	"Mike's Enhanced Small C Compiler v1.14 - 03 Oct 2016"
+#define VERSION	"Mike's Enhanced Small C Compiler v1.15 - 13 Oct 2016"
 #define COPYRGT "(c) 1999-2016 FloppySoftware"
 
 // Output types
@@ -219,3 +220,4 @@
 #define ERCMDER 81 // Illegal max. number of errors
 #define ERCMDLB 82 // Illegal label
 #define ERCMDST 83 // Illegal size of stack
+

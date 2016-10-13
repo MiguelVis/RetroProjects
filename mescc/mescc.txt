@@ -6,7 +6,7 @@
 ]     ] ]       ]     ] ]     ] ]     ]
 ]     ] ]]]]]]]  ]]]]]   ]]]]]   ]]]]]
 
-MESCC v1.14 - 03 Oct 2016
+MESCC v1.15 - 13 Oct 2016
 
 Mike's Enhanced Small C Compiler for Z80 and CP/M
 
@@ -32,7 +32,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 See the copying file for more details.
 
-Last update: 22:11 03/10/2016.
+Last update: 23:17 13/10/2016.
 
 
 OVERVIEW

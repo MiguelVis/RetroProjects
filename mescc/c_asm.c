@@ -4,7 +4,7 @@
 
 	Assembler code output module.
 
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez, FloppySoftware.
+	Copyright (c) 1999-2016 Miguel I. Garcia Lopez, FloppySoftware.
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -753,3 +753,4 @@ lgnotfn()
 {
 	callrt("lgnot");
 }
+

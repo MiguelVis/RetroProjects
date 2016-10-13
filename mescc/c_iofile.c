@@ -4,7 +4,7 @@
 
 	I/O file module.
 
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez
+	Copyright (c) 1999-2016 Miguel I. Garcia Lopez
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -30,10 +30,6 @@
 	07 Nov 2015 : Modified fo_dec(). Now prints negative numbers as -32, instead of 0-32.
 	18 Dec 2015 : Modified fo_dec() to print -32768 correctly.
 	11 Oct 2016 : Documented and slightly optimized.
-
-	Notes:
-
-	Filenames are stored in the form: A:FILENAME.TYP + ZERO
 */
 
 // Open file for input
@@ -154,3 +150,4 @@ int n;
 	fo_ch(n % 10 + '0');
 #endif
 }
+

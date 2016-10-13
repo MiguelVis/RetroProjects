@@ -4,7 +4,7 @@
 
 	Build the compiler itself with MESCC under a z80 & CP/M environment.
 
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez, FloppySoftware.
+	Copyright (c) 1999-2016 Miguel I. Garcia Lopez, FloppySoftware.
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -22,7 +22,7 @@
 
 	How to build MESCC with this file:
 
-	cc make_cc -s:2048
+	cc make_cc -s:1024
 	ccopt make_cc
 	zsm make_cc
 	hextocom make_cc
@@ -37,30 +37,30 @@
 	26 Oct 2015 : Added c_defs.c. Modified some comments.
 	10 Jan 2015 : Added CC_FILEIO_SMALL def.
 	19 Jul 2016 : Removed CC_FILEIO_SMALL def.
-	11 Oct 2016 : Added c_parser.c.
+	11 Oct 2016 : Added c_parser.c. Documented.
 */
 
-/*	MESCC defs.
-*/
+// MESCC #definitions
+// ------------------
 
-// Nothing...
+// Nothing yet...
 
-/*	MESCC runtime
-*/
+// MESCC runtime
+// -------------
 
-#include "mescc.h"
+#include <mescc.h>
 
-/*	MESCC libraries
-*/
+// MESCC libraries
+// ---------------
 
-#include "fileio.h"
-#include "conio.h"
-#include "string.h"
-#include "ctype.h"
-#include "mem.h"
+#include <fileio.h>
+#include <conio.h>
+#include <string.h>
+#include <ctype.h>
+#include <mem.h>
 
-/*	Compiler modules
-*/
+// Compiler modules
+// ----------------
 
 #include "c_defs.c"
 #include "c_main.c"
@@ -72,3 +72,4 @@
 #include "c_buf.c"
 #include "c_iocon.c"
 #include "c_iofile.c"
+

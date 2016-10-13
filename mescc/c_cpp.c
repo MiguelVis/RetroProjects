@@ -4,7 +4,7 @@
 
 	Integrated preprocessor module.
 
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez, FloppySoftware.
+	Copyright (c) 1999-2016 Miguel I. Garcia Lopez, FloppySoftware.
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -31,11 +31,7 @@
 	12 Aug 2016 : Support for indented #commands.
 	11 Oct 2016 : Documented and slightly optimized.
 	12 Oct 2016 : Change input '\t' to ' ' in cpp_read().
-	13 Oct 2016 : Now cpp_read() skip empty lines (both C and assembler).
-
-	Notes:
-
-	Filenames are stored in the form: A:FILENAME.TYP + ZERO
+	13 Oct 2016 : Now cpp_read() skip empty lines (both C and assembler) and comments (assembler).
 */
 
 // Setup CPP
@@ -209,7 +205,7 @@ p_include()
 
 	cppfps[cppincs]   = fi_fp;
 	cpplines[cppincs] = fi_line;
-	strcpy(cppfnames + cppincs * 15, fi_name); // A:12345678.123 + zero
+	strcpy(cppfnames + cppincs * FILENAME_MAX, fi_name);
 
 	++cppincs;
 
@@ -224,7 +220,7 @@ p_endinc()
 
 	fi_fp   = cppfps[--cppincs];
 	fi_line = cpplines[cppincs];
-	strcpy(fi_name, cppfnames + cppincs * 15); // A:12345678.123 + zero
+	strcpy(fi_name, cppfnames + cppincs * FILENAME_MAX);
 
 	fi_eof = 0;
 
@@ -573,15 +569,17 @@ cpp_read()
 			// Check if it's an assembler line
 			if(cppinasm)
 			{
-				fo_line(line /* + lptr */);
+				// Skip assembler comments
+				if(Bf() != ';')
+					fo_line(line /* + lptr */);
 			}
 
 			// It's C source code
 			else {
 				if(ctext)
 				{
-					// Output C source code as assembler comment
-					comment(); fo_line(line);
+					// Output C source code as assembler comment -- FIXME - This outputs // coments too!
+					comment(); fo_line(line /* + lptr */);
 				}
 
 				// Preprocess C source code
@@ -754,3 +752,4 @@ msgindent()
 	for(i = 0; i < cppincs; ++i)
 		co_str("  ");
 }
+
