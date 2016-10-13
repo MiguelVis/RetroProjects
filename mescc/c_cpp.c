@@ -31,6 +31,7 @@
 	12 Aug 2016 : Support for indented #commands.
 	11 Oct 2016 : Documented and slightly optimized.
 	12 Oct 2016 : Change input '\t' to ' ' in cpp_read().
+	13 Oct 2016 : Now cpp_read() skip empty lines (both C and assembler).
 
 	Notes:
 
@@ -495,10 +496,14 @@ cpp_read()
 			++fi_line;
 		}
 
-		// Check EOF
-		if(c == EOF)
+		// Increment line number
+		++fi_line;
+
+		// Check empty line
+		if(!lptr)
 		{
-			if(!lptr)
+			// Check EOF
+			if(c == EOF)
 			{
 				// Check if there are pending included files
 				if(cppincs)
@@ -510,10 +515,10 @@ cpp_read()
 				// EOF
 				return 1;
 			}
-		}
 
-		// Increment line number
-		++fi_line;
+			// Skip empty lines
+			continue;
+		}
 
 		// End of string
 		if(lptr != LN_SIZ)
@@ -537,6 +542,7 @@ cpp_read()
 					break;
 			}
 
+			// EOL ?
 			if(!BfGet())
 				continue;
 
@@ -549,6 +555,10 @@ cpp_read()
 		// Skip blanks
 		BfBlanks();
 
+		// Skip empty lines
+		if(!Bf())
+			continue;
+
 		// Check if it's a #command
 		if(BfEq('#'))
 		{
@@ -556,6 +566,8 @@ cpp_read()
 			p_prep(0);
 			p_cmd();
 		}
+
+		// Check if we are not in ignoring code (false if, etc.)
 		else if(!cppinign)
 		{
 			// Check if it's an assembler line
@@ -563,11 +575,12 @@ cpp_read()
 			{
 				fo_line(line /* + lptr */);
 			}
-			else if(Bf())
-			{
-				// Check it the option 'output C source code as comments' is active
+
+			// It's C source code
+			else {
 				if(ctext)
 				{
+					// Output C source code as assembler comment
 					comment(); fo_line(line);
 				}
 

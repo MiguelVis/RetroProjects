@@ -602,19 +602,22 @@ doubreg()
 	a_code("ADD HL,HL");
 }
 
+// Increment or decrement
+
 a_incdec(lval, inc, post)
 int lval[], inc, post;
 {
 	char *ptr;
 	int i, dbl;
 
-	ptr=lval[0];
+	ptr = lval[0];
 
-	if((ptr && (ptr[SY_TYPE] & TY_CHAR) && ptr[SY_IDENT]!=ID_PTR)
+	if((ptr && (ptr[SY_TYPE] & TY_CHAR) && ptr[SY_IDENT] != ID_PTR)
 		|| (lval[1] & TY_CHAR))
 	{
 		if(!lval[1])
-			ptr[SY_STORAGE]==ST_STATIK ? immed_str(ptr+SY_NAME) : getloc(ptr);
+			ptr[SY_STORAGE] == ST_STATIK ? immed_str(ptr + SY_NAME) : getloc(ptr);
+
 		if(post)
 			a_code("LD A,(HL)");
 
