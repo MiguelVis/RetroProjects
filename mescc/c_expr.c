@@ -27,7 +27,7 @@
 	26 Oct 2015 : Cleaned.
 	20 Nov 2015 : Updated, function addglb() has changed.
 	03 Oct 2016 : Added '\e' to ChEsc().
-	13 Oct 2016 : Documented and optimized a bit.
+	13 Oct 2016 : Documented and optimized a bit. Added LVAL_??? names.
 
 	Operators precedence:
 
@@ -48,36 +48,48 @@
 	=  -= += *= %=	heir1		right to left
 	/= &= ^= |=
 
-	lval[0] is a symbol table address or 0 for constants
-	lval[1] is a type for indirect objects or 0 for static objects
-	lval[2] is a type for a pointer or array or 0
+	lval[LVAL_SYMADR] is a symbol table address or 0 for constants
+	lval[LVAL_TYPIND] is a type for indirect objects or 0 for static objects
+	lval[LVAL_TYPPTR] is a type for a pointer or array or 0
 */
+
+// Local #defines
+
+#define LVAL_DIM 3
+
+#define LVAL_SYMADR 0
+#define LVAL_TYPIND 1
+#define LVAL_TYPPTR 2
+
+// Parse expression
 
 expresn()
 {
-	int lval[3];
+	int lval[LVAL_DIM];
 	if(heir1(lval))
 		rvalue(lval);
 }
 
+// Level 1: = += -= *= /= %= &= ^= |=
+
 heir1(lval)
 int lval[];
 {
-	int k,lval2[3];
+	int k, lval2[LVAL_DIM];
 	char op;
 
-	k=heir1a(lval);
+	k = heir1a(lval);
 
 	if(BfNeq('=') && BfNextNeq('='))
 		return k;
 
-	switch(op=Bf())
+	switch(op = Bf())
 	{
 		case '=' :
 			BfGet();
 			if(k)
 			{
-				if(lval[1])
+				if(lval[LVAL_TYPIND])
 					fpush();
 				if(heir1(lval2))
 					rvalue(lval2);
@@ -88,34 +100,34 @@ int lval[];
 			return 0;
 		case '+' :
 		case '-' :
-			BfGet();BfGet();
+			BfGet(); BfGet();
 			if(!k)
 			{
 				ndlval();
 				return 0;
 			}
-			if(lval[1])
+			if(lval[LVAL_TYPIND])
 				fpush();
 			rvalue(lval);
 			fpush();
 			if(heir1(lval2))
 				rvalue(lval2);
-			if(dbltest(lval,lval2))
+			if(dbltest(lval, lval2))
 				doubreg();
 			fpop();
-			if(dbltest(lval2,lval))
+			if(dbltest(lval2, lval))
 			{
 				swap();
 				doubreg();
 				swap();
 			}
 
-			if(op=='+')
+			if(op == '+')
 				addfn();
 			else
 			{
 				subfn();
-				if((lval[2] & TY_INT) && (lval2[2] & TY_INT))
+				if((lval[LVAL_TYPPTR] & TY_INT) && (lval2[LVAL_TYPPTR] & TY_INT))
 				{
 					swap();
 					immed_dec(1);
@@ -123,7 +135,7 @@ int lval[];
 				}
 			}
 
-			/*result(lval,lval2);*/
+			// result(lval, lval2);
 			break;
 		case '*' :
 		case '/' :
@@ -131,13 +143,13 @@ int lval[];
 		case '&' :
 		case '^' :
 		case '|' :
-			BfGet();BfGet();
+			BfGet(); BfGet();
 			if(!k)
 			{
 				ndlval();
 				return 0;
 			}
-			if(lval[1])
+			if(lval[LVAL_TYPIND])
 				fpush();
 			rvalue(lval);
 			fpush();
@@ -171,10 +183,12 @@ int lval[];
 	return 0;
 }
 
+// Level 1a: expression ? expression : expression
+
 heir1a(lval)
 int lval[];
 {
-	int k,lval2[3],lab1,lab2;
+	int k, lval2[LVAL_DIM], lab1, lab2;
 
 	k=heir1b(lval);
 
@@ -185,13 +199,13 @@ int lval[];
 
 		do
 		{
-			lab1=getlabl();
+			lab1 = getlabl();
 			testjmp(lab1);
 
 			if(heir1b(lval2))
 				rvalue(lval2);
 
-			lab2=getlabl();
+			lab2 = getlabl();
 			jump(lab2);
 
 			a_lnlabel(lab1);
@@ -205,19 +219,20 @@ int lval[];
 		}
 		while(InChEq('?'));
 
-		k=0;
+		k = 0;
 	}
 
 	return k;
 }
 
+// Level 1b: ||
 
 heir1b(lval)
 int lval[];
 {
-	int k,lval2[3];
+	int k, lval2[LVAL_DIM];
 
-	k=heir1e(lval);
+	k = heir1e(lval);
 
 	if(InWordEq('||'))
 	{
@@ -235,18 +250,20 @@ int lval[];
 		}
 		while(InWordEq('||'));
 
-		k=0;
+		k = 0;
 	}
 
 	return k;
 }
 
+// Level 1e: &&
+
 heir1e(lval)
 int lval[];
 {
-	int k,lval2[3];
+	int k, lval2[LVAL_DIM];
 
-	k=heir2(lval);
+	k = heir2(lval);
 
 	if(InWordEq('&&'))
 	{
@@ -263,18 +280,20 @@ int lval[];
 		}
 		while(InWordEq('&&'));
 
-		k=0;
+		k = 0;
 	}
 
 	return k;
 }
 
+// Level 2: | (or)
+
 heir2(lval)
 int lval[];
 {
-	int k,lval2[3];
+	int k, lval2[LVAL_DIM];
 
-	k=heir3(lval);
+	k = heir3(lval);
 
 	InBlanks();
 
@@ -296,12 +315,14 @@ int lval[];
 	return 0;
 }
 
+// Level 3: ^ (xor)
+
 heir3(lval)
 int lval[];
 {
-	int k,lval2[3];
+	int k, lval2[LVAL_DIM];
 
-	k=heir4(lval);
+	k = heir4(lval);
 
 	InBlanks();
 
@@ -323,12 +344,14 @@ int lval[];
 	return 0;
 }
 
+// Level 4: & (and)
+
 heir4(lval)
 int lval[];
 {
-	int k, lval2[3];
+	int k, lval2[LVAL_DIM];
 
-	k=heir5(lval);
+	k = heir5(lval);
 
 	InBlanks();
 
@@ -350,12 +373,14 @@ int lval[];
 	return 0;
 }
 
+// Level 5: == !=
+
 heir5(lval)
 int lval[];
 {
-	int k,lval2[3];
+	int k, lval2[LVAL_DIM];
 
-	k=heir6(lval);
+	k = heir6(lval);
 
 	InBlanks();
 
@@ -368,9 +393,9 @@ int lval[];
 	while(1)
 	{
 		if(InWordEq('=='))
-			k=0;
+			k = 0;
 		else if(InWordEq('!='))
-			k=1;
+			k = 1;
 		else
 			return 0;
 
@@ -383,12 +408,14 @@ int lval[];
 	}
 }
 
+// Level 6: < > <= >=
+
 heir6(lval)
 int lval[];
 {
-	int k,lval2[3];
+	int k, lval2[LVAL_DIM];
 
-	k=heir7(lval);
+	k = heir7(lval);
 
 	InBlanks();
 
@@ -404,13 +431,13 @@ int lval[];
 	while(1)
 	{
 		if(InWordEq('<='))
-			k=0;
+			k = 0;
 		else if(InWordEq('>='))
-			k=1;
+			k = 1;
 		else if(BfEq('<') && BfNextNeq('<'))
-			k=2;
+			k = 2;
 		else if(BfEq('>') && BfNextNeq('>'))
-			k=3;
+			k = 3;
 		else
 			break;
 
@@ -423,7 +450,7 @@ int lval[];
 		fpop();
 
 		if(signtest(lval) && signtest(lval2))
-			k+=4;
+			k += 4;
 
 		switch(k)
 		{
@@ -441,12 +468,14 @@ int lval[];
 	return 0;
 }
 
+// Level 7: >> <<
+
 heir7(lval)
 int lval[];
 {
-	int k,lval2[3];
+	int k, lval2[LVAL_DIM];
 
-	k=heir8(lval);
+	k = heir8(lval);
 
 	InBlanks();
 
@@ -459,9 +488,9 @@ int lval[];
 	while(1)
 	{
 		if(InWordEq('>>'))
-			k=0;
+			k = 0;
 		else if(InWordEq('<<'))
-			k=1;
+			k = 1;
 		else
 			break;
 
@@ -476,12 +505,14 @@ int lval[];
 	return 0;
 }
 
+// Level 8: + - =
+
 heir8(lval)
 int lval[];
 {
-	int k,lval2[3];
+	int k, lval2[LVAL_DIM];
 
-	k=heir9(lval);
+	k = heir9(lval);
 
 	InBlanks();
 
@@ -494,19 +525,19 @@ int lval[];
 	while(1)
 	{
 		if(InChEq('+'))
-			k=0;
+			k = 0;
 		else if(InChEq('-'))
-			k=1;
+			k = 1;
 		else
 			break;
 
 		fpush();
 		if(heir9(lval2))
 			rvalue(lval2);
-		if(dbltest(lval,lval2))
+		if(dbltest(lval, lval2))
 			doubreg();
 		fpop();
-		if(dbltest(lval2,lval))
+		if(dbltest(lval2, lval))
 		{
 			swap();
 			doubreg();
@@ -516,7 +547,7 @@ int lval[];
 		if(k)
 		{
 			subfn();
-			if((lval[2] & TY_INT) && (lval2[2] & TY_INT))
+			if((lval[LVAL_TYPPTR] & TY_INT) && (lval2[LVAL_TYPPTR] & TY_INT))
 			{
 				swap();
 				immed_dec(1);
@@ -526,24 +557,24 @@ int lval[];
 		else
 			addfn();
 
-		if(lval2[2])
+		if(lval2[LVAL_TYPPTR])
 		{
-			if(lval[2])
-				lval[2]=0;
+			if(lval[LVAL_TYPPTR])
+				lval[LVAL_TYPPTR] = 0;
 			else
 			{
-				lval[0]=lval2[0];
-				lval[1]=lval2[1];
-				lval[2]=lval2[2];
+				lval[LVAL_SYMADR] = lval2[LVAL_SYMADR];
+				lval[LVAL_TYPIND] = lval2[LVAL_TYPIND];
+				lval[LVAL_TYPPTR] = lval2[LVAL_TYPPTR];
 			}
 		}
 		else if(signtest(lval))
 		{
 			if(!signtest(lval2))
 			{
-				lval[0]=lval2[0];
-				lval[1]=lval2[1];
-				lval[2]=lval2[2];
+				lval[LVAL_SYMADR] = lval2[LVAL_SYMADR];
+				lval[LVAL_TYPIND] = lval2[LVAL_TYPIND];
+				lval[LVAL_TYPPTR] = lval2[LVAL_TYPPTR];
 			}
 		}
 	}
@@ -551,12 +582,14 @@ int lval[];
 	return 0;
 }
 
+// Level 9: * / %
+
 heir9(lval)
 int lval[];
 {
-	int k,lval2[3];
+	int k, lval2[LVAL_DIM];
 
-	k=heir10(lval);
+	k = heir10(lval);
 
 	InBlanks();
 
@@ -569,11 +602,11 @@ int lval[];
 	while(1)
 	{
 		if(InChEq('*'))
-			k=0;
+			k = 0;
 		else if(InChEq('/'))
-			k=1;
+			k = 1;
 		else if(InChEq('%'))
-			k=2;
+			k = 2;
 		else
 			break;
 
@@ -585,12 +618,12 @@ int lval[];
 		if(signtest(lval))
 		{
 			if(signtest(lval2))
-				k+=3;
+				k += 3;
 			else
 			{
-				lval[0]=lval2[0];
-				lval[1]=lval2[1];
-				lval[2]=lval2[2];
+				lval[LVAL_SYMADR] = lval2[LVAL_SYMADR];
+				lval[LVAL_TYPIND] = lval2[LVAL_TYPIND];
+				lval[LVAL_TYPPTR] = lval2[LVAL_TYPPTR];
 			}
 		}
 
@@ -607,6 +640,8 @@ int lval[];
 
 	return 0;
 }
+
+// Level 10: ++thing --thing *thing &thing ~thing !thing thing++ thing--
 
 heir10(lval)
 int lval[];
@@ -631,23 +666,23 @@ int lval[];
 	{
 		if(heir10(lval))
 			rvalue(lval);
-		lval[1]=(ptr=lval[0]) ? ptr[SY_TYPE] : TY_INT;
-		lval[2]=0;
+		lval[LVAL_TYPIND] = (ptr = lval[LVAL_SYMADR]) ? ptr[SY_TYPE] : TY_INT;
+		lval[LVAL_TYPPTR] = 0;
 		return 1;
 	}
 	else if(InChEq('&'))
 	{
 		if(heir10(lval))
 		{
-			ptr=lval[0];
-			lval[2]=ptr[SY_TYPE];
-			if(!lval[1])
+			ptr = lval[LVAL_SYMADR];
+			lval[LVAL_TYPPTR] = ptr[SY_TYPE];
+			if(!lval[LVAL_TYPIND])
 			{
-				if(ptr[SY_STORAGE]==ST_STKLOC)
+				if(ptr[SY_STORAGE] == ST_STKLOC)
 					getloc(ptr);
 				else
 					immed_str(ptr);
-				lval[1]=ptr[SY_TYPE];
+				lval[LVAL_TYPIND] = ptr[SY_TYPE];
 			}
 		}
 		else
@@ -667,7 +702,7 @@ int lval[];
 	}
 	else
 	{
-		k=heir11(lval);
+		k = heir11(lval);
 
 		if(InWordEq('++'))
 			k ? a_incdec(lval, 1, 1) : ndlval();
@@ -691,7 +726,7 @@ int *lval;
 
 	k = primary(lval);
 
-	ptr = lval[0];
+	ptr = lval[LVAL_SYMADR];
 
 	InBlanks();
 
@@ -727,8 +762,8 @@ int *lval;
 				fpop();
 				addfn();
 
-				lval[0] = 0;
-				lval[1] = ptr[SY_TYPE];
+				lval[LVAL_SYMADR] = 0;
+				lval[LVAL_TYPIND] = ptr[SY_TYPE];
 				k=1;
 			}
 			else if(InChEq('('))
@@ -742,7 +777,7 @@ int *lval;
 				}
 				else callfnc(ptr);
 
-				k = lval[0] = 0;
+				k = lval[LVAL_SYMADR] = 0;
 			}
 			else
 				return k;
@@ -769,7 +804,7 @@ int *lval;
 	char *ptr, sname[NAME_SIZ];
 	int num[1], k, szof;
 
-	lval[2] = 0;
+	lval[LVAL_TYPPTR] = 0;
 
 	// Parenthesis
 	if(InChEq('('))
@@ -785,19 +820,19 @@ int *lval;
 		// Local symbol
 		if(ptr = findloc(sname))
 		{
-			lval[0] = ptr;
+			lval[LVAL_SYMADR] = ptr;
 
 			if(ptr[SY_IDENT] == ID_ARR)
 			{
 				getloc(ptr);
-				lval[1] = lval[2] = ptr[SY_TYPE];
+				lval[LVAL_TYPIND] = lval[LVAL_TYPPTR] = ptr[SY_TYPE];
 				return 0;
 			}
 
-			lval[1] = 0;
+			lval[LVAL_TYPIND] = 0;
 
 			if(ptr[SY_IDENT] == ID_PTR)
-				lval[2] = ptr[SY_TYPE];
+				lval[LVAL_TYPPTR] = ptr[SY_TYPE];
 
 			return 1;
 		}
@@ -807,19 +842,19 @@ int *lval;
 		{
 			if(ptr[SY_IDENT] != ID_FUN)
 			{
-				lval[0] = ptr;
+				lval[LVAL_SYMADR] = ptr;
 
 				if(ptr[SY_IDENT] == ID_ARR)
 				{
 					immed_str(ptr);
-					lval[1] = lval[2] = ptr[SY_TYPE];
+					lval[LVAL_TYPIND] = lval[LVAL_TYPPTR] = ptr[SY_TYPE];
 					return 0;
 				}
 
-				lval[1] = 0;
+				lval[LVAL_TYPIND] = 0;
 
 				if(ptr[SY_IDENT] == ID_PTR)
-					lval[2] = ptr[SY_TYPE];
+					lval[LVAL_TYPPTR] = ptr[SY_TYPE];
 
 				return 1;
 			}
@@ -840,7 +875,7 @@ int *lval;
 
 			immed_dec(szof);
 
-			return lval[0] = lval[1] = 0;
+			return lval[LVAL_SYMADR] = lval[LVAL_TYPIND] = 0;
 		}
 		else
 		{
@@ -850,14 +885,14 @@ int *lval;
 
 		// It's a function
 
-		lval[0] = ptr;
-		lval[1] = 0;
+		lval[LVAL_SYMADR] = ptr;
+		lval[LVAL_TYPIND] = 0;
 
 		return 0;
 	}
 
 	if(cnstant(num))
-		return lval[0] = lval[1] = 0;
+		return lval[LVAL_SYMADR] = lval[LVAL_TYPIND] = 0;
 
 	// Error: invalid expression
 	errcont(ERINVEX);
@@ -896,7 +931,7 @@ int lval[];
 {
 	char *ptr;
 
-	if(lval[2] || lval[1] == TY_UINT || ((ptr = lval[0]) && ptr[SY_TYPE] == TY_UINT)) // FIXME -- Optimize this ??
+	if(lval[LVAL_TYPPTR] || lval[LVAL_TYPIND] == TY_UINT || ((ptr = lval[LVAL_SYMADR]) && ptr[SY_TYPE] == TY_UINT)) // FIXME -- Optimize this ??
 		return 0;
 
 	return 1;
@@ -909,11 +944,11 @@ int *lval;
 {
 	char *ptr;
 
-	if(lval[1])
-		putstk(lval[1]);
+	if(lval[LVAL_TYPIND])
+		putstk(lval[LVAL_TYPIND]);
 	else
 	{
-		ptr = lval[0];
+		ptr = lval[LVAL_SYMADR];
 
 		if(ptr[SY_STORAGE] == ST_STKLOC)
 			putvloc(ptr);
@@ -929,9 +964,9 @@ int *lval;
 {
 	char *ptr;
 
-	if(lval[0] && !lval[1])
+	if(lval[LVAL_SYMADR] && !lval[LVAL_TYPIND])
 	{
-		ptr = lval[0];
+		ptr = lval[LVAL_SYMADR];
 
 		if(ptr[SY_STORAGE] == ST_STKLOC)
 			getvloc(ptr);
@@ -939,7 +974,7 @@ int *lval;
 			getmem(ptr);
 	}
 	else
-		indrct(lval[1]);
+		indrct(lval[LVAL_TYPIND]);
 }
 
 // Test expression
@@ -1132,3 +1167,10 @@ ndlval()
 {
 	errcont(ERMBLVL);
 }
+
+// Undefine local #defines
+
+#undef LVAL_DIM
+#undef LVAL_SYMADR
+#undef LVAL_TYPIND
+#undef LVAL_TYPPTR
