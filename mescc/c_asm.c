@@ -33,13 +33,10 @@
 	28 Oct 2015 : Now ;[ is for optimizer off and ;] for optimizer on.
 	22 Nov 2015 : New function wrtequ().
 	01 Dec 2015 : Print a SPACE on line starts, instead of a TAB.
-	13 Oct 2016 : Documented a bit.
+	13 Oct 2016 : Documented.
 */
 
-/*	void a_start(void)
-
-	Start assembler code.
-*/
+// Start of assembler code
 
 a_start()
 {
@@ -57,26 +54,20 @@ a_start()
 		fo_line("#asm");
 }
 
-/*	void a_end(void)
-
-	End assembler code.
-*/
+// End of assembler code
 
 a_end()
 {
-	if(typout==OUT_PRG)
+	if(typout == OUT_PRG)
 		fo_line("ccfreemem: DEFB 0");
-	else if(typout==OUT_LIB)
+	else if(typout == OUT_LIB)
 		fo_line("#endasm");
 
-	if(typout!=OUT_LIB)
+	if(typout != OUT_LIB)
 		a_code("END");
 }
 
-/*	void a_opt(on)
-
-	Code for optimizer.
-*/
+// Output flag for optimizer
 
 a_opt(on)
 int on;
@@ -84,73 +75,77 @@ int on;
 	fo_line(on ? ";]" : ";[");
 }
 
+// Output space + something + \n
+
 a_code(s)
 char *s;
 {
-	fo_ch(' ');fo_line(s);
+	fo_ch(' '); fo_line(s);
 }
+
+// Output space + something
 
 a_tcode(s)
 char *s;
 {
-	fo_ch(' ');fo_str(s);
+	fo_ch(' '); fo_str(s);
 }
+
+// Output (something)
 
 a_pcode(s)
 char *s;
 {
-	fo_ch('(');fo_str(s);fo_ch(')');
+	fo_ch('('); fo_str(s); fo_ch(')');
 }
+
+// Output (something) + \n
 
 a_pcodenl(s)
 char *s;
 {
-	a_pcode(s);fo_nl();
+	a_pcode(s); fo_nl();
 }
 
-/*	void comment(void)
+// Start of assembler comment
 
-	Start of comment.
-*/
-	
 comment()
 {
 	fo_ch(';');
 }
 
-/*	void getmem(char *sym)
-
-	HL = (global var)
-*/
+// HL = (global variable)
 
 getmem(sym)
 char *sym;
 {
-	if((sym[SY_TYPE] & TY_CHAR) && sym[SY_IDENT]!=ID_PTR)
+	if((sym[SY_TYPE] & TY_CHAR) && sym[SY_IDENT] != ID_PTR)
 	{
-		a_tcode(sym[SY_TYPE]==TY_CHAR ? "LD A," : "LD HL,");
-		a_pcodenl(sym+SY_NAME);
+		a_tcode(sym[SY_TYPE] == TY_CHAR ? "LD A," : "LD HL,");
+		a_pcodenl(sym + SY_NAME);
 
-		sym[SY_TYPE]==TY_CHAR ? callrt("sxt") : a_code("LD H,0");
+		sym[SY_TYPE] == TY_CHAR ? callrt("sxt") : a_code("LD H,0");
 	}
 	else
 	{
-		a_tcode("LD HL,");a_pcodenl(sym+SY_NAME);
+		a_tcode("LD HL,"); a_pcodenl(sym + SY_NAME);
 	}
 }
+
+// Get local value
 
 getvloc(sym)
 char *sym;
 {
 	int offset, sizflg;
 
-	offset=(sym[SY_OFFSET] & 255) + (sym[SY_OFFSET+1] << 8) - sptr;
+	offset=(sym[SY_OFFSET] & 255) + (sym[SY_OFFSET + 1] << 8) - sptr; // FIXME - Optimize this
 
-	sizflg=offset < 256;
+	sizflg = offset < 256;
 
-	if((sym[SY_TYPE] & TY_CHAR) && sym[SY_IDENT]!=ID_PTR)
+	if((sym[SY_TYPE] & TY_CHAR) && sym[SY_IDENT] != ID_PTR)
 	{
-		if(sym[SY_TYPE]==TY_CHAR)
+		if(sym[SY_TYPE] == TY_CHAR)
 			callrt(sizflg ? "xgc" : "xgc2");
 		else if(offset)
 			callrt(sizflg ? "xgb" : "xgb2");
@@ -169,8 +164,7 @@ char *sym;
 			case 0:	a_code("POP HL");
 				a_code("PUSH HL");
 				return;
-			/**************************
-
+			/*************************************************************
 			NOTE: FOLLOWING CODE CAN CAUSE 1 BYTE OF LOCAL VARIABLES TO
 			BE CORRUPTED, IF AN INTERRUPT OCCURS BETWEEN INC SP AND DEC SP
 			AND THE SYSTEM PUTS SOMETHING IN THE PROGRAM STACK (AS DOES
@@ -181,7 +175,7 @@ char *sym;
 				a_code("PUSH HL");
 				a_code("DEC SP");
 				return;
-			***************************/
+			**************************************************************/
 			case 2:	a_code("POP BC");
 				a_code("POP HL");
 				a_code("PUSH HL");
@@ -199,48 +193,43 @@ char *sym;
 	fo_nl();
 }
 
-
-/*	void getloc(char *sym)
-
-	HL = local var. adress
-*/
+// HL = local variable address
 
 getloc(sym)
 char *sym;
 {
-	immed_dec((sym[SY_OFFSET] & 255) + (sym[SY_OFFSET+1] << 8) - sptr);
+	immed_dec((sym[SY_OFFSET] & 255) + (sym[SY_OFFSET + 1] << 8) - sptr); // FIXME - Optimize this
 	a_code("ADD HL,SP");
 }
 
-/*	void putmem(char *sym)
-
-	(global var) = HL
-*/
+// (global variable) = HL
 
 putmem(sym)
 char *sym;
 {
-	if((sym[SY_TYPE] & TY_CHAR) && sym[SY_IDENT]!=ID_PTR)
+	if((sym[SY_TYPE] & TY_CHAR) && sym[SY_IDENT] != ID_PTR)
 	{
 		a_code("LD A,L");
-		a_tcode("LD ");a_pcode(sym+SY_NAME);fo_line(",A");
+		a_tcode("LD "); a_pcode(sym + SY_NAME); fo_line(",A");
 	}
 	else
 	{
-		a_tcode("LD ");a_pcode(sym+SY_NAME);fo_line(",HL");
+		a_tcode("LD "); a_pcode(sym + SY_NAME); fo_line(",HL");
 	}
 }
+
+// Put local value
 
 putvloc(sym)
 char *sym;
 {
 	int offset, sizflg;
 
-	offset=(sym[SY_OFFSET] & 255) + (sym[SY_OFFSET+1] << 8) - sptr;
+	offset = (sym[SY_OFFSET] & 255) + (sym[SY_OFFSET + 1] << 8) - sptr; // FIXME - Optimize this
 
-	sizflg=offset < 256;
+	sizflg = offset < 256;
 
-	if((sym[SY_TYPE] & TY_CHAR) && sym[SY_IDENT]!=ID_PTR)
+	if((sym[SY_TYPE] & TY_CHAR) && sym[SY_IDENT] != ID_PTR)
 	{
 		if(offset < 2)
 		{
@@ -260,8 +249,7 @@ char *sym;
 				a_code("PUSH HL");
 				return;
 
-			/***************************
-
+			/*************************************************************
 			NOTE: FOLLOWING CODE CAN CAUSE 1 BYTE OF LOCAL VARIABLES TO
 			BE CORRUPTED, IF AN INTERRUPT OCCURS BETWEEN INC SP AND DEC SP
 			AND THE SYSTEM PUTS SOMETHING IN THE PROGRAM STACK (AS DOES
@@ -272,7 +260,7 @@ char *sym;
 				a_code("PUSH HL");
 				a_code("DEC SP");
 				return;
-			*******************************/
+			**************************************************************/
 			case 2:	a_code("POP BC");
 				a_code("POP DE");
 				a_code("PUSH HL");
@@ -290,12 +278,7 @@ char *sym;
 	fo_nl();
 }
 
-
-/*	void putstk(char obj)
-
-	Store specified object type in HL at address
-	on the top of the stack.
-*/
+// Store specified object type in HL at address	on the top of the stack
 
 putstk(obj)
 char obj;
@@ -311,15 +294,12 @@ char obj;
 		callrt("pw");
 }
 
-/*	void indrct(char obj)
-
-	Fetch specified object type indirect through HL into HL.
-*/
+// Fetch specified object type indirect through HL into HL
 
 indrct(obj)
 char obj;
 {
-	if(obj==TY_UCHAR)
+	if(obj == TY_UCHAR)
 	{
 		a_code("LD L,(HL)");
 		a_code("LD H,0");
@@ -328,231 +308,178 @@ char obj;
 		callrt(obj & TY_CHAR ? "gc" : "gw");
 }
 
-/*	void swap(void)
-
-	Swap HL and DE.
-*/
+// Swap HL and DE
 
 swap()
 {
 	a_code("EX DE,HL");
 }
 
-/*	void immed(void)
-
-	Start assembler code for loading HL.
-*/
+// Start assembler code to load HL with a value
 
 immed()
 {
 	a_tcode("LD HL,");
 }
 
-
-/*	void immed_str(char *str)
-
-	Load HL with offset.
-*/
+// Load HL with address
 
 immed_str(str)
 char *str;
 {
-	immed();fo_line(str);
+	immed(); fo_line(str);
 }
 
-/*	void immed_dec(dec)
-
-	Load HL with decimal value.
-*/
+// Load HL with decimal value
 
 immed_dec(dec)
 int dec;
 {
-	immed();fo_dec(dec);fo_nl();
+	immed(); fo_dec(dec); fo_nl();
 }
 
-/*	void fpush(void)
-
-	Push HL into stack.
-*/
+// PUSH HL into stack
 
 fpush()
 {
 	a_code("PUSH HL");
-	sptr-=2;
+	sptr -= 2;
 }
 
-/*	void fpop(void)
-
-	Pop DE from stack.
-*/
+// POP DE from stack
 
 fpop()
 {
 	a_code("POP DE");
-	sptr+=2;
+	sptr += 2;
 }
 
-/*	void swapstk(void)
-
-	Swap HL and stack content.
-*/
+// Swap HL and stack content
 
 swapstk()
 {
 	a_code("EX (SP),HL");
 }
 
+// Output local label
+
 a_label(num)
 int num;
 {
-	fo_ch(letlab);fo_dec(num);
+	fo_ch(letlab); fo_dec(num);
 }
+
+// Output local label + \n
 
 a_lnlabel(num)
 int num;
 {
-	a_label(num);fo_nl();
+	a_label(num); fo_nl();
 }
 
-/*	void callrt(char *label)
-
-	Call runtime label.
-*/
+// Call runtime label
 
 callrt(label)
 char *label;
 {
-	a_tcode("CALL cc");fo_line(label);
+	a_tcode("CALL cc"); fo_line(label);
 }
 
-/*	void callfn(char *label)
-
-	Call function label.
-*/
+// Call function label
 
 callfn(label)
 char *label;
 {
-	a_tcode("CALL ");fo_line(label);
+	a_tcode("CALL "); fo_line(label);
 }
 
-/*	void execsw(int count, int label, int endlab)
+// Execute switch statement
 
-	Execute switch command in runtime.
-*/
-
-execsw(count,label,endlab)
-int count,label,endlab;
+execsw(count, label, endlab)
+int count, label, endlab;
 {
-	a_tcode("LD DE,");a_lnlabel(label);
-	a_tcode("LD HL,");a_lnlabel(endlab);
-	a_tcode("LD B,");fo_dec(count);fo_nl();
+	a_tcode("LD DE,"); a_lnlabel(label);
+	a_tcode("LD HL,"); a_lnlabel(endlab);
+	a_tcode("LD B,");  fo_dec(count); fo_nl();
 	a_code("JP ccswtch");
 }
 
-/*	void retfn(void)
-
-	Return from function.
-*/
+// Output RET
 
 retfn()
 {
 	a_code("RET");
 }
 
-/*	void callstk(void)
-
-	Perform subroutine call to address on top of stack.
-*/
+// Perform subroutine call to adress on top of stack
 
 callstk()
 {
-	immed_str("5+$");		/* MGL 20 Dec 03 - ZSM error if $+5 */
+	immed_str("5+$");    // ZSM error if $+5
 	swapstk();
 	a_code("JP (HL)");
-	sptr+=2;
+	sptr += 2;
 }
 
-/*	void jump(int label)
-
-	Jump to local label.
-*/
+// Jump to local label
 
 jump(label)
 int label;
 {
-	a_tcode("JP ");a_lnlabel(label);
+	a_tcode("JP "); a_lnlabel(label);
 }
 
-/*	void testjmp(int label)
-
-	Jump to local label if HL == 0.
-*/
+// Jump to local label if HL == 0
 
 testjmp(label)
 int label;
 {
 	a_code("LD A,H");
 	a_code("OR L");
-	a_tcode("JP Z,");a_lnlabel(label);
+	a_tcode("JP Z,"); a_lnlabel(label);
 }
 
-/*	void defbyte(void)
-
-	Start assembler command defb.
-*/
+// Output DEFB
 
 defbyte()
 {
 	a_tcode("DEFB ");
 }
 
-/*	void defword(void)
-
-	Start assembler command defw.
-*/
+// Output DEFW
 
 defword()
 {
 	a_tcode("DEFW ");
 }
 
-/*	void defstrg(void)
-
-	Start assembler command defs.
-*/
+// Output DEFS
 
 defstrg()
 {
 	a_tcode("DEFS ");
 }
 
-/*	void wrtequ(void)
-
-	Write assembler command equ.
-*/
+// Output EQU
 
 wrtequ()
 {
 	a_tcode("EQU ");
 }
 
-/*	int modstk(int newsp, int flag)
-
-	Modify stack pointer value. Return newsp.
-	If flag!=0 preserve hl.
-*/
+// Modify stack pointer value
+// in:  flag != 0 to preserve hl
+// out: new stack pointer value
 
 modstk(newsp, flag)
 int newsp, flag;
 {
 	int k, m;
 
-	k=newsp-sptr;
-	m=flag ? 14 : 10;
+	k = newsp - sptr;
+	m = flag ? 14 : 10;
 
-	if(k>0 && k<m)
+	if(k > 0 && k < m)
 	{
 		if(k & 1)
 		{
@@ -562,10 +489,10 @@ int newsp, flag;
 		while(k)
 		{
 			a_code("POP BC");
-			k-=2;
+			k -=2;
 		}
 	}
-	else if(k<0 && k>-m)
+	else if(k < 0 && k > -m)
 	{
 		if(k & 1)
 		{
@@ -575,7 +502,7 @@ int newsp, flag;
 		while(k)
 		{
 			a_code("PUSH BC");
-			k+=2;
+			k += 2;
 		}
 	}
 	else if(k)
@@ -592,10 +519,7 @@ int newsp, flag;
 	return newsp;
 }
 
-/*	void doubreg(void)
-
-	HL = HL + HL.
-*/
+// Double value: HL = HL + HL
 
 doubreg()
 {
@@ -612,8 +536,7 @@ int lval[], inc, post;
 
 	ptr = lval[0];
 
-	if((ptr && (ptr[SY_TYPE] & TY_CHAR) && ptr[SY_IDENT] != ID_PTR)
-		|| (lval[1] & TY_CHAR))
+	if((ptr && (ptr[SY_TYPE] & TY_CHAR) && ptr[SY_IDENT] != ID_PTR)	|| (lval[1] & TY_CHAR))
 	{
 		if(!lval[1])
 			ptr[SY_STORAGE] == ST_STATIK ? immed_str(ptr + SY_NAME) : getloc(ptr);
@@ -623,7 +546,7 @@ int lval[], inc, post;
 
 		a_code(inc ? "INC (HL)" : "DEC (HL)");
 
-		if(lval[1]==TY_CHAR || (!lval[1] && ptr[SY_TYPE]==TY_CHAR))
+		if(lval[1] == TY_CHAR || (!lval[1] && ptr[SY_TYPE] == TY_CHAR))
 			callrt(post ? "sxt" : "gc");
 		else
 		{
@@ -633,7 +556,7 @@ int lval[], inc, post;
 	}
 	else
 	{
-		i=dbl=((lval[2] & TY_INT) && (!lval[1] || (!lval[1] && ptr[SY_IDENT]==ID_PTR))) ? 2 : 1;
+		i = dbl = ((lval[2] & TY_INT) && (!lval[1] || (!lval[1] && ptr[SY_IDENT] == ID_PTR))) ? 2 : 1;
 		if(lval[1])
 			fpush();
 		rvalue(lval);
