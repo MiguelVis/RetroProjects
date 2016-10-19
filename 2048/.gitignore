@@ -1,0 +1,19 @@
+# ----
+# XPCW
+# ----
+
+xbitmap.h
+xpcw.h
+xtext.h
+
+# -----
+# *.SCR
+# -----
+
+*.SCR
+
+# ----------
+# THUMBNAILS
+# ----------
+
+*.db

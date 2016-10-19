@@ -14,6 +14,12 @@ http://www.floppysoftware.es
 http://cpm-connections.blogspot.com.es
 
 
+2048
+----
+
+A clon of the game 2048 for the Amstrad PCW (uses XPCW).
+
+
 AMSTTY
 ------
 
