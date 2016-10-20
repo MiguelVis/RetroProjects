@@ -26,6 +26,7 @@
 	16 Apr 2007 : GPL'd.
 	26 Oct 2015 : Cleaned.
 	11 Oct 2016 : Documented and slightly optimized.
+	21 Oct 2016 : Modified co_dec() an co_dec_5().
 */
 
 // Print a character
@@ -95,12 +96,13 @@ int n;
 #ifdef C_USEPRINTF
 	printf("%d", n);
 #else
+	/********************************************************************
 	int i;
 
 	if(n < 0)
 	{
 		// Possible $8000 can't be negatived
-		// if((number^0xFFFF)==0x7FFF){outstr("0-32768");return;}*/
+		// if((number^0xFFFF)==0x7FFF){outstr("0-32768");return;}
 
 		co_ch('-');
 
@@ -116,6 +118,9 @@ int n;
 		co_dec(i);
 
 	co_ch(n % 10 + '0');
+	*********************************************************************/
+
+	co_str(int2str(n));
 #endif
 
 	return n;
@@ -123,12 +128,13 @@ int n;
 
 // Print signed decimal number
 
-co_dec05(n)
+co_dec_5(n)
 int n;
 {
 #ifdef C_USEPRINTF
 	printf("%05d", n);
 #else
+	/********************************************************************
 	if(n < 10000)
 	{
 		co_ch('0');
@@ -148,6 +154,9 @@ int n;
 	}
 
 	co_dec(n);
+	*********************************************************************/
+
+	co_str(int2str_5(n));
 #endif
 }
 

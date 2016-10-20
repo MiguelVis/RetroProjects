@@ -6,7 +6,7 @@
 ]     ] ]       ]     ] ]     ] ]     ]
 ]     ] ]]]]]]]  ]]]]]   ]]]]]   ]]]]]
 
-MESCC v1.15 - 13 Oct 2016
+MESCC v1.17 - 21 Oct 2016
 
 Mike's Enhanced Small C Compiler for Z80 and CP/M
 
@@ -32,7 +32,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 See the copying file for more details.
 
-Last update: 23:17 13/10/2016.
+Last update: 00:13 21/10/2016.
 
 
 OVERVIEW
@@ -380,6 +380,11 @@ Preprocessor commands can be indented.
 		 quit:
 			JP 0
 		 #endasm
+
+Predefined macros:
+
+__FILE__  Name of the file currently in process.
+__LINE__  Line number currently in process.
 
 
 ABOUT THE SOURCE CODE OF MESCC

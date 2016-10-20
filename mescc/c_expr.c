@@ -28,6 +28,7 @@
 	20 Nov 2015 : Updated, function addglb() has changed.
 	03 Oct 2016 : Added '\e' to ChEsc().
 	13 Oct 2016 : Documented and optimized a bit. Added LVAL_??? names.
+	20 Oct 2016 : Added support for __FILE__ and __LINE__.
 
 	Operators precedence:
 
@@ -874,6 +875,29 @@ int *lval;
 			ndch(')');
 
 			immed_dec(szof);
+
+			return lval[LVAL_SYMADR] = lval[LVAL_TYPIND] = 0;
+		}
+		else if(!strcmp(sname, "__FILE__"))  // Yes, I know, this should be check in the CPP...
+		{
+			// Write as a constant string
+			immed(); a_label(litlab); fo_ch('+'); fo_dec(litptr); fo_nl();
+
+			ptr = fi_name;
+
+			while(*ptr)
+			{
+				wrtlit(tolower(*ptr++));
+			}
+
+			wrtlit('\0');
+
+			return lval[LVAL_SYMADR] = lval[LVAL_TYPIND] = 0;
+		}
+		else if(!strcmp(sname, "__LINE__"))  // Yes, I know, this should be check in the CPP...
+		{
+			// Write as a constant decimal number
+			immed(); fo_dec(fi_line); fo_nl();
 
 			return lval[LVAL_SYMADR] = lval[LVAL_TYPIND] = 0;
 		}

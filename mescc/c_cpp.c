@@ -34,6 +34,11 @@
 	13 Oct 2016 : Now cpp_read() skip empty lines (both C and assembler) and comments (assembler).
 */
 
+// Types of symbol preprocess
+
+#define CPP_SYM_NO  0  // No preprocessing of symbols
+#define CPP_SYM_YES 1  // Preprocessing of symbols
+
 // Setup CPP
 
 cpp_start()
@@ -135,7 +140,7 @@ p_define()
 	BfBlanks();
 
 	// Preprocess the value
-	p_prep(1);
+	p_prep(CPP_SYM_YES);
 
 	// Add macro
 	p_macput(s, line);
@@ -170,7 +175,7 @@ p_include()
 	BfBlanks();
 
 	// Preprocess the value
-	p_prep(1);
+	p_prep(CPP_SYM_YES);
 
 	// Print message
 	msgindent(); co_str("#include "); co_line(line);
@@ -309,7 +314,7 @@ int iftype;
 	else
 	{
 		// Preprocess the value
-		p_prep(1);
+		p_prep(CPP_SYM_YES);
 
 		// Get value
 		val = 0; number(&val);
@@ -425,6 +430,7 @@ char *name;
 {
 	int i, ln, size;
 
+	// Check for user defined macros
 	if(cpphash[p_hash(*name)])
 	{
 		ln = strlen(name);
@@ -441,6 +447,7 @@ char *name;
 		}
 	}
 
+	// Error: macro not found
 	return -1;
 }
 
@@ -559,7 +566,7 @@ cpp_read()
 		if(BfEq('#'))
 		{
 			// Preprocess #command line and execute it
-			p_prep(0);
+			p_prep(CPP_SYM_NO);
 			p_cmd();
 		}
 
@@ -583,7 +590,7 @@ cpp_read()
 				}
 
 				// Preprocess C source code
-				p_prep(1);
+				p_prep(CPP_SYM_YES);
 
 				// Success
 				return 0;
@@ -593,13 +600,13 @@ cpp_read()
 }
 
 // Preprocess input line
-// in:  sym = 1 to preprocess macros; else 0
+// in: type of symbol preprocessing
 
 p_prep(sym)
 int sym;
 {
 	int i, x;
-	char s[NAME_SIZ];
+	char s[NAME_SIZ], *p;
 
 	cpptmpx = 0;
 
@@ -645,9 +652,9 @@ int sym;
 		{
 			break;
 		}
-		else if(sym && issym1st(Bf())) // Check for symbol names
+		else if(sym && issym1st(Bf()))
 		{
-			// Get symbol name -- FIXME -- Optimize this (but note that 'i' is used later in p_keepstr!)
+			// Check for symbol name -- FIXME -- Optimize this (but note that 'i' is used later in p_keepstr!)
 			i = 0;
 			do
 			{
@@ -658,7 +665,7 @@ int sym;
 			}
 			while(issym(Bf()));
 
-			s[i] = 0;
+			s[i] = '\0';
 
 			// Search for a macro name
 			if((x = p_macfind(s)) == -1)
@@ -752,4 +759,10 @@ msgindent()
 	for(i = 0; i < cppincs; ++i)
 		co_str("  ");
 }
+
+// Undefine internal macros
+
+#undef CPP_SYM_NO
+#undef CPP_SYM_YES
+
 

@@ -192,9 +192,9 @@ int argc, argv[]; // MESCC doesn't have char *argv[] yet...
 	// Print summary
 	co_line("Table    Used  Free");
 	co_line("-------- ----- -----");
-	co_str("Strings  "); co_dec05(litptr) ;co_ch(' '); co_dec05(STRBUF_SIZ - litptr); co_nl();
-	co_str("Globals  "); co_dec05(glbptr - GLB_START); co_ch(' '); co_dec05(GLB_END - glbptr); co_nl();
-	co_str("Macros   "); co_dec05(cppmacx) ;co_ch(' '); co_dec05(CPPMACSIZ - cppmacx); co_nl();
+	co_str("Strings  "); co_dec_5(litptr) ;co_ch(' '); co_dec_5(STRBUF_SIZ - litptr); co_nl();
+	co_str("Globals  "); co_dec_5(glbptr - GLB_START); co_ch(' '); co_dec_5(GLB_END - glbptr); co_nl();
+	co_str("Macros   "); co_dec_5(cppmacx) ;co_ch(' '); co_dec_5(CPPMACSIZ - cppmacx); co_nl();
 
 	co_nl();
 

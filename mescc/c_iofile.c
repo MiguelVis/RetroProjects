@@ -30,6 +30,7 @@
 	07 Nov 2015 : Modified fo_dec(). Now prints negative numbers as -32, instead of 0-32.
 	18 Dec 2015 : Modified fo_dec() to print -32768 correctly.
 	11 Oct 2016 : Documented and slightly optimized.
+	21 Oct 2016 : Modified fo_dec().
 */
 
 // Open file for input
@@ -127,12 +128,13 @@ int n;
 #ifdef C_USEPRINTF
 	fprintf(fo_fp, "%d", n);
 #else
+	/***********************************************************************
 	int i;
 
 	if(n < 0)
 	{
 		// Possible $8000 can't be negatived
-		// if((number^0xFFFF)==0x7FFF){outstr("0-32768");return;}*/
+		// if((number^0xFFFF)==0x7FFF){outstr("0-32768");return;}
 
 		fo_ch('-');
 
@@ -148,6 +150,9 @@ int n;
 		fo_dec(i);
 
 	fo_ch(n % 10 + '0');
+	************************************************************************/
+
+	fo_str(int2str(n));
 #endif
 }
 

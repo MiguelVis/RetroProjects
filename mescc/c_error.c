@@ -115,8 +115,8 @@ char *msg;
 	fo_nl(); co_nl();
 	
 	comment();
-	fo_str(co_str("Error!")); fo_dec(co_dec05(++errcnt)); fo_ch(co_ch(' '));
-	fo_str(co_str("Line: ")); fo_dec(co_dec05(fi_line));  fo_ch(co_ch(' '));
+	fo_str(co_str("Error!")); fo_dec(co_dec_5(++errcnt)); fo_ch(co_ch(' '));
+	fo_str(co_str("Line: ")); fo_dec(co_dec_5(fi_line));  fo_ch(co_ch(' '));
 	fo_str(co_str("File: ")); fo_line(co_line(fi_name));
 
 	comment();
