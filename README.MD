@@ -98,6 +98,12 @@ TE
 A small text editor for CP/M (highly configurable; there are ports for various machines and operating systems: Amstrad PCW, Amstrad CPC, Spectrum +3, Kaypro, VT-52, VT-100, DOS, Windows, GNU/Linux).
 
 
+UT
+--
+
+Unitary tests library for MESCC.
+
+
 WTD
 ---
 
