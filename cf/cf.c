@@ -38,6 +38,7 @@
 	Revisions:
 
 		06 Jul 2016 : Work begins.
+		21 Oct 2016 : Refactorized CF function names.
 */
 
 /* Defines for MESCC libraries
@@ -120,7 +121,7 @@ main()
 
 	printf("Creating CF\n\n");
 
-	if(!(cf = cf_create(6)))
+	if(!(cf = CfCreate(6)))
 		error("Can't create CF");
 
 	set_key("title", "That's cool!");
@@ -143,52 +144,52 @@ main()
 
 	printf("Writting test.cf\n\n");
 
-	if(cf_write(cf, "test.cf"))
+	if(CfWrite(cf, "test.cf"))
 		error("Can't write test.cf");
 
 	printf("Destroying CF\n\n");
 
-	cf_destroy(cf);
+	CfDestroy(cf);
 
 	// -------------------------------------------
 
 	printf("Creating CF\n\n");
 
-	if(!(cf = cf_create(8)))
+	if(!(cf = CfCreate(8)))
 		error("Can't create CF");
 
 	printf("Reading test.cf into CF\n\n");
 
-	if(cf_read(cf, "test.cf"))
+	if(CfRead(cf, "test.cf"))
 		error("Can't read test.cf");
 
 	pr_keys(cf);
 
 	printf("Reading test_2.cf into CF\n\n");
 
-	if((k = cf_read(cf, "test_2.cf"))) { printf("!!%d!!\n", k);
+	if((k = CfRead(cf, "test_2.cf"))) { printf("!!%d!!\n", k);
 		error("Can't read test_2.cf");}
 
 	pr_keys(cf);
 
-	cf_get_all(cf, pr_one_key);
+	CfGetAll(cf, pr_one_key);
 	printf("\n");
 
-	printf("Title     >> %s\n", cf_get_key(cf, "title"));
-	printf("Author    >> %s\n", cf_get_str(cf, "author", "unknown"));
-	printf("Publisher >> %s\n", cf_get_str(cf, "publisher", "n/a"));
-	printf("Year      >> %d\n", cf_get_uint(cf, "year", 9999));
-	printf("Pages     >> %d\n", cf_get_int(cf, "pages", 9999));
-	printf("Summary   >> %s\n", cf_get_str(cf, "summary", "n/a"));
-	printf("Lent      >> %s\n", cf_get_bool(cf, "lent", 0) ? "Yes" : "No");
-	printf("To        >> %s\n", cf_get_key(cf, "lent_to"));
-	printf("Expires   >> %s\n", cf_get_key(cf, "lend_expires"));
+	printf("Title     >> %s\n", CfGetKey(cf, "title"));
+	printf("Author    >> %s\n", CfGetStr(cf, "author", "unknown"));
+	printf("Publisher >> %s\n", CfGetStr(cf, "publisher", "n/a"));
+	printf("Year      >> %d\n", CfGetUint(cf, "year", 9999));
+	printf("Pages     >> %d\n", CfGetInt(cf, "pages", 9999));
+	printf("Summary   >> %s\n", CfGetStr(cf, "summary", "n/a"));
+	printf("Lent      >> %s\n", CfGetBool(cf, "lent", 0) ? "Yes" : "No");
+	printf("To        >> %s\n", CfGetKey(cf, "lent_to"));
+	printf("Expires   >> %s\n", CfGetKey(cf, "lend_expires"));
 
 	printf("\n");
 
 	printf("Destroying CF\n\n");
 
-	cf_destroy(cf);
+	CfDestroy(cf);
 
 	// -------------------------------------------
 
@@ -200,7 +201,7 @@ char *key, *value;
 {
 	int result;
 
-	result = cf_set_key(cf, key, value);
+	result = CfSetKey(cf, key, value);
 
 	printf("Set %s = %s%s\n", key, value, result ? " --> ERROR" : "");
 }
@@ -210,7 +211,7 @@ char *key; int value;
 {
 	int result;
 
-	result = cf_set_bool(cf, key, value);
+	result = CfSetBool(cf, key, value);
 
 	printf("Set %s = %s%s\n", key, value ? "true" : "false", result ? " --> ERROR" : "");
 }
@@ -220,7 +221,7 @@ char *key, *value;
 {
 	int result;
 
-	result = cf_set_str(cf, key, value);
+	result = CfSetStr(cf, key, value);
 
 	printf("Set %s = \"%s\"%s\n", key, value, result ? " --> ERROR" : "");
 }
@@ -228,7 +229,7 @@ char *key, *value;
 pr_keys(cf)
 CF *cf;
 {
-	cf_pr_keys(cf);
+	CfPrKeys(cf);
 
 	printf("\n");
 }

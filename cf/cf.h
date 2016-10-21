@@ -26,20 +26,20 @@
 	15 Jul 2016 : Added supported #defines.
 	              Added '.' and '-' as valid characters for key names.
 	              Added ';' as valid character for comments.
-	16 Jul 2016 : Added cf_get_all().
-	21 Oct 2016 : Solved a couple of bugs in cf_read() and xcf_add().
+	16 Jul 2016 : Added CfGetAll().
+	21 Oct 2016 : Solved a couple of bugs in CfRead() and xCfAdd(). Refactorized function names.
 
 	Supported #defines:
 
-	CF_READ     : cf_read().
-	CF_WRITE    : cf_write().
-	CF_GET_ALL  : cf_get_all().
-	CF_GET_BOOL : cf_get_bool().
-	CF_GET_INT  : cf_get_int().
-	CF_GET_UINT : cf_get_uint().
-	CF_GET_STR  : cf_get_str().
-	CF_SET_BOOL : cf_set_bool().
-	CF_SET_STR  : cf_set_str().
+	CF_READ     : CfRead().
+	CF_WRITE    : CfWrite().
+	CF_GET_ALL  : CfGetAll().
+	CF_GET_BOOL : CfGetBool().
+	CF_GET_INT  : CfGetInt().
+	CF_GET_UINT : CfGetUint().
+	CF_GET_STR  : CfGetStr().
+	CF_SET_BOOL : CfSetBool().
+	CF_SET_STR  : CfSetStr().
 
 	Notes:
 
@@ -106,15 +106,15 @@ char xcf_buf[XCF_BF_SIZE];
    -----------------------------
    Return address, or NULL on failure.
 */
-cf_create(max)
+CfCreate(max)
 int max;
 {
 	CF *cf;
 
 	// Alloc memory
 	if((cf = malloc(SIZEOF_PTR * XCF_FIELDS))) {
-		if((cf[XCF_FKEYS] = xcf_alloc(max))) {
-			if((cf[XCF_FVALUES] = xcf_alloc(max))) {
+		if((cf[XCF_FKEYS] = xCfAlloc(max))) {
+			if((cf[XCF_FVALUES] = xCfAlloc(max))) {
 
 				// Store the rest of fields
 				cf[XCF_FMAX] = max;
@@ -124,7 +124,7 @@ int max;
 			}
 
 			// Failure
-			xcf_free(cf[XCF_FKEYS], max);
+			xCfFree(cf[XCF_FKEYS], max);
 		}
 
 		// Failure
@@ -139,12 +139,12 @@ int max;
    ------------------------------
    Return NULL.
 */
-cf_destroy(cf)
+CfDestroy(cf)
 CF *cf;
 {
 	// Free the arrays and its entries
-	xcf_free(cf[XCF_FKEYS], cf[XCF_FMAX]);
-	xcf_free(cf[XCF_FVALUES], cf[XCF_FMAX]);
+	xCfFree(cf[XCF_FKEYS], cf[XCF_FMAX]);
+	xCfFree(cf[XCF_FVALUES], cf[XCF_FMAX]);
 
 	// Free the buffer
 	free(cf);
@@ -164,20 +164,20 @@ CF *cf; char *key, *value;
 	int entry;
 
 	// Add the key and value, only if key not exists.
-	if((entry = xcf_find(cf[XCF_FKEYS], cf[XCF_FMAX], key)) == -1) {
+	if((entry = xCfFind(cf[XCF_FKEYS], cf[XCF_FMAX], key)) == -1) {
 
 		// Add the key
-		if((entry = xcf_add(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
+		if((entry = xCfAdd(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
 
 			// Add the value
-			if(xcf_set(cf[XCF_FVALUES], value, entry)) {
+			if(xCfSet(cf[XCF_FVALUES], value, entry)) {
 
 				// Success
 				return 0;
 			}
 
 			// Failure
-			xcf_del(cf[XCF_FKEYS], entry);
+			xCfDel(cf[XCF_FKEYS], entry);
 		}
 	}
 
@@ -197,10 +197,10 @@ CF *cf; char *key, *value;
 	int entry;
 
 	// Get entry number
-	if((entry = xcf_find(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
+	if((entry = xCfFind(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
 
 		// Change the value
-		if(xcf_set(cf[XCF_FVALUES], value, entry)) {
+		if(xCfSet(cf[XCF_FVALUES], value, entry)) {
 
 			// Success
 			return 0;
@@ -216,16 +216,16 @@ CF *cf; char *key, *value;
    ----------------------
    Return 0 on success, or -1 on failure.
 */
-cf_set_key(cf, key, value)
+CfSetKey(cf, key, value)
 CF *cf; char *key, *value;
 {
 	int entry;
 
 	// Get entry number
-	if((entry = xcf_find(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
+	if((entry = xCfFind(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
 
 		// The key exists: change its value
-		if(xcf_set(cf[XCF_FVALUES], value, entry)) {
+		if(xCfSet(cf[XCF_FVALUES], value, entry)) {
 
 			// Success
 			return 0;
@@ -233,17 +233,17 @@ CF *cf; char *key, *value;
 	}
 	else {
 		// The key doesn't exists: add it
-		if((entry = xcf_add(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
+		if((entry = xCfAdd(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
 
 			// Add the value
-			if(xcf_set(cf[XCF_FVALUES], value, entry)) {
+			if(xCfSet(cf[XCF_FVALUES], value, entry)) {
 
 				// Success
 				return 0;
 			}
 
 			// Failure
-			xcf_del(cf[XCF_FKEYS], entry);
+			xCfDel(cf[XCF_FKEYS], entry);
 		}
 
 		// Failure
@@ -257,14 +257,14 @@ CF *cf; char *key, *value;
    --------------------------
    Return pointer to the value, or NULL on failure.
 */
-cf_get_key(cf, key)
+CfGetKey(cf, key)
 CF *cf; char *key;
 {
 	int entry;
 	unsigned int *arr;
 
 	// Get entry number
-	if((entry = xcf_find(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
+	if((entry = xCfFind(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
 
 		// Get array address
 		arr = cf[XCF_FVALUES];
@@ -287,7 +287,7 @@ CF *cf; char *key;
    ---------------------------------------
    Return 0 on success, or -1 on failure.
 */
-cf_read(cf, fname)
+CfRead(cf, fname)
 CF *cf; char *fname;
 {
 	FILE *fp;
@@ -316,14 +316,14 @@ CF *cf; char *fname;
 			}
 
 			// Remove spaces on the left
-			bf = xcf_lf_spaces(xcf_buf);
+			bf = xCfLfSpaces(xcf_buf);
 
 			// Skip comments
 			if(*bf == '#' || *bf == ';')
 				continue;
 
 			// Remove spaces on the right
-			bf = xcf_rt_spaces(bf);
+			bf = xCfRtSpaces(bf);
 
 			// Skip empty lines
 			if(!(*bf))
@@ -351,7 +351,7 @@ CF *cf; char *fname;
 			// Check for =
 			if(k != '=') {
 				// Skip spaces
-				bf = xcf_lf_spaces(bf);
+				bf = xCfLfSpaces(bf);
 
 				// Check for =
 				if(*bf != '=') {
@@ -363,7 +363,7 @@ CF *cf; char *fname;
 			}
 
 			// Skip spaces
-			bf = xcf_lf_spaces(bf);
+			bf = xCfLfSpaces(bf);
 
 			// Check if there is a value
 			if(!(*bf)) {
@@ -371,8 +371,8 @@ CF *cf; char *fname;
 			}
 
 			// Add the key / value pair to the configuration buffer
-			if(cf_set_key(cf, key, bf)) {
-				cf_destroy(cf);
+			if(CfSetKey(cf, key, bf)) {
+				CfDestroy(cf);
 				err = -1;
 				break;
 			}
@@ -397,7 +397,7 @@ CF *cf; char *fname;
    --------------------------------------
    Return 0 on success, or -1 on failure.
 */
-cf_write(cf, fname)
+CfWrite(cf, fname)
 CF *cf; char *fname;
 {
 	FILE *fp;
@@ -452,7 +452,7 @@ CF *cf; char *fname;
 /* Get all keys
    ------------
 */
-cf_get_all(cf, funct)
+CfGetAll(cf, funct)
 CF *cf; unsigned int funct;
 {
 	unsigned int *arrk, *arrv;
@@ -480,13 +480,13 @@ CF *cf; unsigned int funct;
    -----------------------------------
    Return 1 for true, 0 for false, or the default value on failure.
 */
-cf_get_bool(cf, key, def)
+CfGetBool(cf, key, def)
 CF *cf; char *key; int def;
 {
 	char *value;
 
 	// Get value
-	if((value = cf_get_key(cf, key))) {
+	if((value = CfGetKey(cf, key))) {
 
 		// Check for true or false
 		if(!strcmp(value, "true"))
@@ -509,13 +509,13 @@ CF *cf; char *key; int def;
    --------------------------
    Return an int, or the default value on failure.
 */
-cf_get_int(cf, key, def)
+CfGetInt(cf, key, def)
 CF *cf; char *key; int def;
 {
 	char *value;
 
 	// Get value
-	if((value = cf_get_key(cf, key))) {
+	if((value = CfGetKey(cf, key))) {
 
 		// Return the int value
 		return atoi(value);
@@ -533,7 +533,7 @@ CF *cf; char *key; int def;
    -----------------------------------
    Return an unsigned int, or the default value on failure.
 */
-cf_get_uint(cf, key, def)
+CfGetUint(cf, key, def)
 CF *cf; char *key; unsigned int def;
 {
 	char *value;
@@ -543,7 +543,7 @@ CF *cf; char *key; unsigned int def;
 	val = 0;
 
 	// Get value
-	if((value = cf_get_key(cf, key))) {
+	if((value = CfGetKey(cf, key))) {
 
 		// Compute the value
 		while(isdigit(*value))
@@ -568,14 +568,14 @@ CF *cf; char *key; unsigned int def;
    -----------------------------
    Return a string, or the default value on failure.
 */
-cf_get_str(cf, key, def)
+CfGetStr(cf, key, def)
 CF *cf; char *key, *def;
 {
 	char *value;
 	int k;
 
 	// Get value
-	if((value = cf_get_key(cf, key))) {
+	if((value = CfGetKey(cf, key))) {
 
 		// Check for quoted strings
 		if(*value == '\"') {
@@ -616,12 +616,12 @@ CF *cf; char *key, *def;
    -----------------------------------
    Return 0 on success, or -1 on failure.
 */
-cf_set_bool(cf, key, value)
+CfSetBool(cf, key, value)
 CF *cf; char *key; int value;
 {
 	// Set the value
 	// and return the result.
-	return cf_set_key(cf, key, value ? "true" : "false");
+	return CfSetKey(cf, key, value ? "true" : "false");
 }
 
 #endif
@@ -632,7 +632,7 @@ CF *cf; char *key; int value;
    -----------------------------
    Return 0 on success, or -1 on failure.
 */
-cf_set_str(cf, key, value)
+CfSetStr(cf, key, value)
 CF *cf; char *key, *value;
 {
 	char *tmp;
@@ -649,7 +649,7 @@ CF *cf; char *key, *value;
 		tmp[size - 2] = '\"';
 
 		// Set the key
-		result = cf_set_key(cf, key, tmp);
+		result = CfSetKey(cf, key, tmp);
 
 		// Free allocated memory
 		free(tmp);
@@ -673,7 +673,7 @@ CF *cf; char *key, *value;
 /* Print keys and values
    ---------------------
 */
-cf_pr_keys(cf)
+CfPrKeys(cf)
 CF *cf;
 {
 	unsigned int *arrk, *arrv;
@@ -698,7 +698,7 @@ CF *cf;
    ---------------------------
    Return array address, or NULL on failure.
 */
-xcf_alloc(max)
+xCfAlloc(max)
 int max;
 {
 	unsigned int *arr;
@@ -722,7 +722,7 @@ int max;
 /* Free an array and its entries
    -----------------------------
 */
-xcf_free(arr, size)
+xCfFree(arr, size)
 unsigned int *arr; int size;
 {
 	int i;
@@ -741,7 +741,7 @@ unsigned int *arr; int size;
    ----------
    Return entry number, or -1 on failure.
 */
-xcf_find(arr, size, key)
+xCfFind(arr, size, key)
 unsigned int *arr; int size; char *key;
 {
 	int i;
@@ -765,7 +765,7 @@ unsigned int *arr; int size; char *key;
    -----------------------
    Return entry number, or -1 on failure.
 */
-xcf_add(arr, size, data)
+xCfAdd(arr, size, data)
 unsigned int *arr; int size; char *data;
 {
 	int i;
@@ -775,7 +775,7 @@ unsigned int *arr; int size; char *data;
 		if(!arr[i]) {
 
 			// Set the value and return success or failure
-			return xcf_set(arr, data, i) ? i : -1;
+			return xCfSet(arr, data, i) ? i : -1;
 		}
 	}
 
@@ -787,7 +787,7 @@ unsigned int *arr; int size; char *data;
    -----------------------
    Return pointer to the entry data, or NULL on failure.
 */
-xcf_set(arr, data, entry)
+xCfSet(arr, data, entry)
 unsigned int *arr; char *data; int entry;
 {
 	char *str;
@@ -812,7 +812,7 @@ unsigned int *arr; char *data; int entry;
    --------------------------
    Return NULL.
 */
-xcf_del(arr, entry)
+xCfDel(arr, entry)
 unsigned int *arr; int entry;
 {
 	// Free old data if needed
@@ -831,7 +831,7 @@ unsigned int *arr; int entry;
    -----------------------------------
    Return pointer to the first non space character.
 */
-xcf_lf_spaces(s)
+xCfLfSpaces(s)
 char *s;
 {
 	// Skip spaces
@@ -842,7 +842,7 @@ char *s;
 	return s;
 }
 
-xcf_rt_spaces(s)
+xCfRtSpaces(s)
 char *s;
 {
 	char *rtp;
