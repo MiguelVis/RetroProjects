@@ -27,6 +27,7 @@
 	              Added '.' and '-' as valid characters for key names.
 	              Added ';' as valid character for comments.
 	16 Jul 2016 : Added cf_get_all().
+	21 Oct 2016 : Solved a couple of bugs in cf_read() and xcf_add().
 
 	Supported #defines:
 
@@ -57,16 +58,17 @@
 #include <string.h>
 
 #ifdef CF_READ
-#include <fileio.h>
-#include <ctype.h>
+	#define CC_FGETS
+	#include <fileio.h>
+	#include <ctype.h>
 #endif
 
 #ifdef CF_WRITE
-#include <fileio.h>
+	#include <fileio.h>
 #endif
 
 #ifdef CF_GET_UINT
-#include <ctype.h>
+	#include <ctype.h>
 #endif
 
 /* Public defines
@@ -370,7 +372,9 @@ CF *cf; char *fname;
 
 			// Add the key / value pair to the configuration buffer
 			if(cf_set_key(cf, key, bf)) {
-				err = -1; break;
+				cf_destroy(cf);
+				err = -1;
+				break;
 			}
 		}
 
@@ -770,12 +774,8 @@ unsigned int *arr; int size; char *data;
 	for(i = 0; i < size; ++i) {
 		if(!arr[i]) {
 
-			// Set the value
-			if(xcf_set(arr, data, i)) {
-
-				// Success
-				return i;
-			}
+			// Set the value and return success or failure
+			return xcf_set(arr, data, i) ? i : -1;
 		}
 	}
 
