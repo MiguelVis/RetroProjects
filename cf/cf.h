@@ -28,6 +28,7 @@
 	              Added ';' as valid character for comments.
 	16 Jul 2016 : Added CfGetAll().
 	21 Oct 2016 : Solved a couple of bugs in CfRead() and xCfAdd(). Refactorized function names.
+	24 Oct 2016 : Modified CfRead(), CfWrite(), CfSetKey() to support reading and writing empty lines and comments.
 
 	Supported #defines:
 
@@ -222,7 +223,7 @@ CF *cf; char *key, *value;
 	int entry;
 
 	// Get entry number
-	if((entry = xCfFind(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
+	if((entry = (*key && *key != '#' && *key != ';') ? xCfFind(cf[XCF_FKEYS], cf[XCF_FMAX], key) : -1) != -1) {
 
 		// The key exists: change its value
 		if(xCfSet(cf[XCF_FVALUES], value, entry)) {
@@ -287,24 +288,22 @@ CF *cf; char *key;
    ---------------------------------------
    Return 0 on success, or -1 on failure.
 */
-CfRead(cf, fname)
-CF *cf; char *fname;
+CfRead(cf, fname, cmt)
+CF *cf; char *fname; int cmt;
 {
 	FILE *fp;
 	int err, k;
-	char *bf, *key;
+	char *bf, *key, cmt_key[2];
 
 	// Default: no errors
-	err = 0;
+	err = cmt_key[1] = 0;
 
 	// Open file
 	if((fp = fopen(fname, "r"))) {
 		while(fgets(xcf_buf, XCF_BF_SIZE, fp)) {
 
 			// Get the length of the string
-			// and skip empty lines
-			if(!(k = strlen(xcf_buf)))
-				continue;
+			k = strlen(xcf_buf);
 
 			// Remove the trailing new line if any,
 			// and check for too long lines.
@@ -318,16 +317,28 @@ CF *cf; char *fname;
 			// Remove spaces on the left
 			bf = xCfLfSpaces(xcf_buf);
 
-			// Skip comments
-			if(*bf == '#' || *bf == ';')
-				continue;
-
 			// Remove spaces on the right
 			bf = xCfRtSpaces(bf);
 
-			// Skip empty lines
-			if(!(*bf))
+			// Skip comments and empty lines
+			if(!(*bf) || *bf == '#' || *bf == ';') {
+				if(cmt)	{
+					cmt_key[0] = *bf;
+
+					if(*bf) {
+						// Remove spaces on the left
+						bf = xCfLfSpaces(bf + 1);
+					}
+
+					if(CfSetKey(cf, cmt_key, bf)) {
+						CfDestroy(cf);
+						err = -1;
+						break;
+					}
+				}
+
 				continue;
+			}
 
 			// Set the pointer to the key name
 			key = bf;
@@ -403,10 +414,7 @@ CF *cf; char *fname;
 	FILE *fp;
 	unsigned int *arrk, *arrv;
 	int max, i;
-
-#ifndef FPRINTF_H
 	char *s;
-#endif
 
 	// Open file
 	if((fp = fopen(fname, "w"))) {
@@ -419,17 +427,30 @@ CF *cf; char *fname;
 		// Write key / value pairs
 		for(i = 0; i < max; ++i) {
 			if(arrk[i]) {
+
+				s = arrk[i];
+
+				if(*s) {
 #ifndef FPRINTF_H
-				s = arrk[i]; while(*s) fputc(*s++, fp);
+					if(*s != '#' && *s != ';') {
+						while(*s) fputc(*s++, fp);
+						fputc(' ', fp); fputc('=', fp);
+					}
+					else {
+						fputc(*s, fp);
+					}
 
-				fputc(' ', fp); fputc('=', fp); fputc(' ', fp);
+					fputc(' ', fp);
+					s = arrv[i]; while(*s) fputc(*s++, fp);
 
-				s = arrv[i]; while(*s) fputc(*s++, fp);
-
-				fputc('\n', fp);
+					fputc('\n', fp);
 #else
-				fprintf(fp, "%s = %s\n", arrk[i], arrv[i]);
+					fprintf(fp, (*s != '#' && *s != ';') ? "%s = %s\n" : "%s %s\n", arrk[i], arrv[i]);
 #endif
+				}
+				else {
+					fputc('\n', fp);
+				}
 			}
 		}
 
@@ -678,13 +699,22 @@ CF *cf;
 {
 	unsigned int *arrk, *arrv;
 	int i;
+	char *s;
 
 	arrk = cf[XCF_FKEYS];
 	arrv = cf[XCF_FVALUES];
 
 	for(i = 0; i < cf[XCF_FMAX]; ++i) {
-		if(arrk[i])
-			printf("%d : %s = %s\n", i, arrk[i], arrv[i]);
+		if(arrk[i]) {
+			s = arrk[i];
+
+			if(*s) {
+				printf((*s == '#' || *s == ';') ? "%02d : %s %s\n" : "%02d : %s = %s\n", i, arrk[i], arrv[i]);
+			}
+			else {
+				printf("%02d :\n", i);
+			}
+		}
 	}
 }
 

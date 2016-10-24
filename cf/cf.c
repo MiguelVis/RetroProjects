@@ -39,6 +39,7 @@
 
 		06 Jul 2016 : Work begins.
 		21 Oct 2016 : Refactorized CF function names.
+		24 Oct 2016 : Added reading and writing of empty lines and comments.
 */
 
 /* Defines for MESCC libraries
@@ -121,14 +122,17 @@ main()
 
 	printf("Creating CF\n\n");
 
-	if(!(cf = CfCreate(6)))
+	if(!(cf = CfCreate(9)))
 		error("Can't create CF");
 
+	set_key("#", "Book data:");
 	set_key("title", "That's cool!");
 	set_key("author", "Jim Brown");
 	set_key("year", "1969");
 	set_key("pages", "150");
 	set_str("summary", "This book, blah, blah, blah...");
+	set_key("", "");
+	set_key("#", "Is it lent?");
 	set_bool("lent", 1);
 
 	// This should cause an error
@@ -155,20 +159,20 @@ main()
 
 	printf("Creating CF\n\n");
 
-	if(!(cf = CfCreate(8)))
+	if(!(cf = CfCreate(11)))
 		error("Can't create CF");
 
 	printf("Reading test.cf into CF\n\n");
 
-	if(CfRead(cf, "test.cf"))
+	if(CfRead(cf, "test.cf", 1))
 		error("Can't read test.cf");
 
 	pr_keys(cf);
 
 	printf("Reading test_2.cf into CF\n\n");
 
-	if((k = CfRead(cf, "test_2.cf"))) { printf("!!%d!!\n", k);
-		error("Can't read test_2.cf");}
+	if((k = CfRead(cf, "test_2.cf", 0)))
+		error("Can't read test_2.cf");
 
 	pr_keys(cf);
 
@@ -237,7 +241,12 @@ CF *cf;
 pr_one_key(key, value)
 char *key, *value;
 {
-	printf("%s = %s\n", key, value);
+	if(*key) {
+		printf((*key == '#' || *key == ';') ? "%s %s\n" : "%s = %s\n", key, value);
+	}
+	else {
+		printf("\n");
+	}
 
 	return 0;
 }
