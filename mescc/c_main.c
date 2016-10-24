@@ -38,6 +38,7 @@
 	29 Nov 2015 : Modified dofor() to support forever loops: for(;;){...}.
 	01 Nov 2015 : Emit function labels without ':' -- see newfunc().
 	11 Oct 2016 : Changes in doswtch() output to help the optimizer. Extract parser functions to c_parser.c. Documented. Optimized.
+	24 Oct 2016 : Option S to set default type for char to signed or unsigned.
 */
 
 // Globals
@@ -70,7 +71,8 @@ int	letlab,        // Label letter
 	argstk,        // Function arg. SP
 	argtop,        // Function arg. top SP
 	errcnt,        // Error count
-	errmax,        // Max. num. of errors
+	errmax,        // Max. num. of errors,
+	uchar,         // Default type for char is unsigned?
 	locsiz,        // Size of local variables in a function
 	stksize;       // Stack size for program
 
@@ -136,7 +138,7 @@ int argc, argv[]; // MESCC doesn't have char *argv[] yet...
 	*opfname = '\0';
 	stksize  = 512;
 	/* Already 0 *******************
-	ctext = nxtlab = 0;
+	ctext = uchar = nxtlab = 0;
 	********************************/
 
 	// Parse options from command line
@@ -249,6 +251,12 @@ int argcnt, argstr[];
 		else if(!strcmp("E-", ptr))
 			errstop = 0;
 
+		// Default type for char is unsigned?
+		else if(!strcmp("S+", ptr))
+			uchar = 0;
+		else if(!strcmp("S-", ptr))
+			uchar = 1;
+
 		// Max. number of errors to abort compilation
 		else if((!memcmp("E:", ptr, 2)) && *ptr3)
 		{
@@ -311,11 +319,12 @@ help()
 	co_line("-O:name[.typ] File name for output");
 	co_line("-Cflag        C source as comments?");
 	co_line("-Eflag        Pause on errors?");
+	co_line("-Sflag        Default type for char is signed?");
 	co_line("-E:number     Max. number of errors to abort");
 	co_line("-L:letnum     Letter and start number for labels");
 	co_line("-S:size       Mininum stack size\n");
 	co_line("Default options are: (flag is + for YES, - for NO)\n");
-	co_line("\t-PRG -C- -E+ -E:50 -L:A0 -S:512");
+	co_line("\t-PRG -C- -E+ -S+ -E:50 -L:A0 -S:512");
 	co_line("\tInput file type is .c");
 	co_line("\tOutput file name is the same as input");
 }

@@ -23,6 +23,7 @@
 	Revisions:
 
 	11 Oct 2016 : Extracted from c_main.c.
+	23 Oct 2016 : Modified declvar() in order to set char to signed or unsigned by default (-U option).
 */
 
 // Variable types
@@ -188,6 +189,8 @@ int level;
 
 	if(sign == 1)
 		type = (type == TY_CHAR) ? TY_UCHAR : TY_UINT;
+	else if(!sign && type == TY_CHAR && uchar)
+		type = TY_UCHAR;
 
 	while(1)
 	{
