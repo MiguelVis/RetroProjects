@@ -74,6 +74,12 @@ MINESCPM
 A minesweeper game clone for CP/M.
 
 
+READLINE
+--------
+
+Line editing library for MESCC.
+
+
 ROBOTS
 ------
 
