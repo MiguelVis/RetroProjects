@@ -1,4 +1,4 @@
-/*	program.c
+/*	template.c
 
 	Short description.
 
@@ -6,7 +6,7 @@
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
+	Free Software Foundation; either version 3, or (at your option) any
 	later version.
 
 	This program is distributed in the hope that it will be useful,
@@ -26,20 +26,21 @@
 
 	To compile with MESCC:
 
-		cc program
-		ccopt program
-		zsm program
-		hextocom program
+		cc template
+		ccopt template
+		zsm template
+		hextocom template
 
 	Usage:
 
-		program [-options...] [filename...]
+		template [-options...] [filename...]
 
 	Revisions:
 
 		06 Jan 2016 : Last update of template.
 		02 Jun 2016 : Added stderr support in usage(). Added error(). Added some comments.
 		20 Jul 2016 : Removed CC_FILEIO_SMALL. Added CC_FOPEN_A, CC_FREAD, CC_FWRITE, CC_FGETS.
+		11 Nov 2016 : Updated GPL license to v3.
 */
 
 /* Defines for MESCC libraries
@@ -99,15 +100,15 @@
 /* Project libraries
    -----------------
 */
-#include "program.h"
+#include "template.h"
 
 /* Project defs.
    -------------
 */
-#define APP_NAME    "program"
+#define APP_NAME    "template"
 #define APP_VERSION "v1.00 / 06 Jan 2016"
 #define APP_COPYRGT "(c) 2016 FloppySoftware"
-#define APP_USAGE   "program [-options...] [filename...]"
+#define APP_USAGE   "template [-options...] [filename...]"
 
 /* Program entry
    -------------
@@ -184,3 +185,5 @@ char *msg;
 
 	exit(-1);
 }
+
+
