@@ -98,6 +98,12 @@ SAMARUX
 A Unix-like shell for CP/M. Includes some built-in and external commands.
 
 
+SNIPPETS
+--------
+
+Some useful source code snippets.
+
+
 TE
 --
 
@@ -125,7 +131,7 @@ Graphics and keyboard library for the Amstrad PCW.
 ZSM
 ---
 
-Tools for the ZSM / Z80ASMUK assembler.
+Source code and tools for the ZSM / Z80ASMUK assembler.
 
 
 License
