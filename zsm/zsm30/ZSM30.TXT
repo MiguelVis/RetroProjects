@@ -1,0 +1,49 @@
+ZSM30.txt
+
+
+I was really excited to see that someone had done some work on ZSM
+and the new version is available on UK-Vol 65. I use this program
+quite a lot and, over the years, have built up a 'hate list' of its
+defects. These are mostly errors it tolerates, usually it does what
+it thinks you mean, rather than hurting your feelings by pointing out
+that you have made a mistake. Unfortunately it rarely gets it right,
+and just leaves you to puzzle out where you went wrong.
+
+I must say Ian Watters had done a good job with his revision, he had
+even found bugs that were not on my quite extensive list. He had
+also added several improvements and new facilities which have made
+it a much better assembler. However, it was disappointing to find
+that my worst 'hates' were still there waiting to catch the unwary.
+
+It is for this reason that I decided, if I didn't get down to it and
+put it right myself, no one else would. I have therefore spent
+several months of part time work going through my 'hate list' and
+fixing whatever I could. I won't claim I have found all the bugs,
+Ian's work shows how a fresh mind will turn up things you never
+thought of, but at least I have cleared my own list now. I offer the
+results in this volume
+
+I would be interested to hear anyone's views and further hates. However,
+I am reluctant to embark on the major revision that would be involved in
+including a 'Macro' facility. It would be better to do this with
+ZMAC. Perhaps a broad hint could be given to its author.
+
+C.G.Maxfield
+39 Parkdale,
+Bounds Green Rd,
+LONDON,
+N11 2HB.
+
+Mar '91
+
+
+Yours Sincerely.
+
+
+Chris Maxfield. GW3HAI.
+
+
+P. S.
+A machine readable ASCII copy of this letter is included on my disk.
+
+

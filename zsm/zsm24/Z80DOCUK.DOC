@@ -1,0 +1,150 @@
+		Z80ASM -
+
+		ASSEMBLY  LANGUAGE  PROCESSOR.
+
+		Z80-CPU		ZILOG/MOSTEK MNEMONICS
+
+
+
+
+		LATEST REVISION:	1-SEPTEMBER-1982
+
+
+	Z 8 0 A S M
+
+	Z80ASM is an assembler for the Z80-CPU Microprocessor, using
+the ZILOG/MOSTEK Mnemonics.  It is designed to run under the CP/M 1.4 or 2.2
+Operating systems from Digital Research.  CP/M will run on either an 8080 or
+a Z80 system.  Z80ASM will run in the minimum CP/M system (16k) but will be
+able to use more memory for symbol table storage in larger systems (up to 64k).
+
+	Z80ASM reads a source (.ZSM) file created using the CP/M 'ED' or
+similar Text Editor.  The source may be in either Upper or Lower case
+ letters.   The program produces an optional Object code (.HEX) file
+in INTEL HEX format, and a listing sent either to the Console (CON:) device
+or the (LST: device), or to a print (.PRN) file.  The 'HEX' file can be loaded
+for execution using 'DDT' or 'LOAD' utilities of CP/M or it can be punched on
+to tape or sent down a modem using 'PIP' or 'BSTAM'.
+
+	Input statements are free-format (i.e NOT column oriented). Between
+fields any number of blank or tab characters may be present, but within a field
+there may be no blank or tab characters.  However, statement labels must be
+in the first position of the line.
+  The first character of a label MUST be a letter, with following characters
+ being any alpha-numeric string.  Statement labels should be followed by a
+colon.  Comments are preceeded by a semi-colon and may appear by
+themselves or following all of the fields on a source line.
+
+
+	All the ZILOG/MOSTEK Mnemonics are supported with the following notes:
+
+	1. The syntax of ROTATE and SHIFT instructions is compatible with
+	both 8080 and Z80 patterns.  eg. 'RLCA', 'RRA', 'RR A', 'SL A' etc.
+	2. The 8-BIT IMMEDIATE arithmetic instructions are accepted in the
+	two alternative forms - ADD	<EXPRESSION>
+				ADD	A,<EXPRESSION>  etc.
+	3. Index register displacement values MUST be stated even if
+	the value is Zero.  The MOSTEK manual implies that an
+	unspecified zero displacement is illegal, so this should be
+	declared as LD A,(IX+0, though some Z80	Assemblers
+	do allow  LD A,(IX).
+
+	The list below describes the PSEUDO-OPERATORS available in Z80ASM
+and their argument formats:
+
+	<LABEL>	EQU	<EXPRESSION>	ASSIGN VALUE TO LABEL
+		ORG	<EXPRESSION>	ASSIGN VALUE TO PROGRAM COUNTER
+		DEFS	<EXPRESSION>	RESERVE STORAGE
+		DEFW	<EXPRESSION>	DEFINE WORD (2 BYTES)
+		DEFB	<EXPRESSION>	DEFINE BYTE (FORMAT 1)
+		DEFB	'-STRING-'	DEFINE BYTE (FORMAT 2)
+		EJECT			LISTING EJECT
+		END	<EXPRESSION>	DEFINE EXECUTION ADDRESS
+
+	   NOTE: for DEFW only one Operand is allowed. While for DEFB
+	   mixed <EXPRESSION> and 'STRINGS' separated by commas are permitted.
+
+	EXPRESSIONS:
+
+	Expressions may be any number of the items listed, separated by
+	+  -  * and /  for addition, subtraction, multiplication
+	and division respectively.
+
+	The Division supported is an unsigned 16-bit by 8-bit integer
+	divide with the Quotient only being returned, the
+	remainder is discarded.
+
+	Brackets within expressions are not permitted, but if used
+	will be flagged as errors.
+
+	BOOLEAN Operators are NOT permitted, though if used these
+	probably will not be flagged as an error, and the statement
+	will not be assembled correctly.
+
+	EXPRESSION ELEMENTS:
+
+		<LABEL>		1 TO 11 CHARACTER STATEMENT LABEL
+		<NUMBER>H	HEXADECIMAL NUMBER
+		<NUMBER>O	OCTAL (BASE 8) NUMBER
+		<NUMBER>Q	OCTAL (BASE 8) NUMBER
+		<NUMBER>B	BINARY (BIT) NUMBER
+		<NUMBER>	DECIMAL NUMBER
+		   $		PROGRAM COUNTER REFERENCE
+		  'X'		X = ANY PRINTABLE CHARACTER
+		  'XX'		AS ABOVE, BUT FOR 16-BIT REGISTER
+
+	EXAMPLES OF EXPRESSIONS ARE:
+
+		LABEL1+5
+		0FFH
+		42Q
+		200
+		10100001B+6
+		$-6
+		'9'+1
+		LD HL,25*10
+		LD A,44/11
+		LD HL,'AB'
+
+
+	The source file must have an extension of 'ZSM'. The object file will
+have the extension 'HEX' and the print file that of 'PRN' if they are created.
+
+Z80ASM is called using a command with the following format:
+
+	Z80ASM <FILENAME>.<ABC>
+
+	or Z80ASM n:<FILENAME>
+
+	n:		OPTIONAL DRIVE NAME, FOR DEFAULT OF ALL FILES
+	<FILENAME>	1 TO 8 CHARACTER CP/M FILE NAME (MUST BE .ZSM)
+	<ABC>		OPTION CONTROLS-
+			A=A TO D FOR DRIVE NAME OF SOURCE FILE
+			B=A TO D FOR DRIVE NAME OF HEX FILE
+			 =Z TO SKIP GENERATION OF A HEX FILE
+			C=A TO D FOR DRIVE NAME FOR PRN FILE
+			 =P FOR LISTING TO LST: DEVICE
+			 =X FOR LISTING TO CON: DEVICE
+			 =Y FOR LISTING TO CON: DEVICE (ERRORS ECHO ON LST:)
+			 =Z TO SKIP LISTING (ERRORS APPEAR ON CON: DEVICE)
+
+	IF <FILENAME> ONLY OR n:<FILENAME>  FORMAT IS USED,
+	THE A, B AND C OPTIONS DEFAULT TO THE DEFAULT DRIVE 
+	NOTE: Even if the listing device is not requested, any errors
+	that occur will be listed on the CON: device.
+
+	ERROR MESSAGES:
+
+	These are displayed in the FIRST column of the output line in which
+they occur, just before the instruction address field.
+
+	They consist of:
+
+	E = DEFB Expression badly defined
+	L = Label too long (> 11 chars)
+	M = Multi-defined label
+	O = Opcode error (usually mis-spelled), or illegal statement
+	U = Undefined label
+	V = Relative displacement out of range
+
+

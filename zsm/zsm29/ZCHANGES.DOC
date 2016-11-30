@@ -1,0 +1,66 @@
+Below is an extract from zsm.zsm giving the changes from version 2.8 + notes
+
+In short, the bits in lower case in ZSM.zsm are mine!  Let's hope I haven't
+added any new 'undocumented features'!
+
+
+;-----------------------------------------------
+;
+;	Version 2.9 by R'ian  March 1988
+;
+;	a) message 'L' is a "Label error"		-- omission?
+;	b) change modulus to '\',			-- personal taste,
+;	  allowing '%' in labels			 same as zmac.com
+;	c) give help if no command tail			-- being nice to user
+;	d) check that boot code isn't too long		-- prevention better
+;							 than crashing!
+;	e) tell user where we're at			-- nice again
+;	f) default origin 100h, not 0			-- personal taste,
+;	  & made an equate				 same as zmac again!
+;	g) add ASSERT					-- makes checks like
+;							 'd' easier
+;	h) default page length split into one		-- taste
+;	  for CON: & one for LST:/file + equated
+;	i) slight bug in drive select for .PRN		-- slight bug fix
+;	  file fixed -- now O: works -- and tidy
+;	  rest of setup code
+;	j) allow multiple list options -- like		-- bug fix
+;	  wot it said in the .DOC file
+;	k) change source input routines a bit!		-- add a few equates
+;							 mostly to prepare for
+;							 version 3.0 (macros)
+;	l) alter the list options symbol table		-- saves a few bytes
+;	  to include their execution addresses,		 and t-states, but
+;	  rather than index them up later...		 really taste again
+;	m) add SORT/NOSORT				-- saves a lot of time
+;							 for big programs & 
+;							 easier than changing
+;							 the sort algolrithm
+;	n) add time/date to titles (if Z80 only		-- gosh, I'm nice to
+;	  version running on a CP/M+ machine)		 users!
+;	o) move 'start up' data to end of symbol	-- lack of space, good
+;	  table & make more space at the start		 job I added 'd'!
+;	p) add .LESS. -- signed less than		-- rest are unsigned
+;	q) LIST ops don't do anything on pass 1.	-- cure a 'feature'
+;	  Pass 2 now starts with the defaults
+;	r) Stop too long labels overwriting such	-- bug fix
+;	  uneeded variables as PC, Val & PassNo!
+;	s) Fix -$, *$ etc bug in long DB & DWs		-- bug fix
+;       t) Don't print date if before 11th Apr 88       -- in case date not set
+;
+;===============================================
+
+Change 'm' (NOSORT) was added after seeing how long the sort was taking thanks
+to change 'e'...  
+
+Change 'o' was caused by an ASSERTion failing, which was helpful of it!
+
+Changes 'q' & 'r' were made thanks to noticing the effects of tests in ZSMTEST
+ -- I was testing the multiple list options & noticed that NONE of the .prn
+     file was 'tabbed', instead of the bits after NOTAB
+ -- + trying to generate a label error with a long label name, try it with
+     version 2.8!
+
+Change 's' was thanks to converting mvp.asm to .zsm...
+
+

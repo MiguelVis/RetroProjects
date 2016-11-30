@@ -1,0 +1,17 @@
+ZSM 3.1 by Miguel Garcia / FloppySoftware - 30 Nov 2016
+
+Changes in the source code are marked as ';%' in the comments.
+
+Changes in this version:
+   - Removed feature level for ZSM version.
+   - Removed date/time code.
+   - Enabled '_' and '$' as the first character in labels (as stated
+     in the doc. some versions ago!).
+   - Modulus can be '%' too, as in previous versions.
+   - Disabled '%' as valid character for labels.
+   - Modified usage explanation.
+
+http://www.floppysoftware.es
+floppysoftware@gmail.com
+
+
