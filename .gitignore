@@ -28,9 +28,13 @@ zmac.exe
 !/mescc/*.com
 !/mescc/*.COM
 
-# Don't ignore CP/M binaries in ZSM directory
-!/zsm/*.com
-!/zsm/*.COM
+# Don't ignore some CP/M binaries in ZSM directory
+!/zsm/hextocom.com
+!/zsm/hextocom.COM
+!/zsm/HEXTOCOM.COM
+!/zsm/prntosym.com
+!/zsm/prntosym.COM
+!/zsm/PRNTOSYM.COM
 
 # ------------------------
 # SECTION: MESCC LIBRARIES
