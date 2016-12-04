@@ -1,0 +1,402 @@
+		Z-80 Macro Library Documentation
+		--------------------------------
+
+I.
+	The purpose of this library is to enable the assembly of the Z-80
+    instruction set on a CP/M sytem using the CP/M MAC macro assembler.
+
+	This library is invoked with the pseudo-op:
+
+		"  MACLIB  Z80	"
+
+II.
+	The following symbols and notations are used in the individual macro
+    descriptions;
+
+	r - Any of the 8 bit registers: A, B, C, D, E, H, L, or M
+	rr - Any of the 16 bit register pairs: BC, DE, HL, or SP
+	nn - 8 bit immediate data (0 through 255)
+	d  - 8 bit signed displacment (-128 through +127)
+	nnnn - 16 bit address or immediate data (0 through 65535)
+	b  - bit number (0-7, 7 is most significant, 0 is least)
+	addr - 16 bit address within PC+127 through PC-128
+	m(zzz) - Memory at address "zzz"
+
+III.
+
+ MACLIB ver.		  Zilog ver		   TDL ver
+--------------		-------------		-------------
+
+LDX	r,d		LD	r,(IX+d)	MOV	r,d(IX)
+    Load register from indexed memory (with IX)
+
+LDY	r,d		LD	r,(IY+d)	MOV	r,d(IY)
+    Load register from indexed memory (with IY)
+
+STX	r,d		LD	(IX+d),r	MOV	d(IX),r
+    Store register to indexed memory (with IX)
+
+STY	r,d		LD	(IY+d),r	MOV	d(IY),r
+    Store register to indexed memory (with IY)
+
+MVIX	nn,d		LD	(IX+d),nn	MVI	d(IX)
+    Move immediate to indexed memory (with IX)
+
+MVIY	nn,d		LD	(IY+d),nn	MVI	d(IY)
+    Move immediate to indexed memory (with IY)
+
+LDAI			LD	A,I		LDAI
+    Move I to A
+
+LDAR			LD	A,R		LDAR
+    Move R to A
+
+STAI			LD	I,A		STAI
+    Move A to I
+
+STAR			LD	R,A		STAR
+    Move A to R
+
+LXIX	nnnn		LD	IX,nnnn 	LXI	IX,nnnn
+    Load IX immediate (16 bits)
+
+LXIY	nnnn		LD	IY,nnnn 	LXI	IY,nnnn
+    Load IY immediate (16 bits)
+
+LBCD	nnnn		LD	BC,(nnnn)	LBCD	nnnn
+    Load BC direct (from memory at nnnn)
+
+LDED	nnnn		LD	DE,(nnnn)	LDED	nnnn
+    Load DE direct
+
+LSPD	nnnn		LD	SP,(nnnn)	LSPD	nnnn
+    Load SP direct
+
+LIXD	nnnn		LD	IX,(nnnn)	LIXD	nnnn
+    Load IX direct
+
+LIYD	nnnn		LD	IY,(nnnn)	LIYD	nnnn
+    Load IY direct
+
+SBCD	nnnn		LD	(nnnn),BC	SBCD	nnnn
+    Store BC direct (to memory at nnnn)
+
+SDED	nnnn		LD	(nnnn),DE	SDED	nnnn
+    Store DE direct
+
+SSPD	nnnn		LD	(nnnn),SP	SSPD	nnnn
+    Store SP direct
+
+SIXD	nnnn		LD	(nnnn),IX	SIXD	nnnn
+    Store IX direct
+
+SIYD	nnnn		LD	(nnnn),IY	SIYD	nnnn
+    Store IY direct
+
+SPIX			LD	SP,IX		SPIX
+    Copy IX to the SP
+
+SPIY			LD	SP,IY		SPIY
+    Copy IY to the SP
+
+PUSHIX			PUSH	IX		PUSH	IX
+    Push IX into the stack
+
+PUSHIY			PUSH	IY		PUSH	IY
+    Push IY into the stack
+
+POPIX			POP	IX		POP	IX
+    Pop IX from the stack
+
+POPIY			POP	IY		POP	IY
+    Pop IY from the stack
+
+EXAF			EX	AF,AF'		EXAF
+    Exchange AF and the alternate, AF'
+
+EXX			EXX			EXX
+    Exchange BC DE HL with BC' DE' HL'
+
+XTIX			EX	(SP),IX 	XTIX
+    Exchange IX with the top of the stack
+
+XTIY			EX	(SP),IY 	XTIY
+    Exchange IY with the top of the stack
+
+LDI			LDI			LDI
+    Move m(HL) to m(DE), increment DE and HL, decrement BC
+
+LDIR			LDIR			LDIR
+    Repeat LDI until BC = 0
+
+LDD			LDD			LDD
+    Move m(HL) to m(DE), decrement HL, DE, and BC
+
+LDDR			LDDR			LDDR
+    Repeat LDD until BC = 0
+
+CCI			CPI			CCI
+    Compare A with m(HL), increment HL, decrement BC
+
+CCIR			CPIR			CCIR
+    Repeat CCI until BC = 0  or  A = m(HL)
+
+CCD			CPD			CCD
+    Compare A with m(HL), decrement HL and BC
+
+CCDR			CPDR			CCDR
+    Repeat CCD until BC = 0 or A = m(HL)
+
+ADDX	d		ADD	(IX+d)		ADD	d(IX)
+    Indexed add to A
+
+ADDY	d		ADD	(IY+d)		ADD	d(IY)
+    Indexed add to A
+
+ADCX	d		ADC	(IX+d)		ADC	d(IX)
+    Indexed add with carry
+
+ADCY	d		ADC	(IY+d)		ADC	d(IY)
+    Indexed add with carry
+
+SUBX	d		SUB	(IX+d)		SUB	d(IX)
+    Indexed subtract
+
+SUBY	d		SUB	(IY+d)		SUB	d(IY)
+    Indexed Subtract
+
+SBCX	d		SBC	(IX+d)		SBB	d(IX)
+    Indexed subtract with "borrow"
+
+SBCY	d		SBC	(IY+d)		SBB	d(IY)
+    Indexed subtract with borrow
+
+ANDX	d		AND	(IX+d)		ANA	d(IX)
+    Indexed logical and
+
+ANDY	d		AND	(IY+d)		ANA	d(IY)
+    Indexed logical and
+
+XORX	d		XOR	(IX+d)		XRA	d(IX)
+    Indexed logical exclusive or
+
+XORY	d		XOR	(IY+d)		XRA	d(IY)
+    Indexed logical exclusive or
+
+ORX	d		OR	(IX+d)		ORA	d(IX)
+    Indexed logical or
+
+ORY	d		OR	(IY+d)		ORA	d(IY)
+    Indexed logical exclusive or
+
+CMPX	d		CP	(IX+d)		CMP	d(IX)
+    Indexed compare
+
+CMPY	d		CP	(IY+d)		CMP	d(IY)
+    Index compare
+
+INRX	d		INC	(IX+d)		INR	d(IX)
+    Increment memory at m(IX+d)
+
+INRY	d		INC	(IY+d)		INR	d(IY)
+    Increment memory at m(IY+d)
+
+DCRX	d		INC	(IX+d)		INR	d(IX)
+    Decrement memory at m(IX+d)
+
+DCRY	d		DEC	(IY+d)		DCR	d(IY)
+    Decrement memory at m(IX+d)
+
+NEG			NEG			NEG
+    Negate A (two's complement)
+
+IM0			IM0			IM0
+    Set interrupt mode 0
+
+IM1			IM1			IM1
+    Set interrupt mode 1
+
+IM2			IM2			IM2
+    Set interrupt mode 2
+
+DADC	rr		ADC	HL,rr		DADC	rr
+    Add with carry rr to HL
+
+DSBC	rr		SBC	HL,rr		DSBC   rr
+    Subtract with "borrow" rr from HL
+
+DADX	rr		ADD	IX,rr		DADX	rr
+    Add rr to IX (rr may be BC, DE, SP, IX)
+
+DADY	rr		ADD	IY,rr		DADY   rr
+    Add rr to IY (rr may be BC, DE, SP, IY)
+
+INXIX			INC	IX		INX	IX
+    Increment IX
+
+INXIY			INC	IY		INX	IY
+    Increment IY
+
+DCXIX			DEC	IX		DCX	IX
+    Decrement IX
+
+DCXIY			DEC	IY		DCX	IY
+    Decrement IY
+
+BIT	b,r		BIT	b,r		BIT	b,r
+    Test bit b in register r
+
+SETB	b,r		SET	b,r		SET	b,r
+    Set bit b in register r
+
+RES	b,r		RES	b,r		RES	b,r
+    Reset bit b in register r
+
+BITX	b,d		BIT	b,(IX+d)	BIT	b,d(IX)
+    Test bit b in memory at m(IX+d)
+
+BITY	b,d		BIT	b,(IY+d)	BIT	b,d(IY)
+    Test bit b in memory at m(IY+d)
+
+SETX	b,d		SET	b,(IX+d)	SET	b,d(IX)
+    Set bit b in memory at m(IX+d)
+
+SETY	b,d		SET	b,(IY+d)	SET	b,d(IY)
+    Set bit b in memory at m(IY+d)
+
+RESX	b,d		RES	b,(IX+d)	RES	b,d(IX)
+    Reset bit b in memory at m(IX+d)
+
+RESY	b,d		RES	b,(IY+d)	RES	b,d(IY)
+    Reset bit b in memory at m(IY+d)
+
+JR	addr		JR	addr-$		JMPR	addr
+    Jump relative unconditional
+
+JRC	addr		JR	C,addr-$	JRC	addr
+    Jump relative if Carry indicator true
+
+JRNC	addr		JR	NC,addr-$	JRNC	addr
+    Jump relative if carry indicator false
+
+JRZ	addr		JR	Z,addr-$	JRC	addr
+    Jump relative if Zero indicator true
+
+JRNZ	addr		JR	NZ,addr-$	JRNZ	addr
+    Jump relative if Zero indicator false
+
+DJNZ	addr		DJNZ	addr-$		DJNZ	addr
+    Decrement B, jump relative if non-zero
+
+PCIX			JMP	(IX)		PCIX
+    Jump to address in IX ie, Load PC from IX
+
+PCIY			JMP	(IY)		PCIY
+    Jump to address in IY
+
+RETI			RETI			RETI
+    Return from interrupt
+
+RETN			RETN			RETN
+    Return from non-maskable interrupt
+
+INP	r		IN	r,(C)		INP	r
+    Input from port C to register r
+
+OUTP	r		OUT	(C),r		OUTP	r
+    Output from register r to port (C)
+
+INI			INI			INI
+    Input from port (C) to m(HL), increment HL, decrement b
+
+INIR			INIR			INIR
+    Input from port (C) to m(HL), increment HL, decrement B, repeat if B <> 0
+
+OUTI			OTI			OUTI
+    Output from m(HL) to port (C), increment HL, decrement B
+
+OUTIR			OTIR			OUTIR
+    Repeat OUTI until B = 0
+
+IND			IND			IND
+    Input from port (C) to m(HL), decrement HL & B
+
+INDR			INDR			INDR
+    Repeat IND until B = 0
+
+OUTD			OTD			OUTD
+    Output from m(HL) to port (C), decrement HL & B
+
+OUTDR			OTDR			OUTDR
+    Repeat OUTD until B = 0
+
+RLCR	r		RLC	r		RLCR	r
+    Rotate left circular register
+
+RLCX	d		RLC	(IX+d)		RLCR	d(IX)
+    Rotate left circular indexed memory
+
+RLCY	d		RLC	(IY+d)		RLCR	d(IY)
+    Rotate left circular indexed memory
+
+RALR	r		RL	r		RALR	r
+    Rotate left arithmetic register
+
+RALX	d		RL	(IX+d)		RALR	d(IX)
+    Rotate left arithmetic indexed memory
+
+RALY	d		RL	(IY+d)		RALR	d(IY)
+    Rotate left arithmetic indexed memory
+
+RRCR	r		RRC	r		RRCR	r
+    Rotate right circular register
+
+RRCX	d		RRC	(IX+d)		RRCR	d(IX)
+    Rotate right circular indexed
+
+RRCY   d	       RRC     (IY+d)	       RRCR    d(IY)
+    Rotate right circular indexed
+
+RARR	r		RR	r		RARR	r
+    Rotate right arithmetic register
+
+RARX	d		RR	(IX+d)		RARR	d(IX)
+    Rotate right arithmetic indexed memory
+
+RARY	d		RR	(IY+d)		RARR	d(IY)
+    Rotate right arithmetic indexed memory
+
+SLAR	r		SLA	r		SLAR	r
+    Shift left register
+
+SLAX	d		SLA	(IX+d)		SLAR	d(IX)
+    Shift left indexed memory
+
+SLAY	d		SLA	(IY+d)		SLAR	d(IY)
+    Shift left indexed memory
+
+SRAR	r		SRA	r		SRAR	r
+    Shift right arithmetic register
+
+SRAX	d		SRA	(IX+d)		SRAR	d(IX)
+    Shift right arithmetic indexed memory
+
+SRAY	d		SRA	(IY+d)		SRAR	d(IY)
+    Shift right arithmetic indexed memory
+
+SRLR	r		SRL	r		SRLR	r
+    Shift right logical register
+
+SRLX	d		SRL	(IX+d)		SRLR	d(IX)
+    Shift right logical indexed memory
+
+SRLY	d		SRL	(IY+d)		SRLR	d(IY)
+    Shift right logical indexed memory
+
+RLD			RLD			RLD
+    Rotate left digit
+
+RRD			RRD			RRD
+    Rotate right digit
+
+

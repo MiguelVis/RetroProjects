@@ -82,6 +82,9 @@ z80.h
 # Ignore ZIP files
 *.zip
 
+# Don't ignore intermediate ZSM files in ZSM sub-directories
+!/zsm/zsm*/*.ZSM
+
 # ----------------
 # SECTION: FOLDERS
 # ----------------
