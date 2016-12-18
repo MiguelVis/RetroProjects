@@ -57,6 +57,8 @@
 	29 Nov 2015 : Modified FILENAME_MAX value. Added external references to SamaruX symbols.
 	24 Jan 2016 : Updated to SamaruX v2.04.
 	03 Jun 2016 : Updated to SamaruX v2.05.
+	27 Nov 2016 : Updated to SamaruX v2.06.
+	17 Dec 2016 : Added support for rand.h library.
 */
 
 #ifndef SAMARUX_H
@@ -81,10 +83,10 @@
 
 	DEFB 'SamaruX', 0
 	
-	; Version 2.05
+	; Version 2.06
 	
 	DEFB 2
-	DEFB 05
+	DEFB 06
 
 	JP main
 #endasm
@@ -148,6 +150,12 @@
 #define FILENAME_MAX 22  /* dusrname:filename.typ + ZERO */
 
 extern FILE *stdin, *stdout, *stderr;
+
+/* RAND.H
+   ------
+*/
+
+#define RAND_MAX 32767
 
 /* STDBOOL.H
    ---------

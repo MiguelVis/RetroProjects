@@ -4,8 +4,15 @@
 #
 if banner.txt exist cat banner.txt
 #
+echo ; echo 'Enter whatever user name you want!' ; echo
+#
+# Login:
+#
+echo -n 'login: '
+read USER
+if $USER eq '' goto Login
+#
 env TERM vt52
-env USER YourName
 env PROMPT [%u@%w] %$
 #
 alias h history 0

@@ -31,7 +31,7 @@ CP/M is a registered trademark of Digital Research Inc.
 Z80 is a registered trademark of Zilog.
 Unix is a registered trademark of The Open Group.
 
-This manual covers SamaruX version 2.05 / 06 Jun 2015
+This manual covers SamaruX version 2.07 / 18 Dec 2016
 
 === oOo ===
 
@@ -69,28 +69,30 @@ CHAPTER 3 : BUILT-IN COMMANDS
             3.17 : env - Manage environment variables
             3.18 : exit - Quit the shell
             3.19 : false - Return false.
-            3.20 : goto - Jump to label in batch mode
-            3.21 : grep - Find text patterns in files
-            3.22 : head - Print first lines from files
-            3.23 : history - Manage command line history
-            3.24 : if - Test condition
-            3.25 : ls - List files
-            3.26 : man - Print manual pages
-            3.27 : mem - Print memory usage
-            3.28 : more - Print the contents of text files
-            3.29 : mv - Rename files
-            3.30 : pwd - Print the current working directory
-            3.31 : read - Read a line from standard input
-            3.32 : rm - Remove files
-            3.33 : shift - Shift positional parameters to the left
-            3.34 : sort - Sort text lines
-            3.35 : tail - Print last lines from files
-            3.36 : tee - Duplicate the standard input
-            3.37 : true - Return true.
-            3.38 : tty - Return user's terminal name.
-            3.39 : ver - Print CP/M version and facts
-            3.40 : wc - Count newlines, words and characters
-            3.41 : whoami - Print the user name
+            3.20 : fortune - Print a random fortune.
+            3.21 : goto - Jump to label in batch mode
+            3.22 : grep - Find text patterns in files
+            3.23 : head - Print first lines from files
+            3.24 : history - Manage command line history
+            3.25 : if - Test condition
+            3.26 : ls - List files
+            3.27 : man - Print manual pages
+            3.28 : mem - Print memory usage
+            3.29 : more - Print the contents of text files
+            3.30 : mv - Rename files
+            3.31 : pwd - Print the current working directory
+            3.32 : read - Read a line from standard input
+            3.33 : rm - Remove files
+            3.34 : shift - Shift positional parameters to the left
+            3.35 : sleep - Suspend execution
+            3.36 : sort - Sort text lines
+            3.37 : tail - Print last lines from files
+            3.38 : tee - Duplicate the standard input
+            3.39 : true - Return true.
+            3.40 : tty - Return user's terminal name.
+            3.41 : ver - Print CP/M version and facts
+            3.42 : wc - Count newlines, words and characters
+            3.43 : whoami - Print the user name
 
 === oOo ===
 
@@ -196,10 +198,11 @@ DESCRIPTION
 	
 	   ed < letter.txt
 	
-	You can redirect stdout (console output) with the '>'
-	character:
+	You can redirect stdout (console output) with '>' or
+	'>>':
 	
 	   ls *.c > mydir.txt
+	   echo 'Buy some butler' >> todo.txt
 	
 	You can redirect the output of a command to the input
 	of another command (piping), with the character '|':
@@ -1043,7 +1046,31 @@ EXAMPLES
 	false
 
 +--------------+
-| SECTION 3.20 |  goto
+| SECTION 3.20 |  fortune
++--------------+
+
+NAME
+	fortune - Print a random adage
+
+SYNOPSIS
+	fortune [file]
+
+DESCRIPTION
+	The command fortune prints a random epigram of
+	one line of text.
+	
+	If no file is specified in the command line, the
+	source for epigrams will be the file 'fortunes.txt'.
+
+OPTIONS
+	None.
+
+EXAMPLES
+	fortune
+	fortune jokes.txt
+
++--------------+
+| SECTION 3.21 |  goto
 +--------------+
 
 NAME
@@ -1070,7 +1097,7 @@ EXAMPLES
 	6: # Cont:
 
 +--------------+
-| SECTION 3.21 |  grep
+| SECTION 3.22 |  grep
 +--------------+
 
 NAME
@@ -1097,7 +1124,7 @@ EXAMPLES
 	grep -i Elvis bio.txt story.txt article.doc
 
 +--------------+
-| SECTION 3.22 |  head
+| SECTION 3.23 |  head
 +--------------+
 
 NAME
@@ -1123,7 +1150,7 @@ EXAMPLES
 	head myapp.c
 
 +--------------+
-| SECTION 3.23 |  history
+| SECTION 3.24 |  history
 +--------------+
 
 NAME
@@ -1152,7 +1179,7 @@ EXAMPLES
 	history     = Prints all the history entries
 
 +--------------+
-| SECTION 3.24 |  if
+| SECTION 3.25 |  if
 +--------------+
 
 NAME
@@ -1185,7 +1212,7 @@ NOTES
 	The command if it's very useful in batch mode.
 
 +--------------+
-| SECTION 3.25 |  ls
+| SECTION 3.26 |  ls
 +--------------+
 
 NAME
@@ -1216,7 +1243,7 @@ EXAMPLES
 	ls -sv myfile.c m00:myfile.h myfile.zsm
 
 +--------------+
-| SECTION 3.26 |  man
+| SECTION 3.27 |  man
 +--------------+
 
 NAME
@@ -1263,7 +1290,7 @@ EXAMPLES
 	man wp fi     -- Print fi topic help in wp.man
 
 +--------------+
-| SECTION 3.27 |  mem
+| SECTION 3.28 |  mem
 +--------------+
 
 NAME
@@ -1280,7 +1307,7 @@ OPTIONS
 	None.
 
 +--------------+
-| SECTION 3.28 |  more
+| SECTION 3.29 |  more
 +--------------+
 
 NAME
@@ -1310,7 +1337,7 @@ EXAMPLES
 	more -24 file.txt letter.doc
 
 +--------------+
-| SECTION 3.29 |  mv
+| SECTION 3.30 |  mv
 +--------------+
 
 NAME
@@ -1333,7 +1360,7 @@ NOTES
 	or rename directories.
 
 +--------------+
-| SECTION 3.30 |  pwd
+| SECTION 3.31 |  pwd
 +--------------+
 
 NAME
@@ -1353,7 +1380,7 @@ EXAMPLES
 	pwd
 
 +--------------+
-| SECTION 3.31 |  read
+| SECTION 3.32 |  read
 +--------------+
 
 NAME
@@ -1375,7 +1402,7 @@ EXAMPLES
 	echo Hello $USER !!!
 
 +--------------+
-| SECTION 3.32 |  rm
+| SECTION 3.33 |  rm
 +--------------+
 
 NAME
@@ -1408,7 +1435,7 @@ EXAMPLES
 	rm -fi A02:*.bak
 
 +--------------+
-| SECTION 3.33 |  shift
+| SECTION 3.34 |  shift
 +--------------+
 
 NAME
@@ -1436,7 +1463,30 @@ EXAMPLES
 	  $# = 2, $1 = two, $2 = three
 
 +--------------+
-| SECTION 3.34 |  sort
+| SECTION 3.35 |  sleep
++--------------+
+
+NAME
+	sleep - Suspend execution for a specified time
+
+SYNOPSIS
+	sleep seconds
+
+DESCRIPTION
+	The sleep command suspends the execution for the
+	specified amount of seconds.
+
+OPTIONS
+	None.
+
+EXAMPLES
+	sleep 60
+
+NOTES
+	Needs CP/M version 3.
+
++--------------+
+| SECTION 3.36 |  sort
 +--------------+
 
 NAME
@@ -1463,7 +1513,7 @@ EXAMPLES
 	sort -n myprog.bas
 
 +--------------+
-| SECTION 3.35 |  tail
+| SECTION 3.37 |  tail
 +--------------+
 
 NAME
@@ -1489,7 +1539,7 @@ EXAMPLES
 	tail myapp.c
 
 +--------------+
-| SECTION 3.36 |  tee
+| SECTION 3.38 |  tee
 +--------------+
 
 NAME
@@ -1510,7 +1560,7 @@ EXAMPLES
 	cat profile.sx | tee profile.bak
 
 +--------------+
-| SECTION 3.37 |  true
+| SECTION 3.39 |  true
 +--------------+
 
 NAME
@@ -1529,7 +1579,7 @@ EXAMPLES
 	true
 
 +--------------+
-| SECTION 3.38 |  tty
+| SECTION 3.40 |  tty
 +--------------+
 
 NAME
@@ -1555,7 +1605,7 @@ EXAMPLES
 	tty
 
 +--------------+
-| SECTION 3.39 |  ver
+| SECTION 3.41 |  ver
 +--------------+
 
 NAME
@@ -1575,7 +1625,7 @@ EXAMPLES
 	ver
 
 +--------------+
-| SECTION 3.40 |  wc
+| SECTION 3.42 |  wc
 +--------------+
 
 NAME
@@ -1607,22 +1657,35 @@ NOTES
 	The CR ('\r') characters will not be counted.
 
 +--------------+
-| SECTION 3.41 |  whoami
+| SECTION 3.42 |  wc
 +--------------+
 
 NAME
-	whoami - Print the user name
+	wc - Count newlines, words and characters
 
 SYNOPSIS
-	whoami
+	wc [file ...]
 
 DESCRIPTION
-	The command whoami prints the user name.
+	The command wc counts the number of newlines, words
+	and characters in files.
+	
+	It prints also a line with totals if more than one
+	file is specified.
+	
+	If no file names are entered, wc reads from the
+	standard input.
+	
+	The - file means the standard input.
 
 OPTIONS
 	None.
 
 EXAMPLES
-	whoami
+	wc mytasks.txt
+	grep 2015 diary.doc | wc
 
-
+NOTES
+	The CR ('\r') characters will not be counted.
+
+

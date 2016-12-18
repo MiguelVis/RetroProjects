@@ -150,6 +150,14 @@
 	14 Jun 2016 : Added tty command.
 	19 Jun 2016 : Added shift command.
 
+	v2.06
+
+	27 Nov 2016 : Added '>>' in output redirection. Optimized NULL comparisons.
+	28 Nov 2016 : Added SX_CMDCPM def. to support cpm command.
+	16 Dec 2016 : Added sleep command.
+	17 Dec 2016 : Included rand.h library. Added fortune command.
+	18 Dec 2016 : Solved bug in Execute().
+
 	NOTES:
 	
 	- Don't forget to modify samarux.h when you compile this file.
@@ -171,10 +179,14 @@
    --------------
 */
 
-#define CC_NO_ARGS /* No command line arguments */
-#define CC_FCX     /* Enable FCX support (user numbers in file names) */
-#define CC_FCX_DIR /* Enable named directories -- see DirToDrvUsr() below */
-#define CC_STDIO   /* Enable stdin, stdout and stderr */
+#define CC_NO_ARGS    /* No command line arguments */
+#define CC_FCX        /* Enable FCX support (user numbers in file names) */
+#define CC_FCX_DIR    /* Enable named directories -- see DirToDrvUsr() below */
+#define CC_STDIO      /* Enable stdin, stdout and stderr */
+#define CC_FOPEN_A    /* To include "a" and "ab" modes for fopen() */
+#define CC_FREAD      /* To include fread() */
+#define CC_FGETS      /* To include fgets() */
+#define CC_CONIO_BIOS /* Direct console I/O */
 
 /* DEFs FOR SamaruX
    ----------------
@@ -184,6 +196,7 @@
 #define SX_EXTCMDS    /* External commands support */
 #define SX_HKEXIT     /* Hook for exit() */
 #define SX_MINIMAL    /* Minimal # of built-in commands */
+#define SX_CMDCPM     /* Support for cpm command */
 
 /* MESCC LIBRARIES
    ---------------
@@ -202,6 +215,8 @@
 #include <fprintf.h>
 #include <sprintf.h>
 #include <clock.h>
+#include <stdbool.h>
+#include <rand.h>
 
 #ifdef SX_HKEXIT
 
@@ -311,7 +326,9 @@ int sx_exit_code;     /* exit code */
 
 #ifndef SX_MINIMAL
 #include <sx_cp.c>
+#ifdef SX_CMDCPM
 #include <sx_cpm.c>
+#endif
 #include <sx_date.c>
 #include <sx_df.c>
 #include <sx_diral.c>
@@ -327,6 +344,11 @@ int sx_exit_code;     /* exit code */
 #include <sx_env.c>
 #include <sx_exit.c>
 #include <sx_false.c>
+
+#ifndef SX_MINIMAL
+#include <sx_fortu.c>
+#endif
+
 #include <sx_goto.c>
 
 #ifndef SX_MINIMAL
@@ -359,6 +381,7 @@ int sx_exit_code;     /* exit code */
 #include <sx_shift.c>
 
 #ifndef SX_MINIMAL
+#include <sx_sleep.c>
 #include <sx_sort.c>
 #include <sx_tail.c>
 #include <sx_tee.c>
@@ -452,6 +475,9 @@ main()
 #ifdef SX_FALSE
 	sv_cmd_name[sv_cmd_max]="false";    sv_cmd_fun[sv_cmd_max++]=FalseMain;
 #endif
+#ifdef SX_FORTUNE
+	sv_cmd_name[sv_cmd_max]="fortune";  sv_cmd_fun[sv_cmd_max++]=FortuneMain;
+#endif
 #ifdef SX_GOTO
 	sv_cmd_name[sv_cmd_max]="goto";     sv_cmd_fun[sv_cmd_max++]=GotoMain;
 #endif
@@ -494,6 +520,9 @@ main()
 #ifdef SX_SHIFT
 	sv_cmd_name[sv_cmd_max]="shift";    sv_cmd_fun[sv_cmd_max++]=ShiftMain;
 #endif
+#ifdef SX_SLEEP
+	sv_cmd_name[sv_cmd_max]="sleep";    sv_cmd_fun[sv_cmd_max++]=SleepMain;
+#endif
 #ifdef SX_SORT
 	sv_cmd_name[sv_cmd_max]="sort";     sv_cmd_fun[sv_cmd_max++]=SortMain;
 #endif
@@ -522,35 +551,35 @@ main()
 	/* Create some buffers and tables */
 
 	/* FCXs */
-	if((sv_fcxbuf = malloc(SX_MAX_FCX * 13)) == NULL)
+	if(!(sv_fcxbuf = malloc(SX_MAX_FCX * 13)))
 		return ErrorMem();
 
 	/* Environment names */
-	if((sv_env_name = KeyAlloc(SX_MAX_ENV)) == NULL)
+	if(!(sv_env_name = KeyAlloc(SX_MAX_ENV)))
 		return ErrorMem();
 
 	/* Environment values */
-	if((sv_env_value = KeyAlloc(SX_MAX_ENV)) == NULL)
+	if(!(sv_env_value = KeyAlloc(SX_MAX_ENV)))
 		return ErrorMem();
 
 	/* Alias names */
-	if((sv_alias_name = KeyAlloc(SX_MAX_ALIAS)) == NULL)
+	if(!(sv_alias_name = KeyAlloc(SX_MAX_ALIAS)))
 		return ErrorMem();
 
 	/* Alias values */
-	if((sv_alias_value = KeyAlloc(SX_MAX_ALIAS)) == NULL)
+	if(!(sv_alias_value = KeyAlloc(SX_MAX_ALIAS)))
 		return ErrorMem();
 
 	/* Directory names */
-	if((sv_dir_path = KeyAlloc(SX_MAX_DIR)) == NULL)
+	if(!(sv_dir_path = KeyAlloc(SX_MAX_DIR)))
 		return ErrorMem();
 
 	/* Directory values */
-	if((sv_dir_alias = KeyAlloc(SX_MAX_DIR)) == NULL)
+	if(!(sv_dir_alias = KeyAlloc(SX_MAX_DIR)))
 		return ErrorMem();
 
 	/* History */
-	if((sv_hist = KeyAlloc(SX_MAX_HIST)) == NULL)
+	if(!(sv_hist = KeyAlloc(SX_MAX_HIST)))
 		return ErrorMem();
 
 	/* Set-up CP/M */
@@ -566,6 +595,7 @@ main()
 	/* Check if there is a CP/M command line */
 	if(*(ptr = 0x0080))
 	{
+#ifdef SX_CMDCPM
 		/* Check mode */
 
 		if(*ptr > 4 && ptr[1] == ' ' && ptr[2] == '-' && ptr[3] == 'R' && ptr[4] == ' ')
@@ -582,6 +612,7 @@ main()
 		}
 		else
 		{
+#endif
 			/* CP/M mode: execute command and return to CP/M */
 
 			++sv_flg_cpm;
@@ -600,7 +631,9 @@ main()
 
 			/* Return to CP/M */
 			return 0;
+#ifdef SX_CMDCPM
 		}
+#endif
 	}
 	else
 	{
@@ -734,7 +767,7 @@ int argc, argv[]; /* char *argv[] */
 
 				/* Pseudo-environment variables: $?, $#, $0, $1, etc. */
 
-				if(val == NULL && !p[2])
+				if(!val && !p[2])
 				{
 					if(p[1] == '?')
 						val = (sv_cmd_exit ? "1" : "0");
@@ -748,7 +781,7 @@ int argc, argv[]; /* char *argv[] */
 				}
 			}
 
-			if(val != NULL)
+			if(val)
 				argv[i] = val;
 			else
 				return ErrorFindVar();
@@ -768,6 +801,7 @@ int argc, argv[], pipe_in, pipe_out; /* char *argv[] */
 {
 	int i, k;
 	char *p, *fnin, *fnout;
+	bool fnout_append;
 	FILE *fp;
 
 #ifdef SX_DEBUG
@@ -782,7 +816,7 @@ int argc, argv[], pipe_in, pipe_out; /* char *argv[] */
 
 		if(*p == '<' && !p[1])
 		{
-			if(i > 0 && i < argc - 1 && fnin == NULL && !pipe_in)
+			if(i > 0 && i < argc - 1 && !fnin && !pipe_in)
 				fnin = argv[i + 1];
 			else
 			{
@@ -792,10 +826,12 @@ int argc, argv[], pipe_in, pipe_out; /* char *argv[] */
 				return ErrorRedir();
 			}
 		}
-		else if(*p == '>' && !p[1])
+		else if(*p == '>' && (!p[1] || (p[1] == '>' && !p[2])))
 		{
-			if(i > 0 && i < argc - 1 && fnout == NULL && !pipe_out)
-				fnout = argv[i + 1];
+			if(i > 0 && i < argc - 1 && !fnout && !pipe_out)
+			{
+				fnout = argv[i + 1]; fnout_append = p[1];
+			}
 			else
 			{
 #ifdef SX_DEBUG
@@ -819,9 +855,9 @@ int argc, argv[], pipe_in, pipe_out; /* char *argv[] */
 	if(pipe_out)
 		fnout = sv_pipe_out;
 
-	if(fnin != NULL)
+	if(fnin)
 	{
-		if((fp = fopen(fnin, "r")) != NULL)
+		if((fp = fopen(fnin, "r")))
 			stdin = fp;
 		else
 		{
@@ -832,9 +868,9 @@ int argc, argv[], pipe_in, pipe_out; /* char *argv[] */
 		}
 	}
 
-	if(fnout != NULL)
+	if(fnout)
 	{
-		if((fp = fopen(fnout, "w")) != NULL)
+		if((fp = fopen(fnout, (fnout_append ? "a" : "w"))))
 			stdout = fp;
 		else
 		{
@@ -864,7 +900,7 @@ int pipe_in, pipe_out;
 	fprintf(stderr, "[ExeRedirStop START]");
 #endif
 
-	if(stdin != NULL)
+	if(stdin)
 	{
 		fclose(stdin);
 
@@ -872,7 +908,7 @@ int pipe_in, pipe_out;
 			remove(sv_pipe_in);
 	}
 
-	if(stdout != NULL)
+	if(stdout)
 	{
 		fclose(stdout);
 
@@ -940,13 +976,13 @@ int argc, argv[], pipe_in, pipe_out; /* char *argv[] */
 	if(i == sv_cmd_max)
 	{
 		/* Try to load */
-		if((mem = /*cmd =*/ LoadPrl(BinFile(argv[0]))) != NULL)
+		if((mem = /*cmd =*/ LoadPrl(BinFile(argv[0]))))
 			cmd = 13 + ((mem & 0x00FF) ? (mem & 0xFF00) + 0x100 : mem);
 	}
 #endif
 
 	/* Execute command if found */
-	if(cmd != NULL)
+	if(cmd)
 	{
 		/* Change environment variables in command line */
 		if(!ExeVars(argc, argv))
@@ -1022,7 +1058,7 @@ int argc, argv[], pipe_in, pipe_out; /* char *argv[] */
 Execute(cmdline)
 char *cmdline;
 {
-	int i, argc, *argv, pipe_in, pipe_out, cmd_nxt, cmd_nxt_pars, code, skip;
+	int i, argc, *argv, *pargv, pipe_in, pipe_out, cmd_nxt, cmd_nxt_pars, code, skip;
 	char *p, *buf, *alias, *unparsed;
 
 	/* Skip comments */
@@ -1034,13 +1070,13 @@ char *cmdline;
 #endif
 
 	/* Alloc memory for command line */
-	if((buf = malloc(strlen(cmdline) + 1)) == NULL)
+	if(!(buf = malloc(strlen(cmdline) + 1)))
 		return (sv_cmd_exit = ErrorMem());
 
 	strcpy(buf, cmdline);
 
 	/* Alloc memory for arguments */
-	if((argv = KeyAlloc(SX_MAX_ARGS)) == NULL)
+	if(!(argv = pargv = KeyAlloc(SX_MAX_ARGS)))
 	{
 		free(buf);
 
@@ -1087,9 +1123,9 @@ char *cmdline;
 			break;
 
 		/* Alias */
-		if((alias = AliasGet(argv[0])) != NULL)
+		if((alias = AliasGet(argv[0])))
 		{
-			if(strchr(alias, ' ') != NULL) /* FIXME : Tab? */
+			if(strchr(alias, ' ')) /* FIXME : Tab? */
 			{
 				if(argc == 1)
 					Execute(alias);
@@ -1097,9 +1133,9 @@ char *cmdline;
 				{
 					/* Both alias and command line have arguments */
 
-					if((unparsed = UnParse(argc - 1, argv + 1)) != NULL)
+					if((unparsed = UnParse(argc - 1, argv + 1)))
 					{
-						if((p = malloc(strlen(alias) + strlen(unparsed) + 2)) != NULL)
+						if((p = malloc(strlen(alias) + strlen(unparsed) + 2)))
 						{
 							strcpy(p, alias); strcat(p, " "); strcat(p, unparsed);
 
@@ -1155,7 +1191,7 @@ char *cmdline;
 	}
 
 	/* Free buffers */
-	free(buf); free(argv);
+	free(buf); free(pargv);
 
 #ifdef SX_DEBUG
 	fprintf(stderr, "[Execute END]\n");
@@ -1179,13 +1215,13 @@ UpdateHist()
 		sv_flg_hist = 0;
 	else
 	{
-		if(sv_hist[SX_MAX_HIST - 1] != NULL)
+		if(sv_hist[SX_MAX_HIST - 1])
 			free(sv_hist[SX_MAX_HIST - 1]);
 
 		for(i = SX_MAX_HIST - 1; i; --i)
 			sv_hist[i] = sv_hist[i - 1];
 
-		if((sv_hist[0] = malloc(strlen(sv_ed_buf) + 1)) == NULL)
+		if(!(sv_hist[0] = malloc(strlen(sv_ed_buf) + 1)))
 			return ErrorMem();
 
 		strcpy(sv_hist[0], sv_ed_buf);
@@ -1202,7 +1238,7 @@ Prompt()
 {
 	char *p, *px; int ch;
 
-	if((p = EnvGet("PROMPT")) == NULL)
+	if(!(p = EnvGet("PROMPT")))
 		p = "%$";
 
 	while((ch = *p++))
@@ -1215,7 +1251,7 @@ Prompt()
 					putchar('$');
 					break;
 				case 'u' : /* Username */
-					putstr((px = EnvGet("USER")) != NULL ? px : "UnkUsr");
+					putstr((px = EnvGet("USER")) ? px : "UnkUsr");
 					break;
 				case 'w' : /* Working directory */
 					PrintCWD();
@@ -1264,7 +1300,7 @@ char *fn;
 	fprintf(stderr, "[ Profile start ]\n");
 #endif
 
-	if((fp = fopen(fn, "r")) != NULL)
+	if((fp = fopen(fn, "r")))
 	{
 		fclose(fp);
 
@@ -1548,7 +1584,7 @@ int maxarg;
 			}
 		}
 
-		/* ZERO at the end of the string argument */
+		/* ZERO at the end of the argument */
 		if(*buf)
 			*buf++=0;
 	}
@@ -1578,7 +1614,7 @@ int items;
 	int *array; /* char *array[] */
 	int i;
 
-	if((array = malloc(items * SIZEOF_PTR)) != NULL)
+	if((array = malloc(items * SIZEOF_PTR)))
 	{
 		for(i = 0; i < items; ++i)
 			array[i] = NULL;
@@ -1598,7 +1634,7 @@ int *table, max;
 
 	for(i = 0; i < max; ++i)
 	{
-		if(table[i] != NULL)
+		if(table[i])
 			free(table[i]);
 	}
 
@@ -1616,7 +1652,7 @@ int *names, *values, max;
 
 	for(i = 0; i < max; ++i)
 	{
-		if(names[i] != NULL)
+		if(names[i])
 			printf("%s = %s\n", names[i], values[i]);
 	}
 }
@@ -1633,7 +1669,7 @@ int *names, max; char *name;
 
 	for(i = 0; i < max; ++i)
 	{
-		if(names[i] != NULL)
+		if(names[i])
 		{
 			if(!strcmp(name, names[i]))
 				return i;
@@ -1670,7 +1706,7 @@ int *table, max;
 
 	for(i = k = 0; i < max; ++i)
 	{
-		if(table[i] != NULL)
+		if(table[i])
 			++k;
 	}
 
@@ -1689,7 +1725,7 @@ int *table, max;
 
 	for(i = 0; i < max; ++i)
 	{
-		if(table[i] == NULL)
+		if(!table[i])
 			break;
 	}
 
@@ -1711,11 +1747,11 @@ int *names, *values, max; char *name, *value;
 
 	for(i = 0; i < max; ++i)
 	{
-		if(names[i] == NULL)
+		if(!names[i])
 		{
-			if((names[i] = malloc(n)) != NULL)
+			if((names[i] = malloc(n)))
 			{
-				if((values[i] = malloc(v)) != NULL)
+				if((values[i] = malloc(v)))
 				{
 					strcpy(names[i], name);
 					strcpy(values[i], value);
@@ -1767,18 +1803,18 @@ char *fn; int max_lines, max_len;
 	err = 0;
 
 	/* Create array */
-	if((arr_lines = KeyAlloc(max_lines)) != NULL)
+	if((arr_lines = KeyAlloc(max_lines)))
 	{
 		/* Create line buffer */
 
-		if((pbuf = malloc(max_len + 1)) != NULL)
+		if((pbuf = malloc(max_len + 1)))
 		{
 			/* Open file */
-			if((fp = fopen(fn, "r")) != NULL)
+			if((fp = fopen(fn, "r")))
 			{
 				for(i = 0; i < 32000; ++i)
 				{
-					if(fgets(pbuf, max_len + 1, fp) == NULL)
+					if(!fgets(pbuf, max_len + 1, fp))
 						break;
 
 					if(i == max_lines)
@@ -1821,7 +1857,7 @@ char *fn; int max_lines, max_len;
 					if(err)
 						break;
 
-					if((arr_lines[i] = malloc(k + 1)) == NULL)
+					if(!(arr_lines[i] = malloc(k + 1)))
 					{
 						err = ErrorMem(); break;
 					}
@@ -1840,10 +1876,10 @@ char *fn; int max_lines, max_len;
 	else
 		err = ErrorMem();
 
-	if(pbuf != NULL)
+	if(pbuf)
 		free(pbuf);
 
-	if(err && arr_lines != NULL)
+	if(err && arr_lines)
 		KeyFree(arr_lines, max_lines);
 
 	return err ? NULL : arr_lines;
@@ -1876,7 +1912,7 @@ int argc, argv[], flag; /* char *argv[] */
 	for(i = k = 0; i < argc; ++i)
 		k += strlen(argv[i]) + 1;
 
-	if((p = q = malloc(k)) != NULL)
+	if((p = q = malloc(k)))
 	{
 		for(i = 0; i < argc; ++i)
 		{
@@ -1905,10 +1941,12 @@ int argc, argv[], flag; /* char *argv[] */
 SetUpCPM()
 {
 	sv_cpmver = bdos_a(BF_OSVER, 0xCACA);
-	sv_dma = 0x0080;
-	sv_drive = bdos_a(BF_GETDRV, 0xCACA);
-	sv_user = bdos_a(BF_USER, 0xFFFF);
+	sv_dma    = 0x0080;
+	sv_drive  = bdos_a(BF_GETDRV, 0xCACA);
+	sv_user   = bdos_a(BF_USER, 0xFFFF);
 }
+
+#ifdef SX_CMDCPM
 
 /* LOAD SAMARUX STATUS
    -------------------
@@ -1930,17 +1968,17 @@ char *fn;
 	FILE *fp;
 	int i;
 
-	if((fp = fopen(fn, "w")) != NULL)
+	if((fp = fopen(fn, "w")))
 	{
 		for(i = 0; i < SX_MAX_ENV; ++i)
 		{
-			if(sv_env_name[i] != NULL)
+			if(sv_env_name[i])
 				fprintf(fp, "env %s '%s'\n", sv_env_name[i], sv_env_value[i]);
 		}
 
 		for(i = 0; i < SX_MAX_ALIAS; ++i)
 		{
-			if(sv_alias_name[i] != NULL)
+			if(sv_alias_name[i])
 				fprintf(fp, "alias %s '%s'\n", sv_alias_name[i], sv_alias_value[i]);
 		}
 
@@ -1951,6 +1989,8 @@ char *fn;
 
 	return 1;
 }
+
+#endif
 
 /* GET TERMINAL ROWS
    -----------------
@@ -1992,7 +2032,7 @@ char *s; int scbf;
 	char *v, b[2];
 	int i;
 
-	if((v = EnvGet(s)) != NULL)
+	if((v = EnvGet(s)))
 	{
 		i = atoi(v);
 
@@ -2020,7 +2060,7 @@ char *s; int scbf;
 AddTypeToFn(type, fn)
 char *type, *fn;
 {
-	if(strchr(fn, '.') == NULL)
+	if(!strchr(fn, '.'))
 	{
 		if(strlen(fn) + strlen(type) < FILENAME_MAX)
 		{
@@ -2057,7 +2097,7 @@ char *path, *fn;
 	{
 		strcpy(fn, fn + 1);
 	}
-	else if(path != NULL && strchr(fn, ':') == NULL)
+	else if(path && !strchr(fn, ':'))
 	{
 		k = strlen(path);
 
@@ -2083,7 +2123,7 @@ char *fn;
 {
 	char *t;
 
-	if((t = AddPathToFn(EnvGet("TMPDIR"), fn)) != NULL)
+	if((t = AddPathToFn(EnvGet("TMPDIR"), fn)))
 		return t;
 
 	return fn;
@@ -2099,10 +2139,10 @@ char *fn;
 {
 	char *t;
 
-	if((t = AddPathToFn(EnvGet("BINDIR"), fn)) != NULL)
+	if((t = AddPathToFn(EnvGet("BINDIR"), fn)))
 		fn = t;
 
-	if((t = AddTypeToFn(".x", fn)) != NULL)
+	if((t = AddTypeToFn(".x", fn)))
 		fn = t;
 
 	return fn;
@@ -2291,7 +2331,7 @@ char *fn;
 
 	/* Open file */
 
-	if((fp = fopen(fn, "rb")) != NULL)
+	if((fp = fopen(fn, "rb")))
 	{
 		/* Discard 1 byte in PRL header */
 
@@ -2305,7 +2345,7 @@ char *fn;
 		/* Get enough memory: PRL code size + a page of 256 - 1 bytes, because
 		   a PRL must start in an address like: 0x??00 */
 
-		if((adr = malloc(size + 255)) != NULL)
+		if((adr = malloc(size + 255)))
 		{
 #ifdef SX_DEBUG
 	fprintf(stderr, "[LoadPrl ADR = %04x SIZE = %u]\n", adr, size + 255);

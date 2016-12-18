@@ -29,6 +29,7 @@
 	Revisions:
 
 	05 Jun 2016 : Extracted from sx.c.
+	27 Nov 2016 : v2.06.
 */
 
 /* SAMARUX DEFINES
@@ -36,16 +37,16 @@
 */
 
 #define SX_VERSION 2
-#define SX_RELEASE 05
-#define SX_APPDATE "06 Jun 2016"
+#define SX_RELEASE 06
+#define SX_APPDATE "18 Dec 2016"
 
 #define SX_COPYRGT "(c) 2015-2016 Miguel Garcia / FloppySoftware"
 
 #define SX_PROFILE "profile.sx"  /* Profile for interactive mode */
 #define SX_PROFCPM "profcpm.sx"  /* Profile for CP/M mode */
 
-#define SX_PIPEIN  "pipein.sx"   /* Pipe input  file name */
-#define SX_PIPEOUT "pipeout.sx"  /* Pipe output file name */
+#define SX_PIPEIN  "pipein.sxp"  /* Pipe input  file name */
+#define SX_PIPEOUT "pipeout.sxp" /* Pipe output file name */
 
 #define SX_TTY_ROWS 25  /* Default console rows    */
 #define SX_TTY_COLS 80  /* Default console columns */
@@ -62,7 +63,7 @@
 
 #define SX_MAX_ARGS 24  /* Max. # of arguments in the command line */
 
-#define SX_MAX_CMD 41   /* Max. # of built-in commands */
+#define SX_MAX_CMD 43   /* Max. # of built-in commands */
 
 #define SX_MAX_BATCH 10 /* Max. # of batch variables: $0 .. $9 */
 

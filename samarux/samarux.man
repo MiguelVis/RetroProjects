@@ -3,7 +3,7 @@
 # (c) 2015 Miguel I. Garcia Lopez, FloppySoftware, Spain
 #
 # Created:     08 Dec 2014
-# Last edited: 19 Jun 2016
+# Last edited: 18 Dec 2016
 #
 # $NM is NAME
 # $SY is SYNOPSIS
@@ -217,10 +217,11 @@ character:
 
    ed < letter.txt
 
-You can redirect stdout (console output) with the '>'
-character:
+You can redirect stdout (console output) with '>' or
+'>>':
 
    ls *.c > mydir.txt
+   echo 'Buy some butler' >> todo.txt
 
 You can redirect the output of a command to the input
 of another command (piping), with the character '|':
@@ -579,6 +580,24 @@ $OP
 None.
 $EX
 false
+# ========
+@fortune
+#
+$NM
+fortune - Print a random adage
+$SY
+fortune [file]
+$DE
+The command fortune prints a random epigram of
+one line of text.
+
+If no file is specified in the command line, the
+source for epigrams will be the file 'fortunes.txt'.
+$OP
+None.
+$EX
+fortune
+fortune jokes.txt
 # ========
 @files
 #
@@ -1007,6 +1026,22 @@ batch myscript one two three
   shift
   
   $# = 2, $1 = two, $2 = three
+# ========
+@sleep
+#
+$NM
+sleep - Suspend execution for a specified time
+$SY
+sleep seconds
+$DE
+The sleep command suspends the execution for the
+specified amount of seconds.
+$OP
+None.
+$EX
+sleep 60
+$NT
+Needs CP/M version 3.
 # ========
 @sort
 #

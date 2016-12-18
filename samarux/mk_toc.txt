@@ -32,26 +32,28 @@ CHAPTER 3 : BUILT-IN COMMANDS
             3.17 : env - Manage environment variables
             3.18 : exit - Quit the shell
             3.19 : false - Return false.
-            3.20 : goto - Jump to label in batch mode
-            3.21 : grep - Find text patterns in files
-            3.22 : head - Print first lines from files
-            3.23 : history - Manage command line history
-            3.24 : if - Test condition
-            3.25 : ls - List files
-            3.26 : man - Print manual pages
-            3.27 : mem - Print memory usage
-            3.28 : more - Print the contents of text files
-            3.29 : mv - Rename files
-            3.30 : pwd - Print the current working directory
-            3.31 : read - Read a line from standard input
-            3.32 : rm - Remove files
-            3.33 : shift - Shift positional parameters to the left
-            3.34 : sort - Sort text lines
-            3.35 : tail - Print last lines from files
-            3.36 : tee - Duplicate the standard input
-            3.37 : true - Return true.
-            3.38 : tty - Return user's terminal name.
-            3.39 : ver - Print CP/M version and facts
-            3.40 : wc - Count newlines, words and characters
-            3.41 : whoami - Print the user name
+            3.20 : fortune - Print a random fortune.
+            3.21 : goto - Jump to label in batch mode
+            3.22 : grep - Find text patterns in files
+            3.23 : head - Print first lines from files
+            3.24 : history - Manage command line history
+            3.25 : if - Test condition
+            3.26 : ls - List files
+            3.27 : man - Print manual pages
+            3.28 : mem - Print memory usage
+            3.29 : more - Print the contents of text files
+            3.30 : mv - Rename files
+            3.31 : pwd - Print the current working directory
+            3.32 : read - Read a line from standard input
+            3.33 : rm - Remove files
+            3.34 : shift - Shift positional parameters to the left
+            3.35 : sleep - Suspend execution
+            3.36 : sort - Sort text lines
+            3.37 : tail - Print last lines from files
+            3.38 : tee - Duplicate the standard input
+            3.39 : true - Return true.
+            3.40 : tty - Return user's terminal name.
+            3.41 : ver - Print CP/M version and facts
+            3.42 : wc - Count newlines, words and characters
+            3.43 : whoami - Print the user name
 

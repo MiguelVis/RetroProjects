@@ -1,0 +1,102 @@
+A bug in the code is worth two in the documentation.
+A fault tolerant system must report the faults even as it tolerates them.
+A hacker does for love what others would not do for money.- Laura Creighton 
+A low level language is one whose programs require attention to the irrelevant.
+A paperless office has about as much chance as a paperless bathroom.
+A successful tool is used to do something undreamed of by its author.- Samuel Johnson 
+Abstraction is achieved by data hiding and enforced by encapsulation.
+Actual usability is inversely proportionate to apparent user-friendliness.
+Adding manpower to a late software project makes it later.- Frederick Brooks 
+All programmers are playwrights and all computers are lousy actors.
+All the simple programs have been written, and all the good names taken.
+All you need to know is the user interface.- J.Redford 
+An algorithm must be seen to be believed.- Donald Knuth 
+An infinite loop is OK as long as you don't get stuck in it.
+An operating system without virtual memory is an OS without virtue.
+Any programming language is at its best before it is implemented and used.
+Avoid GOTOs completely if you can keep the program readable.
+Avoid the Fortran arithmetic IF (or better yet, just avoid Fortran).
+Avoid unnecessary branches.
+Bad style destroys an otherwise superb program.
+Bad tools result in bad software.- J.L.Marsh 
+BASIC is to computer programming as QWERTY is to typing.- Seymour Papert 
+Be careful when a loop exits to the same place from side and bottom.
+Choose variable names that will not be confused.
+Computers are unreliable, but humans are even more unreliable.- Gilb 
+Computers talk to each other worse than their designers do.
+Computers...are not designed, as we are, for ambiguity.- Thomas 
+Controlling complexity is the essence of computer programming.- Brian Kernighan 
+Digital circuits are made from analog parts.
+Disk is cheap, but storage is expensive.
+Don't comment or patch bad code; rewrite it.
+Don't compare floating point numbers solely for equality.
+Don't diddle code to make it faster; find a better algorithm.
+Don't document the program; program the document.
+Don't stop at one bug.
+Every bug you find is the last one.
+Every good work of software starts by scratching a developer's personal itch.
+Every program is either trivial or it contains at least one bug.
+Everything should be transparent to the user.
+Expert systems are built to embody the knowledge of human experts.- Rich Kulawiec 
+Favor object composition over class inheritance.
+Garbage in, garbage out.
+Given enough eyeballs, all bugs are shallow.- Eric Raymond 
+Good programmers know what to write.Great ones know what to rewrite.- Eric Raymond 
+I do not fear computers.I fear the lack of them.- Isaac Asimov 
+I suppose when it gets to that point, we shan't know how it does it.- Alan Turing 
+If the code and the comments disagree, then both are probably wrong.- Schryer 
+If you have a procedure with 10 parameters, you probably missed some.
+In the long run, every program becomes rococco, and then rubble.- Alan Perlis 
+It is easier to change the specification to fit the program than vice versa.
+It is easier to write an incorrect program than understand a correct one.
+It wasn't as easy to get programs right as we had thought.- Maurice Wilkes, 1949 
+It's easy to get lost in the details of an incorrect implementation.- Tom von Alten 
+Know Thy User.
+Let the machine do the dirty work.- Elements of Programming Style 
+Machine independent code isn't.
+Make input easy to proofread.
+Make it right before you make it faster.
+Make sure all variables are initialized before use.
+Make sure comments and code agree.
+Make sure your code "does nothing" gracefully.
+Never put off till run-time what you can do at compile-time.- David Gries 
+Never test for an error condition you don't know how to handle.- Steinbach 
+Never underestimate the bandwidth of a station wagon full of tapes.- Jackson 
+Never write software that anthropomorphizes the machine.
+Never write software that patronizes the user.
+New technology becomes salable three years before it becomes usable.
+New technology becomes usable three years before its users become competent.
+No extensible language will be universal.- T.Cheatham 
+On the Web, understanding the medium matters more than controlling the layout.
+Performance is easier to add than clarity.
+Plan the system for change.- Frederick Brooks 
+Program to an interface, not an implementation.
+Replace repetitive expressions by calls to a common function.
+Smart data structures and dumb code works a lot better than vice versa.
+Software is best understood as a branch of movie making.- Ted Nelson 
+Software is mind work.Having the right frame of mind is essential.
+The best packed information most resembles random noise.
+The computer is the Proteus of machines.- Seymour Papert 
+The computing field is always in need of new cliches.- Alan Perlis 
+The less time planning, the more time programming.
+The Macintosh was the first personal computer good enough to be criticized.
+The number of UNIX installations has grown to 10, with more expected.(6/72) 
+The purpose of computing is insight, not numbers.- Richard Hamming 
+The wise person writes bomb-proof code.
+There are always at least two ways to program the same thing.
+There are never any bugs you haven't found yet.
+There can never be a computer language in which you cannot write a bad program.
+There is no problem that, when programmed just right, isn't more complicated.
+To understand a program you must become both the machine and the program.
+Try not to let implementation details sneak into design documents.
+Undetectable errors are infinite; detectable errors by definition are finite.
+UNIX is many things to many people, but it has never been everything to anybody.
+Use free-form input where possible.
+Use GOTOs only to implement a fundamental structure.
+Use IF...ELSE IF...ELSE IF...ELSE...to implement multi-way branches.
+Use text for text and images for images.- Paul Martz 
+Using a free internet service, you're not the customer, you're the product.
+Watch out for off-by-one errors.
+When a program is being tested, it is too late to make design changes.
+When we write programs that "learn", it turns out we do and they don't.
+You don't have to know how the computer works, just how to work the computer.

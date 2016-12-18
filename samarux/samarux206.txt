@@ -7,6 +7,23 @@ cpm-connections.blogspot.com
 floppysoftware@gmail.com
 
 
+SamaruX v2.06, ?? ??? ????
+==========================
+
+Last changes.
+
+Shell improvements:
+-------------------
+
+- Added support for '>>' in output redirection.
+
+New built-in commands:
+----------------------
+
+fortune : Print a random adage.
+sleep   : Suspend execution for a # of seconds.
+
+
 SamaruX v2.05, 06 Jun 2016
 ==========================
 
