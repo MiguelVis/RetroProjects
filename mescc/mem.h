@@ -1,47 +1,35 @@
-/*	mem.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	Memory functions.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	25 Oct 2000 : Last revision.
-	16 Apr 2007 : GPL'd.
-
-	Public:
-
-	char *memset(char *dst, char data, int count)
-	char *memcpy(char *dst, char *src, int count)
-	int memcmp(char *mem1, char *mem2, int count)
-*/
-
+/**
+ * @file   mem.h
+ * @brief  Memory functions.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Memory functions, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Revisions:
+ *  - 25 Oct 2000 : Last revision.
+ *  - 16 Apr 2007 : GPL'd.
+ *  - 25 Aug 2016 : Documented. GPL v3.
+ *
+ * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef MEM_H
 
 #define MEM_H
 
-/*	char *memset(char *dst, char data, int count)
-
-	Fill 'count' bytes with 'data' into 'dst',
-	and return pointer to 'dst'.
-*/
-
+/**
+ * @fn     char *memset(char *dst, char data, int count)
+ * @brief  Fill 'count' bytes with 'data' into 'dst'.
+ * @param  dst - destination
+ * @param  data - fill byte
+ * @param  count - how many
+ * @return pointer to 'dst'
+ */
 #asm
 
 memset:	POP	AF
@@ -66,12 +54,14 @@ memset3:
 	RET
 #endasm
 
-/*	char *memcpy(char *dst, char *src, int count)
-
-	Copy 'count' bytes from 'src' to 'dst',
-	and return pointer to 'dst'.
-*/
-
+/**
+ * @fn     char *memcpy(char *dst, char *src, int count)
+ * @brief  Copy 'count' bytes from 'src' to 'dst'.
+ * @param  dst - destination
+ * @param  src - source
+ * @param  count - how many
+ * @return pointer to 'dst'
+ */
 #asm
 
 memcpy:
@@ -93,15 +83,14 @@ memcpy2
 	RET
 #endasm
 
-/*	int memcmp(char *mem1, char *mem2, int count)
-
-	Compare 'count' bytes, and return:
-
-	<1	(-1)	mem1 < mem2
-	=0	(0)	mem1 == mem2
-	>1	(+1)	mem1 > mem2
-*/
-
+/**
+ * @fn     int memcmp(char *mem1, char *mem2, int count)
+ * @brief  Compare 'count' bytes.
+ * @param  mem1 - pointer
+ * @param  mem2 - pointer
+ * @param  count - how many
+ * @return <0 on mem1 < mem2; =0 on mem1 == mem2; >0 on mem1 > mem2
+ */
 #asm
 
 memcmp
@@ -141,3 +130,4 @@ memcmp3
 
 #endif
 
+

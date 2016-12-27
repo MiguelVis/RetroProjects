@@ -1,119 +1,97 @@
-/*	alloc.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	Dynamic memory functions.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	13 Dec 2000 : Last revision.
-	16 Apr 2007 : GPL'd.
-	26 Aug 2012 : Changed some things for more speed.
-	19 Feb 2015 : Now free() checks if pointer is NULL.
-
-	Public:
-
-	void *malloc(unsigned int size)
-	void free(void *)
-
-	Private:
-
-	int xm_gw(int *ptr)
-	void xm_pw(int *ptr, int val)
-
-	Notes:
-
-	Each memory block contains following data:
-
-	WORD size;		Size of data
-	BYTE used;		0=No, 1=Yes
-	BYTE data[size];	Data
-*/
-
+/**
+ * @file   alloc.h
+ * @brief  Dynamic memory allocation.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Dynamic memory allocation functions, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Format of each memory block:
+ *  - WORD size;        size of data
+ *  - BYTE used;        0 = no, 1 = yes
+ *  - BYTE data[size];  data
+ *
+ * Revisions:
+ *  - 13 Dec 2000 : Last revision.
+ *  - 16 Apr 2007 : GPL'd.
+ *  - 26 Aug 2012 : Changed some things for more speed.
+ *  - 19 Feb 2015 : Now free() checks if pointer is NULL.
+ *  - 15 Aug 2016 : Optimized and documented. GPL v3.
+ *
+ * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef ALLOC_H
 
 #define ALLOC_H
 
-/* #define DEBUG_ALLOC */
-
-/*	RUNTIME VARIABLES
-*/
+//#define DEBUG_ALLOC
 
 extern BYTE *ccfreefirst;
 extern WORD ccfreebytes;
 
-/*	PRIVATE VARIABLES
-*/
+BYTE xm_ini,  // 0x69 if initialized
+     *xm_top, // First block
+     *xm_end; // Last block
 
-BYTE	xm_ini,		/* if initialized == 0x69 */
-	*xm_top,	/* First block */
-	*xm_end;	/* Last block */
-
-/*	void *malloc(unsigned int size)
-
-	Memory allocation.
-
-	Return pointer, or NULL if not enough memory.
-*/
-
+/**
+ * @fn     void *malloc(unsigned int size)
+ * @brief  Allocate memory.
+ *
+ * This function tries to allocated a memory block of requested
+ * size in bytes.
+ *
+ * The contents of the allocated memory block is undefined.
+ *
+ * @param  size - needed size in bytes
+ * @return pointer to allocated memory, or null pointer on failure
+ */
 malloc(size)
 WORD size;
 {
 	BYTE *memptr;
 	WORD memsize;
 
-	/* Need initialization ? */
+	// Setup library if needed
 
-	if(xm_ini!=0x69)
+	if(xm_ini != 0x69)
 	{
 		if(ccfreebytes < 7)
 			return 0;
 
-		xm_top=ccfreefirst;
-		xm_end=xm_top + ccfreebytes - 3;
+		xm_top = ccfreefirst;
+		xm_end = xm_top + ccfreebytes - 3;
 
-		xm_pw(xm_top,ccfreebytes - 6);
-		xm_top[2]=0;
+		xm_pw(xm_top, ccfreebytes - 6);
+		xm_top[2] = 0;
 
-		xm_pw(xm_end,0);
-		xm_end[2]=1;
+		xm_pw(xm_end, 0);
+		xm_end[2] = 1;
 
-		xm_ini=0x69;
+		xm_ini = 0x69;
 	}
 
-	/* Search free block */
+	// Search a free block
 
-	for(memptr=xm_top; memptr!=xm_end; memptr+=memsize+3)
+	for(memptr = xm_top; memptr != xm_end; memptr += memsize + 3)
 	{
-		memsize=xm_gw(memptr);
+		memsize = xm_gw(memptr);
 
-		if(memptr[2]==0)
+		if(!memptr[2])
 		{
 			if(memsize >= size)
 			{
-				memptr[2]=1;
+				memptr[2] = 1;
 
 				if(memsize >= size + 3)
 				{
-					xm_pw(memptr,size);
-					xm_pw(memptr+size+3,memsize-size-3);
-					*(memptr+size+5)=0;
+					xm_pw(memptr, size);
+					xm_pw(memptr + size + 3, memsize - size - 3);
+					*(memptr + size + 5) = 0;
 				}
 
 #ifdef DEBUG_ALLOC
@@ -128,50 +106,52 @@ WORD size;
 	alloc_dbg("malloc", size);
 #endif
 
-	return 0;
+	return NULL;
 }
 
-/*	void free(void *ptr)
-
-	Dealloc memory.
-*/
-
+/**
+ * @fn     void free(void *ptr)
+ * @brief  Deallocate memory.
+ *
+ * This function deallocates memory, previously allocated with malloc.
+ *
+ * If ptr is a null pointer, the function does nothing.
+ *
+ * @param  ptr - memory block to deallocate
+ */
 free(ptr)
 BYTE *ptr;
 {
 	char *memptr;
 	unsigned memsize;
 
-	/* Check NULL pointer */
+	// Do nothing on null pointer
 
-	if(ptr == NULL)
+	if(!ptr)
 		return;
 
-	/* Make free */
+	// Make free
 
-	*(ptr - 1)=0;
+	*(ptr - 1) = 0;
 
-	/* Compact block if possible */
+	// Join to another free memory blocks if possible
 
-	for(memptr=xm_top; memptr!=xm_end; memptr+=memsize+3)
+	for(memptr = xm_top; memptr != xm_end; memptr += memsize + 3)
 	{
-		memsize=xm_gw(memptr);
+		memsize = xm_gw(memptr);
 
-		if(memptr[2]==0)
+		if(!memptr[2])
 		{
-			if(*(memptr+memsize+5)==0)
+			if(!(*(memptr + memsize + 5)))
 			{
-				memsize+=xm_gw(memptr+memsize+3)+3;
+				memsize += xm_gw(memptr + memsize + 3) + 3;
 
-				if(*(memptr+memsize+5)==0)
-					memsize+=xm_gw(memptr+memsize+3)+3;
+				if(!(*(memptr + memsize + 5)))
+					memsize += xm_gw(memptr + memsize + 3) + 3;
 
-				xm_pw(memptr,memsize);
+				xm_pw(memptr, memsize);
 
-#ifdef DEBUG_ALLOC
-	alloc_dbg("free", ptr);
-#endif
-				return;
+				break;
 			}
 		}
 	}
@@ -181,10 +161,7 @@ BYTE *ptr;
 #endif
 }
 
-/*	int xm_gw(int *ptr)
-
-	Get a int from ptr.
-*/
+// int xm_gw(int *ptr) : get an int from ptr.
 
 xm_gw(ptr)
 WORD *ptr;
@@ -192,10 +169,7 @@ WORD *ptr;
 	return *ptr;
 }
 
-/*	void xm_pw(int *ptr, int val)
-
-	Put a int into ptr.
-*/
+// void xm_pw(int *ptr, int val) : put an int into ptr.
 
 xm_pw(ptr, val)
 WORD *ptr, val;
@@ -205,11 +179,13 @@ WORD *ptr, val;
 
 #ifdef DEBUG_ALLOC
 
+// void alloc_dbg(char *fn, WORD wrd) : Quick and dirty debug.
+
 alloc_dbg(fn, wrd)
-char *fn; unsigned int wrd;
+char *fn; WORD wrd;
 {
-	unsigned char *pb, data[4];
-	unsigned int size, *pw;
+	BYTE *pb, data[4];
+	WORD size, *pw;
 	int use;
 
 	printf("SP = %04x (%s %04x)\n", alloc_sp(), fn, wrd);
@@ -230,7 +206,7 @@ char *fn; unsigned int wrd;
 }
 
 #asm
-alloc_sp:
+alloc_sp
 	LD  HL,0
 	ADD HL,SP
 	RET
@@ -238,4 +214,10 @@ alloc_sp:
 
 #endif
 
+// Cleaning
+
+#undef DEBUG_ALLOC
+
 #endif
+
+

@@ -1,62 +1,47 @@
-/*	sprintf.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	sprintf function.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	20 Oct 2000 : Last revision.
-	16 Apr 2007 : GPL'd.
-	14 Apr 2015 : Ammended a bad closed comment.
-
-	Public:
-
-	int sprintf(char *dst, char *fmt, arg1, arg2, ...)
-
-	Private:
-
-	int xspfout(char ch)
-	void xspfend(void)
-
-	Notes:
-
-	See XPRINT.H
-*/
-
+/**
+ * @file   sprintf.h
+ * @brief  Library for sprintf() function.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Implementation of sprintf() function, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Revisions:
+ *  - 20 Oct 2000 : Last revision.
+ *  - 16 Apr 2007 : GPL'd.
+ *  - 14 Apr 2015 : Ammended a bad closed comment.
+ *  - 25 Aug 2016 : Documented. GPL v3.
+ *
+ * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef SPRINTF_H
 
 #define SPRINTF_H
 
+// Dependencies
+// ------------
+
 #ifndef XPRINTF_H
-#include <xprintf.h>
+	#include <xprintf.h>
 #endif
 
-/*	int sprintf(char *dst, char *fmt, arg1, arg2, ...)
-
-	Formatted output to memory.
-
-	Return -1 on error, else return number of chars written.
-
-	Currently always return number of chars written.
-*/
-
+/**
+ * @fn     int sprintf(char *dst, char *fmt, arg1, arg2, ...)
+ * @brief  Formatted output to memory.
+ *
+ * See the documentation for xprintf.h to learn about the string format.
+ *
+ * @param  dst - destination
+ * @param  fmt - string format
+ * @param  arg1 - argument #1
+ * @param  arg? - argument #?
+ * @return number or characters written, or -1 on failure (currently always #).
+ */
 #asm
 
 sprintf:
@@ -86,14 +71,7 @@ sprintf:
 	RET
 #endasm
 
-/*	int xspfout(char ch)
-
-	Auxiliary function for xprintf.
-
-	Output ch to memory, and return TRUE on error, else FALSE.
-
-	Currently always return FALSE.
-*/
+// int xspfout(char ch) : output ch to memory; return 0 on success, !=0 on failure (currently always returns 0).
 
 #asm
 
@@ -110,12 +88,7 @@ xspfout:
 	RET
 #endasm
 
-/*	void xspfend(void)
-
-	Auxiliary function for xprintf.
-
-	Ends formatted output, writing a zero byte.
-*/
+// void xspfend(void) : end formatted output; writes a trailing zero byte.
 
 #asm
 
@@ -127,3 +100,5 @@ xspfend:
 #endasm
 
 #endif
+
+

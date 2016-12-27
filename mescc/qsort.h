@@ -1,45 +1,45 @@
-/*	qsort.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	Sort function.
-
-	Copyright (c) 2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	30 Nov 2015 : First version (bubble sort).
-
-	void qsort(void *base, size_t items, size_t size, int (*comp)(const void *, const void*))
-
-
-*/
-
+/**
+ * @file   qsort.h
+ * @brief  Sort function.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * This library implements a sort function of general use,
+ * which uses the bubble sort algorithm, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Revisions:
+ *  - 30 Nov 2015 : First version (bubble sort).
+ *  - 15 Aug 2016 : Documented. GPL v3.
+ *
+ * Copyright (c) 2015-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef QSORT_H
 
 #define QSORT_H
 
-/*	void qsort(void *base, size_t items, size_t size, int (*comp)(const void *, const void*))
-
-	Sort an array.
-*/
-
+/**
+ * @fn     void qsort(void *base, size_t items, size_t size, int (*comp)(const void *, const void*))
+ * @brief  Sort an array of elements.
+ *
+ * Sort an array of elements into ascending order.
+ *
+ * The comparison function must return:
+ *  - <0 on elem1 <  elem2
+ *  - =0 on elem1 == elem2
+ *  - >0 on elem1 >  elem2
+ *
+ * @param  base  - address of first element
+ * @param  items - number of elements in the array
+ * @param  size  - size in bytes of each element
+ * @param  comp  - comparison function
+ */
 qsort(base, items, size, comp)
-BYTE *base; int items, size, *comp;
+BYTE *base; int items, size; WORD comp;
 {
 	int i, j, k;
 	BYTE *pi, *pj, t;
@@ -65,3 +65,4 @@ BYTE *base; int items, size, *comp;
 
 #endif
 
+

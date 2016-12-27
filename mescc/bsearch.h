@@ -1,45 +1,46 @@
-/*	bsearch.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	Binary search function.
-
-	Copyright (c) 2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	30 Nov 2015 : First version.
-
-	void *bsearch(const void *key, const void *base, size_t items, size_t size, int (*comp)(const void *, const void *))
-
-
-*/
-
+/**
+ * @file   bsearch.h
+ * @brief  Binary search.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * This library implements a binary search function of general use,
+ * for MESCC (Mike's Enhanced Small C Compiler for Z80 & CP/M).
+ *
+ * Revisions:
+ *  - 30 Nov 2015 : First version.
+ *  - 15 Aug 2016 : Bug solved. Documented. GPL v3.
+ *
+ * Copyright (c) 2015-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef BSEARCH_H
 
 #define BSEARCH_H
 
-/*	void *bsearch(const void *key, const void *base, size_t items, size_t size, int (*comp)(const void *, const void *))
-
-	Binary search. Returns item found, else NULL.
-*/
-
+/**
+ * @fn     void *bsearch(const void *key, const void *base, size_t items, size_t size, int (*comp)(const void *, const void *))
+ * @brief  Binary search.
+ *
+ * Search an element in an array, which must be in ascending order.
+ *
+ * The comparison function must return:
+ *  - <0 on key <  base[x]
+ *  - =0 on key == base[x]
+ *  - >0 on key >  base[x]
+ *
+ * @param  key   - element to search
+ * @param  base  - address of first element
+ * @param  items - number of elements in the array
+ * @param  size  - size in bytes of each element
+ * @param  comp  - comparison function
+ * @return pointer to matching element, or null pointer on failure
+ */
 BYTE *bsearch(key, base, items, size, comp)
-BYTE *key, *base; int items, size, *comp;
+BYTE *key, *base; int items, size; WORD comp;
 {
 	int a, b, c, dir;
 	BYTE *p;
@@ -49,7 +50,7 @@ BYTE *key, *base; int items, size, *comp;
 
 	while (a <= b) {
 
-		c = (a + b) / 1;
+		c = (a + b) >> 1;  // c = (a + b) / 2;
 		p = (base + (c * size));
 
 		if (dir = comp(p, key)) {
@@ -67,3 +68,4 @@ BYTE *key, *base; int items, size, *comp;
 
 #endif
 
+

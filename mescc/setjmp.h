@@ -1,102 +1,90 @@
-/*	setjmp.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	Non-local jumps.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	21 Ago 2015 : Initial version.
-	22 Ago 2015 : Changed jmp_buf from char to int.
-
-	Public:
-	
-	int setjmp (jmp_buf env)
-	void longjmp (jmp_buf env, int rv)
-	
-	Notes:
-	
-	Only one jmp_buf is allowed (sorry, typedef is not supported by MESCC).
-	
-	Call to setjmp is performed as:
-	
-	; setjmp(env);
-	
-	LD HL,(env)
-	PUSH HL
-	CALL setjmp
-	POP BC
-	
-	Call to longjmp is performed as:
-	
-	; longjmp(env, 1);
-	
-	LD HL,(env)
-	PUSH HL
-	LD HL,1
-	PUSH HL
-	CALL longjmp
-	POP BC
-	POP BC
-*/
-
+/**
+ * @file   setjmp.h
+ * @brief  Non-local jumps.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Non-local jumps functions, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Only one jmp_buf is allowed.
+ *
+ * Call to setjmp is performed as - ie: setjmp(env):
+ *   LD HL,(env)
+ *   PUSH HL
+ *   CALL setjmp
+ *   POP BC
+ *
+ * Call to longjmp is performed as - ie: longjmp(env, 1):
+ *
+ *   LD HL,(env)
+ *   PUSH HL
+ *   LD HL,1
+ *   PUSH HL
+ *   CALL longjmp
+ *   POP BC
+ *   POP BC
+ *
+ * Defined macros:
+ *  - jmp_buf
+ *
+ * Revisions:
+ *  - 21 Ago 2015 : Initial version.
+ *  - 22 Ago 2015 : Changed jmp_buf from char to int.
+ *  - 15 Ago 2016 : Documented. GPL v3.
+ *
+ * Copyright (c) 2015-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef SETJMP_H
 
 #define SETJMP_H
 
-/* Defs. and globals
-*/
+#define jmp_buf int   // Just something
 
-#define jmp_buf int   /* Just something */
+WORD setjmp_rt;       // Return address
+WORD setjmp_sp;       // SP
 
-WORD setjmp_rt;       /* Return address */
-WORD setjmp_sp;       /* SP */
-
-/*	int setjmp (jmp_buf env)
-
-	Save state information in env. Returns ZERO from direct call, NON-ZERO from a longjmp call.
-*/
-
+/**
+ * @fn     int setjmp (jmp_buf env)
+ * @brief  Save state information for later use of longjmp().
+ * @param  env - buffer for state data
+ * @return 0 from direct call, other values from a longjmp call
+ */
 #asm
-setjmp:
-	pop  hl
-	ld   (setjmp_rt), hl  ; return address
-	ld   (setjmp_sp), sp  ; SP
-	push hl
-	ld   hl, 0
-	ret
+setjmp
+	POP  HL
+	LD   (setjmp_rt), HL
+	LD   (setjmp_sp), SP
+	PUSH HL
+	LD   HL, 0
+	RET
 #endasm
 
-/*	void longjmp (jmp_buf env, int rv)
-
-	Restore state stored in env. Execution resumes after setjmp(), and returns the value of rv, that must be NON-ZERO.
-*/
-
+/**
+ * @fn     void longjmp (jmp_buf env, int rv)
+ * @brief  Resume execution after setjmp().
+ *
+ * This function resumes the execution after setjmp(), restoring
+ * the previously stored state in env.
+ *
+ * @param  env - buffer with state data
+ * @param  rv  - value to return; must be != 0
+ * @return rv value
+ */
 #asm
-longjmp:
-	pop  bc
-	pop  hl              ; value to return
-	ld   sp,(setjmp_sp)  ; SP
-	ld   de,(setjmp_rt)  ; return address
-	push de              ; simulate a call
-	ret
+longjmp
+	POP  BC
+	POP  HL
+	LD   SP,(setjmp_sp)
+	LD   DE,(setjmp_rt)
+	PUSH DE
+	RET
 #endasm
 
 #endif
 
+

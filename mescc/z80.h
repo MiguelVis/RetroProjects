@@ -1,93 +1,84 @@
-/*	z80.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	Z80 specific functions.
-
-	Copyright (c) 1999-2014 Miguel I. Garcia Lopez
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	13 Dec 2014 : 1st version.
-
-	Public:
-
-	unsigned int Z80in(int port)
-	void Z80out(int port, int value)
-	void Z80di(void)
-	void Z80ei(void)	
-*/
-
+/**
+ * @file   z80.h
+ * @brief  Z80 specific functions.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Functions for the Z80 cpu, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Revisions:
+ *  - 13 Dec 2014 : 1st version.
+ *  - 15 Aug 2016 : Documented. GPL v3.
+ *
+ * Copyright (c) 2014-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef Z80_H
 
 #define Z80_H
 
-/*	unsigned int Z80in(int port)
-
-	Inputs a byte from a port.
-*/
-
+/**
+ * @fn     int Z80in(int port)
+ * @brief  Input a byte from a port.
+ * @return byte value
+ */
 #asm
 
-Z80in	LD	C,L
+Z80in
+	LD	C,L
 	IN	A,(C)
 	LD	H,0
 	LD	L,A
 	RET
+	
 #endasm
 
-/*	void Z80out(int port, int value)
-
-	Outputs a byte to a port.
-*/
-
+/**
+ * @fn     void Z80out(int port, int value))
+ * @brief  Output a byte to a port.
+ */
 #asm
 
-Z80out	POP	DE
-	POP	HL
-	POP	BC
-	PUSH	BC
-	PUSH	HL
-	PUSH	DE
-	OUT	(C),L
+Z80out
+	POP  DE
+	POP  HL
+	POP  BC
+	PUSH BC
+	PUSH HL
+	PUSH DE
+	OUT  (C),L
 	RET
+	
 #endasm
 
-/*	void Z80di(void)
-
-	Disables interrupts.
-*/
-
+/**
+ * @fn     void Z80di(void)
+ * @brief  Disable interrupts.
+ */
 #asm
 
-Z80di	DI
+Z80di
+	DI
 	RET
+	
 #endasm
 
-/*	void Z80ei(void)
-
-	Enables interrupts.
-*/
-
+/**
+ * @fn     void Z80ei(void)
+ * @brief  Enable interrupts.
+ */
 #asm
 
-Z80ei	EI
+Z80ei
+	EI
 	RET
+	
 #endasm
 
 #endif
 
+

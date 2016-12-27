@@ -1,109 +1,85 @@
-/*	fileio.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	File I/O.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	19 Mar 2001 : Last revision.
-	17 Apr 2004 : Added functions: fread, fwrite, remove, rename.
-	16 Apr 2007 : GPL'd.
-	20 Apr 2007 : Quit "rt" and "wt" modes. Now "r" and "w" are text modes.
-	10 Nov 2013 : Solved bug related to DMA in fopen, rename, remove.
-	19 Nov 2013 : Reworked for UX.
-	11 Dec 2013 : Added function: fgets.
-	08 Dec 2014 : Added stdin, stdout, stderr support if CC_STDIO is defined.
-	09 Dec 2014 : Added support to FCX if CC_FCX defined.
-	18 Dec 2014 : Modified #define EOF (-1) to -1.
-	16 Jan 2015 : Solved related memory bug in rename.
-	16 Jan 2015 : Added FILENAME_MAX ANSI C definition.
-	17 Feb 2015 : Solved bug in rename.
-	07 Mar 2015 : Modified FILENAME_MAX value (now includes ZERO according to ANSI).
-	09 Apr 2015 : Test ambiguous file names in fopen().
-	03 May 2015 : Solved bug in fgets - last character was lost in long lines.
-	17 Nov 2015 : Added FILENAME_MAX value when CC_FCX_DIR is defined.
-	24 Dec 2015 : Added CC_FILEIO_SMALL define to exclude fread(), fwrite() and fgets().
-	04 Jan 2016 : Removed some code from fread() and fwrite().
-	08 Jan 2016 : Include mem.h library.
-	19 Jul 2016 : Added "a" and "ab" modes.
-	              Added support for CC_FOPEN_A, CC_FREAD, CC_FWRITE and CC_FGETS defines.
-	              Removed CC_FILEIO_SMALL define.
-	23 Jul 2016 : Added fputs() and support for CC_FPUTS define.
-
-	Public:
-
-	FILE *fopen(char *fname, char *fmode)
-	int fclose(FILE *fp)
-	int fgetc(FILE *fp)
-	int fputc(int ch, FILE *fp)
-	int feof(FILE *fp)
-	int ferror(FILE *fp)
-	int fread(char *ptr, int size, int nobj, FILE *fp)
-	int fwrite(char *ptr, int size, int nobj, FILE *fp)
-	char *fgets(char *str, int size, FILE *fp)
-	int fputs(char *str, FILE *fp)
-	int remove(char *fname)
-	int rename(char *oldname, char *newname)
-
-	Private:
-
-	int xfgetc(FILE *fp)
-	int xfputc(int ch, FILE *fp)
-	int xfnamb(char *fn)
-
-	Supports following #defs:
-
-	#define CC_STDIO        To support stdin, stdout & stderr.
-	#define CC_FCX          To support FCX (user number in file names, see cpm.h).
-	#define CC_FCX_DIR      To support named directories in file names (see cpm.h).
-	#define CC_FILEIO_SMALL To exclude fread(), fwrite() and fgets(). ===DEPRECATED===
-	#define CC_FOPEN_A	To include "a" and "ab" modes for fopen().
-	#define CC_FREAD	To include fread().
-	#define CC_FWRITE	To include fwrite().
-	#define CC_FGETS	To include fgets().
-	#define CC_FPUTS	To include fputs().
-*/
-
+/**
+ * @file   fileio.h
+ * @brief  File I/O.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * File I/O for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Supports following #defines:
+ *  - #define CC_STDIO        To support stdin, stdout & stderr.
+ *  - #define CC_FCX          To support FCX (user number in file names, see cpm.h).
+ *  - #define CC_FCX_DIR      To support named directories in file names (see cpm.h).
+ *  - #define CC_FILEIO_SMALL To exclude fread(), fwrite() and fgets(). ===DEPRECATED===
+ *  - #define CC_FOPEN_A      To include "a" and "ab" modes for fopen().
+ *  - #define CC_FREAD        To include fread().
+ *  - #define CC_FWRITE       To include fwrite().
+ *  - #define CC_FGETS        To include fgets().
+ *  - #define CC_FPUTS        To include fputs().
+ *
+ * Revisions:
+ *  - 19 Mar 2001 : Last revision.
+ *  - 17 Apr 2004 : Added functions: fread, fwrite, remove, rename.
+ *  - 16 Apr 2007 : GPL'd.
+ *  - 20 Apr 2007 : Quit "rt" and "wt" modes. Now "r" and "w" are text modes.
+ *  - 10 Nov 2013 : Solved bug related to DMA in fopen, rename, remove.
+ *  - 19 Nov 2013 : Reworked for UX.
+ *  - 11 Dec 2013 : Added function: fgets.
+ *  - 08 Dec 2014 : Added stdin, stdout, stderr support if CC_STDIO is defined.
+ *  - 09 Dec 2014 : Added support to FCX if CC_FCX defined.
+ *  - 18 Dec 2014 : Modified #define EOF (-1) to -1.
+ *  - 16 Jan 2015 : Solved related memory bug in rename.
+ *  - 16 Jan 2015 : Added FILENAME_MAX ANSI C definition.
+ *  - 17 Feb 2015 : Solved bug in rename.
+ *  - 07 Mar 2015 : Modified FILENAME_MAX value (now includes ZERO according to ANSI).
+ *  - 09 Apr 2015 : Test ambiguous file names in fopen().
+ *  - 03 May 2015 : Solved bug in fgets - last character was lost in long lines.
+ *  - 17 Nov 2015 : Added FILENAME_MAX value when CC_FCX_DIR is defined.
+ *  - 24 Dec 2015 : Added CC_FILEIO_SMALL define to exclude fread(), fwrite() and fgets().
+ *  - 04 Jan 2016 : Removed some code from fread() and fwrite().
+ *  - 08 Jan 2016 : Include mem.h library.
+ *  - 19 Jul 2016 : Added "a" and "ab" modes.
+ *                  Added support for CC_FOPEN_A, CC_FREAD, CC_FWRITE and CC_FGETS defines.
+ *                  Removed CC_FILEIO_SMALL define.
+ *  - 23 Jul 2016 : Added fputs() and support for CC_FPUTS define.
+ *  - 10 Dec 2016 : Documented. Optimized. GPL v3.
+ *  - 15 Dec 2016 : Optimize NULL comparisons, fgetc(), fputc().
+ *
+ * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef FILEIO_H
 
 #define FILEIO_H
 
+/* Dependencies
+   ------------
+*/
+
 #ifndef CPM_H
-#include <cpm.h>
+	#include <cpm.h>
 #endif
 
 #ifndef ALLOC_H
-#include <alloc.h>
+	#include <alloc.h>
 #endif
 
 #ifndef MEM_H
-#include <mem.h>
+	#include <mem.h>
 #endif
 
 #ifdef CC_STDIO
 #ifndef CONIO_H
-#include <conio.h>
+	#include <conio.h>
 #endif
 #endif
 
-/*	STANDARD DEFs
+/* STANDARD DEFs
+   -------------
 */
 
 #define FILE unsigned char
@@ -127,39 +103,41 @@
 
 #endif
 
-/*	PRIVATE DEFs
+/* PRIVATE DEFs
+   ------------
 */
 
-#define XF_READ   1	/* Read mode */
-#define XF_WRITE  2	/* Write mode */
-#define XF_BIN	4	/* Binary mode */
-#define XF_EOF	8	/* End of file */
-#define XF_ERR	16	/* I/O error */
+#define XF_READ  1   /* Read mode */
+#define XF_WRITE 2   /* Write mode */
+#define XF_BIN   4   /* Binary mode */
+#define XF_EOF   8   /* End of file */
+#define XF_ERR   16  /* I/O error */
 
-#define XF_IMOD	0	/* ModE (1 byte) */
-#define XF_IPOS	1	/* Position in buffer (1 byte) */
-#define XF_IBUF	2	/* Buffer (128 bytes) */
-#define XF_IFCX	130	/* FCX (37 bytes: USER (1) + FCB (36)) */
+#define XF_IMOD  0   /* Mode (1 byte) */
+#define XF_IPOS  1   /* Position in buffer (1 byte) */
+#define XF_IBUF  2   /* Buffer (128 bytes) */
+#define XF_IFCX  130 /* FCX (37 bytes: USER (1) + FCB (36)) */
 
 #ifdef CC_FCX
 
-#define XF_ISIZ	167	/* Data block size */
-#define XF_IRND 164	/* Random record # in FCX */
+#define XF_ISIZ	 167 /* Data block size */
+#define XF_IRND  164 /* Random record # in FCX */
 
 #define fileop bdos_fcx_a
 #define makefb setfcx
 
 #else
 
-#define XF_ISIZ	166	/* Data block size */
-#define XF_IRND 163	/* Random record # in FCB */
+#define XF_ISIZ  166 /* Data block size */
+#define XF_IRND  163 /* Random record # in FCB */
 
 #define fileop bdos_a
 #define makefb setfcb
 
 #endif
 
-/*	CC_FILEIO_SMALL is now DEPRECATED
+/* CC_FILEIO_SMALL is now DEPRECATED
+   ---------------------------------
 */
 
 #ifdef CC_FILEIO_SMALL
@@ -168,24 +146,26 @@
 
 #endif
 
-/*	FILE *fopen(char *fname, char *fmode)
-
-	Apertura de archivo. Devuelve puntero a FILE, o NULL
-	en caso de error.
-	Valores validos para 'fmode':
-
-		"rb"	Lectura binario.
-		"r"	Lectura texto.
-		"wb"	Escritura binario.
-		"w"	Escritura texto.
-		"a"	Escritura texto al final.
-		"ab"	Escritura binario al final.
-
-	En lectura de texto, '\r' es ignorado, '\n' es fin de linea.
-
-	En escritura de texto, '\n' se convierte a '\r' mas '\n'.
-*/
-
+/**
+ * @fn     FILE *fopen(char *fname, char *fmode)
+ * @brief  Open file.
+ *
+ * Valid 'fmode' values are:
+ *  - "rb" : Binary reading.
+ *  - "r"  : Text reading.
+ *  - "wb" : Binary writing.
+ *  - "w"  : Text writing.
+ *  - "a"  : Append text writing.
+ *  - "ab" : Append binary writing.
+ *
+ * In text mode, the following translations are performed:
+ *  - Reading: '\r' is ignored, '\n' is end of line.
+ *  - Writing: '\n' is converted to '\r' + '\n'.
+ *
+ * @param  fname - filename
+ * @param  fmode - file access mode
+ * @return Pointer to FILE on success, else NULL.
+ */
 fopen(fname,fmode)
 char *fname, *fmode;
 {
@@ -197,9 +177,8 @@ char *fname, *fmode;
 	unsigned int *wp;
 #endif
 
-	/* Establecer el modo de apertura */
-
-	if(*fmode=='r')
+	// Mode
+	if(*fmode == 'r')
 		mode = XF_READ;
 	else if(*fmode=='w')
 		mode = XF_WRITE;
@@ -210,59 +189,55 @@ char *fname, *fmode;
 	else
 		return NULL;
 
-	if(*(fmode+1)=='b')
+	if(*(fmode + 1) == 'b')
 		mode |= XF_BIN;
-	else if(*(fmode+1))
+	else if(*(fmode + 1))
 		return NULL;
 
-	/* Nombre de fichero no ambiguo */
-
+	// Filename can't be ambiguous
 	if(xfnamb(fname))
 		return NULL;
 
-	/* Obtener memoria */
-
-	if(!(fp=malloc(XF_ISIZ)))
+	// Get memory
+	if(!(fp = malloc(XF_ISIZ)))
 		return NULL;
 
-	/* Crear fcb */
-
-	if(makefb(fname,fp+XF_IFCX))
+	// Make FCB
+	if(makefb(fname, fp + XF_IFCX))
 	{
 		free(fp);
 		return NULL;
 	}
 
-	/* Abrir fichero */
-
+	// Open file
 	bdos_hl(BF_DMA, fp+XF_IBUF);
 
 	if(mode & XF_READ)
 	{
-		if(fileop(BF_OPEN, fp+XF_IFCX)==255)
+		if(fileop(BF_OPEN, fp + XF_IFCX) == 255)
 		{
 			free(fp);
 			return NULL;
 		}
 
-		fp[XF_IPOS]=128;	/* No hay datos en buffer */
+		fp[XF_IPOS] = 128;  // No data in buffer
 	}
 #ifdef CC_FOPEN_A
 	else if(*fmode == 'a')
 	{
-		fp[XF_IPOS]=0;	/* No hay datos en buffer */
+		fp[XF_IPOS] = 0;  // No data in buffer
 
-		if(fileop(BF_OPEN, fp+XF_IFCX) != 255)
+		if(fileop(BF_OPEN, fp + XF_IFCX) != 255)
 		{
-			fileop(BF_FSIZE, fp+XF_IFCX);
+			fileop(BF_FSIZE, fp + XF_IFCX);
 
 			wp = fp + XF_IRND;
 
-			if(*(fmode+1) != 'b' && *wp)
+			if(*(fmode + 1) != 'b' && *wp)
 			{
 				--(*wp);
 
-				fileop(BF_READRND, fp+XF_IFCX);
+				fileop(BF_READRND, fp + XF_IFCX);
 
 				for(i = 0; i < 128; ++i)
 				{
@@ -277,7 +252,7 @@ char *fname, *fmode;
 					++(*wp);
 			}
 		}
-		else if(fileop(BF_CREATE, fp+XF_IFCX) == 255)
+		else if(fileop(BF_CREATE, fp + XF_IFCX) == 255)
 		{
 			free(fp);
 			return NULL;
@@ -286,47 +261,46 @@ char *fname, *fmode;
 #endif
 	else
 	{
-		if(fileop(BF_FIND1ST, fp+XF_IFCX)!=255)
+		if(fileop(BF_FIND1ST, fp + XF_IFCX) != 255)
 		{
-			if(fileop(BF_DELETE, fp+XF_IFCX)==255)
+			if(fileop(BF_DELETE, fp + XF_IFCX) == 255)
 			{
 				free(fp);
 				return NULL;
 			}
 		}
 
-		if(fileop(BF_CREATE, fp+XF_IFCX)==255)
+		if(fileop(BF_CREATE, fp + XF_IFCX) == 255)
 		{
 			free(fp);
 			return NULL;
 		}
 
-		fp[XF_IPOS]=0;	/* No hay datos en buffer */
+		fp[XF_IPOS] = 0;  // No data in buffer
 	}
 
-	/* Fijar indicadores */
+	// Set file mode
+	fp[XF_IMOD] = mode;
 
-	fp[XF_IMOD]=mode;	/* Modo de apertura */
-
-	/* Devolver puntero a canal */
-
+	// Return pointer to FILE
 	return fp;
 }
 
-/*	int fgetc(FILE *fp)
-
-	Lee un caracter y devuelve su valor, o EOF en caso de error.
-*/
-
+/**
+ * @fn     int fgetc(FILE *fp)
+ * @brief  Read character from file.
+ * @param  fp - pointer to FILE
+ * @return character on success, else EOF on end of file or error
+ */
 fgetc(fp)
 FILE *fp;
 {
 	int c;
 
 #ifdef CC_STDIO
-	/* Consola? */
 
-	if(fp == NULL)
+	// Console?
+	if(!fp)
 	{
 		if((c = getch()) == '\r')
 			c = '\n';
@@ -340,37 +314,46 @@ FILE *fp;
 	}
 #endif
 
-	/* Fichero abierto para lectura y sin errores? */
-
+	// File opened for reading and without errors?
 	if(!(fp[XF_IMOD] & XF_READ) || fp[XF_IMOD] & (XF_EOF + XF_ERR))
 		return EOF;
 
-	/* Leer caracter */
-
-	c=xfgetc(fp);
+/**************************************
+	c = xfgetc(fp);
 
 	if(!(fp[XF_IMOD] & XF_BIN))
 	{
-		while(c=='\r')
-			c=xfgetc(fp);
+		while(c == '\r')
+			c = xfgetc(fp);
 
-		if(c==0x1A)
+		if(c == 0x1A)
 		{
-			fp[XF_IMOD]|=XF_EOF;
-			c=EOF;
+			fp[XF_IMOD] |= XF_EOF;
+			c = EOF;
 		}
 	}
 
-	/* Devolver caracter */
+*********************************/
 
+	// Read binary
+	if((fp[XF_IMOD] & XF_BIN))
+		return xfgetc(fp);
+
+	// Read text
+	while((c = xfgetc(fp)) == '\r')
+		;
+
+	if(c == 0x1A)
+	{
+		fp[XF_IMOD] |= XF_EOF;
+		c = EOF;
+	}
+
+	// Return character
 	return c;
 }
 
-/*	int xfgetc(FILE *fp)
-
-	Funcion auxiliar para fgetc. Devuelve siguiente caracter,
-	o EOF en caso de error.
-*/
+// int xfgetc(FILE *fp) : Helper for fgetc() - return next character, or EOF on end of file or error.
 
 xfgetc(fp)
 FILE *fp;
@@ -378,19 +361,18 @@ FILE *fp;
 #ifdef CC_FOPEN_A
 	unsigned int *wp;
 #endif
-	/* Leer registro si hace falta */
-
-	if(fp[XF_IPOS]==128)
+	// Read next record if needed
+	if(fp[XF_IPOS] == 128)
 	{
 		bdos_hl(BF_DMA, fp+XF_IBUF);
 
 #ifdef CC_FOPEN_A
-		if(fileop(BF_READRND, fp+XF_IFCX))
+		if(fileop(BF_READRND, fp + XF_IFCX))
 #else
-		if(fileop(BF_READSEQ, fp+XF_IFCX))
+		if(fileop(BF_READSEQ, fp + XF_IFCX))
 #endif
 		{
-			fp[XF_IMOD]|=XF_EOF;
+			fp[XF_IMOD] |= XF_EOF;
 			return EOF;
 		}
 
@@ -398,29 +380,29 @@ FILE *fp;
 		wp = fp + XF_IRND; ++(*wp);
 #endif
 
-		fp[XF_IPOS]=0;
+		fp[XF_IPOS] = 0;
 	}
 
-	/* Obtener caracter e incrementar posicion */
-
+	// Get character from buffer and increment pointer
 	return *(fp + XF_IBUF + fp[XF_IPOS]++);
 }
 
-/*	int fputc(int c, FILE *fp)
-
-	Escritura de caracter. Devuelve su valor, o EOF en
-	caso de error.
-*/
-
+/**
+ * @fn     int fputc(int c, FILE *fp)
+ * @brief  Write character to file.
+ * @param  c - character
+ * @param  fp - pointer to FILE
+ * @return c on success, else EOF
+ */
 fputc(c,fp)
 int c;
 FILE *fp;
 {
 
 #ifdef CC_STDIO
-	/* Consola? */
 
-	if(fp == NULL)
+	// Console?
+	if(!fp)
 	{
 		if(c == '\n')
 			putch('\r');
@@ -429,21 +411,33 @@ FILE *fp;
 	}
 #endif
 
-	/* Fichero abierto para escritura y sin error ? */
-
+	// File opened for writing and without errors?
 	if(!(fp[XF_IMOD] & XF_WRITE) || fp[XF_IMOD] & (XF_EOF + XF_ERR))
 		return EOF;
 
+/**************
 	if(!(fp[XF_IMOD] & XF_BIN))
 	{
-		if(c=='\n')
+		if(c == '\n')
 		{
-			if(xfputc('\r',fp)==EOF)
+			if(xfputc('\r', fp) == EOF)
 				return EOF;
 		}
 	}
+***************/
 
-	return xfputc(c,fp);
+	// Write binary
+	if((fp[XF_IMOD] & XF_BIN))
+		return xfputc(c, fp);
+
+	// Write text
+	if(c == '\n')
+	{
+		if(xfputc('\r', fp) == EOF)
+			return EOF;
+	}
+
+	return xfputc(c, fp);
 }
 
 /*	int xfputc(int c, FILE *fp)
@@ -451,6 +445,8 @@ FILE *fp;
 	Funcion auxiliar para fputc. Devuelve valor del
 	caracter escrito, o EOF en caso de error.
 */
+
+// int xfputc(int c, FILE *fp) : Helper for fputc() - return character, or EOF on error.
 
 xfputc(c,fp)
 int c;
@@ -460,23 +456,21 @@ FILE *fp;
 	unsigned int *wp;
 #endif
 
-	/* Almacenar caracter e incrementar posicion */
+	// Store character in buffer and increment pointer
+	*(fp + XF_IBUF + fp[XF_IPOS]++) = c;
 
-	*(fp + XF_IBUF + fp[XF_IPOS]++)=c;
-
-	/* Escribir registro si hace falta */
-
-	if(fp[XF_IPOS]==128)
+	// Write record if needed
+	if(fp[XF_IPOS] == 128)
 	{
 		bdos_hl(BF_DMA, fp + XF_IBUF);
 
 #ifdef CC_FOPEN_A
-		if(fileop(BF_WRITERND, fp+XF_IFCX))
+		if(fileop(BF_WRITERND, fp + XF_IFCX))
 #else
 		if(fileop(BF_WRITESEQ, fp + XF_IFCX))
 #endif
 		{
-			fp[XF_IMOD]|=XF_ERR;
+			fp[XF_IMOD] |= XF_ERR;
 			return EOF;
 		}	
 
@@ -484,92 +478,87 @@ FILE *fp;
 		wp = fp + XF_IRND; ++(*wp);
 #endif
 
-		fp[XF_IPOS]=0;
+		fp[XF_IPOS] = 0;
 	}
 
-	/* Devolver caracter */
-
+	// Return character
 	return c;
 }
 
-/*	int fclose(FILE *fp)
-
-	Cerrado de fichero. Devuelve 0 en caso de exito,
-	EOF en caso de error.
-*/
-
+/**
+ * @fn     int fclose(FILE *fp)
+ * @brief  Close file.
+ * @param  fp - pointer to FILE
+ * @return 0 on success, else EOF
+ */
 fclose(fp)
 FILE *fp;
 {
 
 #ifdef CC_STDIO
-	/* Consola? */
 
-	if(fp == NULL)
+	// Console?
+	if(!fp)
 		return 0;
 #endif
 
-	/* Modo escritura? */
-
+	// Writing mode?
 	if(fp[XF_IMOD] & XF_WRITE)
 	{
 		while(fp[XF_IPOS])
 		{
-			if(xfputc(0x1A, fp)==EOF)
+			if(xfputc(0x1A, fp) == EOF)
 				return EOF;
 		}
 	}
 
-	/* Cerrar el fichero */
-
+	// Close file
 	bdos_hl(BF_DMA, fp + XF_IBUF);
 
-	if(fileop(BF_CLOSE, fp + XF_IFCX)==255)
+	if(fileop(BF_CLOSE, fp + XF_IFCX) == 255)
 		return EOF;
 
-	/* Liberar memoria */
-
+	// Free buffer memory
 	free(fp);
 
-	/* Ok, fichero cerrado */
-
+	// Success
 	return 0;
 }
 
-/*	int feof(FILE *fp)
-
-	Devuelve un valor distinto de cero si se ha llegado
-	al final del fichero.
-*/
-
+/**
+ * @fn     int feof(FILE *fp)
+ * @brief  Test end of file.
+ * @param  fp - pointer to FILE
+ * @return != 0 if true, else 0
+ */
 feof(fp)
 FILE *fp;
 {
 
 #ifdef CC_STDIO
-	/* Consola? */
 
-	if(fp == NULL)
+	// Console?
+	if(!fp)
 		return 0;
 #endif
 
 	return fp[XF_IMOD] & XF_EOF;
 }
 
-/*	int ferror(FILE *fp)
-
-	Devuelve un valor distinto de cero si se origino
-	un error en el fichero.
-*/
-
+/**
+ * @fn     int ferror(FILE *fp)
+ * @brief  Test file error.
+ * @param  fp - pointer to FILE
+ * @return != 0 if true, else 0
+ */
 ferror(fp)
 FILE *fp;
 {
 
 #ifdef CC_STDIO
-	/* Consola? */
 
-	if(fp == NULL)
+	// Console?
+	if(!fp)
 		return 0;
 #endif
 
@@ -578,12 +567,15 @@ FILE *fp;
 
 #ifdef CC_FREAD
 
-/*	int fread(char *ptr, int size, int nobj, FILE *fp)
-
-	Lee nobj objetos de tamanyo size y los pone en ptr.
-	Devuelve el numero de objetos leidos.
-*/
-
+/**
+ * @fn     int fread(char *ptr, int size, int nobj, FILE *fp)
+ * @brief  Read from file.
+ * @param  ptr - destination buffer
+ * @param  size - object size in bytes
+ * @param  nobj - # of objects to read
+ * @param  fp - pointer to FILE
+ * @return # of objects read
+ */
 fread(ptr, size, nobj, fp)
 unsigned char *ptr;
 int size, nobj;
@@ -594,14 +586,14 @@ FILE *fp;
 	//if(!(fp[XF_IMOD] & XF_READ) || fp[XF_IMOD] & (XF_EOF + XF_ERR))
 	//	return EOF;
 
-	for(cobj=0; cobj!=nobj; ++cobj)
+	for(cobj = 0; cobj != nobj; ++cobj)
 	{
-		for(csize=0; csize!=size; ++csize)
+		for(csize = 0; csize != size; ++csize)
 		{
 			if((c = fgetc(fp)) == EOF)
 				return cobj;
 
-			*ptr++=c;
+			*ptr++ = c;
 		}
 	}
 
@@ -612,12 +604,15 @@ FILE *fp;
 
 #ifdef CC_FWRITE
 
-/*	int fwrite(char *ptr, int size, int nobj, FILE *fp)
-
-	Escribe nobj objetos de tamanyo size desde ptr.
-	Devuelve el numero de objetos escritos.
-*/
-
+/**
+ * @fn     int fwrite(char *ptr, int size, int nobj, FILE *fp)
+ * @brief  Write to file.
+ * @param  ptr - source buffer
+ * @param  size - object size in bytes
+ * @param  nobj - # of objects to write
+ * @param  fp - pointer to FILE
+ * @return # of objects written
+ */
 fwrite(ptr, size, nobj, fp)
 unsigned char *ptr;
 int size, nobj;
@@ -628,9 +623,9 @@ FILE *fp;
 	//if(!(fp[XF_IMOD] & XF_WRITE) || fp[XF_IMOD] & (XF_EOF + XF_ERR))
 	//	return EOF;
 
-	for(cobj=0; cobj!=nobj; ++cobj)
+	for(cobj = 0; cobj != nobj; ++cobj)
 	{
-		for(csize=0; csize!=size; ++csize)
+		for(csize = 0; csize != size; ++csize)
 		{
 			if(fputc(*ptr++, fp) == EOF)
 				return cobj;
@@ -644,11 +639,14 @@ FILE *fp;
 
 #ifdef CC_FGETS
 
-/*	char *fgets(char *str, int size, FILE *fp)
-
-	Read a string. Returns 'str' on success, else NULL.
-*/
-
+/**
+ * @fn     char *fgets(char *str, int size, FILE *fp)
+ * @brief  Read string from file.
+ * @param  str - destination buffer
+ * @param  size - # of max. characters to read
+ * @param  fp - pointer to FILE
+ * @return address of 'str' on success, else NULL
+ */
 fgets(str, size, fp)
 char *str; int size; FILE *fp;
 {
@@ -669,7 +667,7 @@ char *str; int size; FILE *fp;
 	if(c == EOF && cs == str)
 		return NULL;
 
-	*cs = 0;
+	*cs = '\0';
 
 	return str;
 }
@@ -678,12 +676,13 @@ char *str; int size; FILE *fp;
 
 #if CC_FPUTS
 
-/*	int fputs(char *str, FILE *fp)
-
-	Writes a string. Returns a non-negative number on success (the
-	number of characters written), else EOF.
-*/
-
+/**
+ * @fn     int fputs(char *str, FILE *fp)
+ * @brief  Write string to file.
+ * @param  str - source buffer
+ * @param  fp - pointer to FILE
+ * @return # of characters written on success, else EOF
+ */
 fputs(str, fp)
 char *str; FILE *fp;
 {
@@ -699,11 +698,12 @@ char *str; FILE *fp;
 
 #endif
 
-/*	int remove(char *fname)
-
-	Borra un archivo. Devuelve un valor distinto de cero si hay error.
-*/
-
+/**
+ * @fn     int remove(char *fname)
+ * @brief  Delete a file.
+ * @param  fname - filename
+ * @return 0 on success, else != 0
+ */
 remove(fname)
 char *fname;
 {
@@ -730,11 +730,13 @@ char *fname;
 	return code != 0xFF ? 0 : -1;
 }
 
-/*	int rename(char *oldname, char *newname)
-
-	Renombra un archivo. Devuelve un valor distinto de cero si hay error.
-*/
-
+/**
+ * @fn     int rename(char *oldname, char *newname)
+ * @brief  Rename a file.
+ * @param  oldname - old filename
+ * @param  newname - new filename
+ * @return 0 on success, else != 0
+ */
 rename(oldname, newname)
 char *oldname, *newname;
 {
@@ -752,7 +754,7 @@ char *oldname, *newname;
 	{
 		if(!makefb(newname, fcx + 17))
 		{
-			/* FIXME : drive + user unchecked */
+			/* FIXME : drive + user unchecked -- must match! */
 
 			memcpy(fcx + 17, fcx + 18, 16);
 
@@ -773,7 +775,7 @@ char *oldname, *newname;
 	{
 		if(!makefb(newname, fcb + 16))
 		{
-			/* FIXME : drive + user unchecked */
+			/* FIXME : drive + user unchecked -- must match! */
 
 			bdos_hl(BF_DMA, 0x0080);
 
@@ -787,14 +789,15 @@ char *oldname, *newname;
 	return code != 0xFF ? 0 : -1;
 }
 
-/*	int xfnamb(char *fn)
-
-	Return 1 if is an ambiguous file name, else 0.
-*/
+// int xfnamb(char *fn) : check if fn is an ambiguous filename -- return 1 if true, else 0.
 
 xfnamb(fn)
 char *fn;
 {
+#ifdef STRING_H
+	if(strchr(fn, '?') || strchr(fn, '*'))
+		return 1;
+#else
 	while(*fn)
 	{
 		if(*fn == '?' || *fn == '*')
@@ -802,11 +805,15 @@ char *fn;
 
 		++fn;
 	}
+#endif
 
 	return 0;
 }
 
+// Cleaning
 #undef fileop
 #undef makefb
 
 #endif
+
+

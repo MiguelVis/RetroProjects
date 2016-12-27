@@ -1,48 +1,33 @@
-/*	string.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	String functions.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	19 Mar 2001 : Last revision.
-	16 Apr 2007 : GPL'd.
-
-	int strlen(char *str)
-	char *strcpy(char *dst, char *src)
-	char *strcat(char *dst, char *src)
-	char *strupr(char *str)
-	int strcmp(char *str1, char *str2)
-	char *strchr(char *str, char ch)
-	int atoi(char *s)
-*/
-
+/**
+ * @file   string.h
+ * @brief  String functions.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * String functions, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Revisions:
+ *  - 19 Mar 2001 : Last revision.
+ *  - 16 Apr 2007 : GPL'd.
+ *  - 15 Aug 2016 : Documented. GPL v3.
+ *
+ * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef STRING_H
 
 #define STRING_H
-
-/*	int strlen(char *str)
-
-	Return string length.
-*/
-
+			
+/**
+ * @fn     int strlen(char *str)
+ * @brief  Return string length.
+ * @param  str - string
+ * @return length in characters
+ */
 #asm
 strlen:
 	LD	D,H
@@ -56,21 +41,23 @@ strlen:
 	RET
 #endasm
 
-/*	char *strcpy(char *dst, char *src)
-
-	Copy src to dst and return dst.
-*/
-
+/**
+ * @fn     char *strcpy(char *dst, char *src)
+ * @brief  Copy string.
+ * @param  dst - destination string
+ * @param  src - source string
+ * @return pointer to dst
+ */
 #asm
 strcpy:
-	POP	BC
-	POP	HL
-	POP	DE
-	PUSH	DE
-	PUSH	HL
-	PUSH	BC
+	POP  BC
+	POP  HL
+	POP  DE
+	PUSH DE
+	PUSH HL
+	PUSH BC
 
-	PUSH	DE
+	PUSH DE
 
 strcpy2:
 	LD	A,(HL)
@@ -83,21 +70,23 @@ strcpy2:
 	RET
 #endasm
 
-/*	char *strcat(char *dst, char *src)
-
-	Copy src at end of dst, and return dst.
-*/
-
+/**
+ * @fn     char *strcat(char *dst, char *src)
+ * @brief  Copy string at the end of another string.
+ * @param  dst - destination string
+ * @param  src - source string
+ * @return pointer to dst
+ */
 #asm
 strcat:
-	POP	BC
-	POP	HL
-	POP	DE
-	PUSH	DE
-	PUSH	HL
-	PUSH	BC
+	POP  BC
+	POP  HL
+	POP  DE
+	PUSH DE
+	PUSH HL
+	PUSH BC
 
-	PUSH	DE
+	PUSH DE
 
 strcat2
 	LD	A,(DE)
@@ -106,24 +95,22 @@ strcat2
 	INC	DE
 	JR	strcat2
 #endasm
-
-/*	int strcmp(char *str1, char *str2)
-
-	Compare strings and return:
-
-	<0	(-1)	str1 < str2
-	=0	(0)	str1 == str2
-	>0	(+1)	str1 > str2
-*/
-
+	
+/**
+ * @fn     int strcmp(char *str1, char *str2)
+ * @brief  Compare two strings.
+ * @param  str1 - a string
+ * @param  str2 - a string
+ * @return <0 on str1 < str2; =0 on str1 == str2; >0 on str1 > str2
+ */
 #asm
 strcmp
-	POP	BC
-	POP	HL
-	POP	DE
-	PUSH	DE
-	PUSH	HL
-	PUSH	BC
+	POP  BC
+	POP  HL
+	POP  DE
+	PUSH DE
+	PUSH HL
+	PUSH BC
 strcmp1
 	LD	A,(DE)
 	CP	(HL)
@@ -147,19 +134,22 @@ strcmp3
 	RET
 #endasm
 
-/*	char *strchr(char *str, char ch)
-
-	Search ch in str. Return pointer to ch, else 0.
-*/
-
+/**
+ * @fn     char *strchr(char *str, char ch)
+ * @brief  Search a character in a string.
+ * @param  str - the string where to search
+ * @param  ch  - the character to find
+ * @return pointer to ch in the string, or NULL on failure
+ */
 #asm
 strchr
-	POP	BC
-	POP	DE
-	POP	HL
-	PUSH	HL
-	PUSH	DE
-	PUSH	BC
+	POP  BC
+	POP  DE
+	POP  HL
+	PUSH HL
+	PUSH DE
+	PUSH BC
+	
 
 strchr2
 	LD	A,(HL)
@@ -175,19 +165,20 @@ strchr2
 	RET
 #endasm
 
-/*	char *strupr(char *str)
-
-	Convert str to upper case.
-*/
-
+/**
+ * @fn     char *strupr(char *str)
+ * @brief  Convert a string to upper case.
+ * @param  str - a string
+ * @return pointer to str
+ */
 #asm
 strupr
-	POP	BC
-	POP	HL
-	PUSH	HL
-	PUSH	BC
+	POP  BC
+	POP  HL
+	PUSH HL
+	PUSH BC
 
-	PUSH	HL
+	PUSH HL
 
 strupr1
 	LD	A,(HL)
@@ -210,38 +201,49 @@ strupr3
 	RET
 #endasm
 
-/*	int atoi(char *s)
-
-	Devuelve el valor de tipo int de una cadena.
-	El calculo termina al encontrar un caracter que no sea un
-	digito decimal (0-9), o al finalizar la cadena.
-	Se admite el signo + o - al pricipio de la cadena.
-*/
-
+/**
+ * @fn     int atoi(char *s)
+ * @brief  Convert string to a integer.
+ *
+ * This function parses a string, interpreting its content as
+ * a decimal integer number, until the end of the string, or
+ * a non decimal digit:
+ *
+ * [+|-][[0..9]...][ZERO|NON_DECIMAL_DIGIT]
+ *
+ * Examples:
+ *  - "-256"       == -256
+ *  - "64"         == 64
+ *  - "1024 bytes" == 1024
+ *  - "what?"      == 0
+ *
+ * @param  s - a string
+ * @return integer value
+ */
 atoi(s)
 char *s;
 {
-	int sign,val;
+	int sign, val;
 
-	if(*s=='+')
+	if(*s == '+')
 	{
-		sign=1;
-		++s;
+		++s; sign = 1;
 	}
-	else if(*s=='-')
+	else if(*s == '-')
 	{
-		sign=-1;
-		++s;
+		++s; sign = -1;
 	}
 	else
-		sign=1;
+		sign = 1;
 
 	val=0;
 
-	while(*s>='0' && *s<='9')
-		val=val*10+(*s++-'0');
+	while(*s >= '0' && *s <= '9')
+		val = val * 10 + (*s++ - '0');
 
-	return val*sign;
+	return val * sign;
 }
-
+	
 #endif
+
+

@@ -1,65 +1,49 @@
-/*	printf.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	printf function.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	20 Oct 2000 : Last revision.
-	16 Apr 2007 : GPL'd.
-
-	Public:
-
-	int printf(char *fmt, arg1, arg2, ...)
-
-	Private:
-
-	void xpfout(char ch)
-	void xpfend(void)
-
-	Notes:
-
-	See XPRINTF.H
-*/
-
+/**
+ * @file   printf.h
+ * @brief  Library for printf() function.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Implementation of printf() function, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Revisions:
+ *  - 20 Oct 2000 : Last revision.
+ *  - 16 Apr 2007 : GPL'd.
+ *  - 25 Aug 2016 : Documented. GPL v3.
+ *
+ * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef PRINTF_H
 
 #define PRINTF_H
 
+// Dependencies
+// ------------
+
 #ifndef XPRINTF_H
-#include <xprintf.h>
+	#include <xprintf.h>
 #endif
 
 #ifndef CONIO_H
-#include <conio.h>
+	#include <conio.h>
 #endif
 
-/*	int printf(char *fmt, arg1, arg2, ...)
-
-	Formatted output to console.
-
-	Return -1 on error, else return number of chars written.
-
-	Currently always return number of chars written.
-*/
-
+/**
+ * @fn     int printf(char *fmt, arg1, arg2, ...)
+ * @brief  Formatted output to stdout (or console).
+ *
+ * See the documentation for xprintf.h to learn about the string format.
+ *
+ * @param  fmt - string format
+ * @param  arg1 - argument #1
+ * @param  arg? - argument #?
+ * @return number or characters written, or -1 on failure (currently always #).
+ */
 #asm
 
 printf:
@@ -83,14 +67,7 @@ printf:
 	RET
 #endasm
 
-/*	int xpfout(char ch)
-
-	Auxiliary function for xprintf.
-
-	Output ch to console, and return TRUE on error, else FALSE.
-
-	Currently always return FALSE.
-*/
+// int xpfout(char ch) : output ch to stdout; return 0 on success, !=0 on failure (currently always returns 0).
 
 #asm
 
@@ -103,14 +80,7 @@ xpfout:
 
 #endasm
 
-/*	void xpfend(void)
-
-	Auxiliary function for xprintf.
-
-	Ends formatted output.
-
-	Currently do nothing.
-*/
+// void xpfend(void) : end formatted output; currently does nothing.
 
 #asm
 
@@ -120,3 +90,5 @@ xpfend:
 #endasm
 
 #endif
+
+

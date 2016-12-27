@@ -1,44 +1,39 @@
-/*	redir.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	Command line redirection.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	08 Dec 2014 : 1st version.
-
-	Public:
-
-	int redir(int argc, char *argv[])
-*/
-
+/**
+ * @file   redir.h
+ * @brief  I/O redirection in command line.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Support library for I/O redirection in command line,
+ * for MESCC (Mike's Enhanced Small C Compiler for Z80 & CP/M).
+ *
+ * Supported redirections:
+ *  - echo < address.txt
+ *  - echo 'Park Avenue, 234b' > address.txt
+ *  - echo 'Call Elvis' >> todo.txt
+ *
+ * Revisions:
+ *  - 08 Dec 2014 : 1st version.
+ *  - 29 Nov 2016 : Support for '>>' redirection. Optimizations in NULL comparisons.
+ *  - 07 Dec 2016 : GPL v3.
+ *
+ * Copyright (c) 2014-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef REDIR_H
 
 #define REDIR_H
 
-/*	int redir(int argc, char *argv[])
-
-	Stdin & stdout redirection in command line.
-	Returns number of args after parsing redirection.
-*/
-
+/**
+ * @fn     int redir(int argc, char *argv[])
+ * @brief  Stdin & stdout redirection in command line.
+ * @param  argc - number of arguments
+ * @param  argv - array of arguments
+ * @return number of arguments after redirection parsing 
+ */
 redir(argc, argv)
 int argc, argv[];
 {
@@ -46,13 +41,21 @@ int argc, argv[];
 	char *fnin, *fnout;
 	FILE *fp;
 
+#ifdef CC_FOPEN_A
+	int append;
+#endif
+
 	fnin = fnout = NULL;
 
 	for(i = 1; i < argc; ++i)
 	{
 		p = argv[i];
 
+#ifdef CC_FOPEN_A
+		if(((*p == '<' || *p == '>') && !(p[1])) || (*p == '>' && p[1] == '>' && !(p[2])))
+#else
 		if((*p == '<' || *p == '>') && !(p[1]))
+#endif
 		{
 			if(i + 1 == argc)
 				return -1;	/* No filename */
@@ -60,7 +63,13 @@ int argc, argv[];
 			if(*p == '<')
 				fnin = argv[i + 1];
 			else
+			{
 				fnout = argv[i + 1];
+
+#ifdef CC_FOPEN_A
+				append = p[1];
+#endif
+			}
 
 			argc -= 2;
 
@@ -70,17 +79,21 @@ int argc, argv[];
 		}
 	}
 
-	if(fnin != NULL)
+	if(fnin)
 	{
-		if((fp = fopen(fnin, "r")) != NULL)
+		if((fp = fopen(fnin, "r")))
 			stdin = fp;
 		else
 			return -2;
 	}
 
-	if(fnout != NULL)
+	if(fnout)
 	{
-		if((fp = fopen(fnout, "w")) != NULL)
+#ifdef CC_FOPEN_A
+		if((fp = fopen(fnout, (append ? "a" : "w"))))
+#else
+		if((fp = fopen(fnout, "w")))
+#endif
 			stdout = fp;
 		else
 			return -3;
@@ -91,3 +104,4 @@ int argc, argv[];
 
 #endif
 
+

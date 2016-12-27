@@ -1,76 +1,77 @@
-/*	atexit.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	Library for atexit() function.
-
-	Copyright (c) 2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	30 Nov 2015 : First version.
-
-	int atexit(void (*func)(void));
-
-*/
-
+/**
+ * @file   atexit.h
+ * @brief  Library for the atexit() function.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Support library for the atexit() function, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Revisions:
+ *  - 30 Nov 2015 : First version.
+ *  - 02 Dec 2016 : Prefix private names with '_' as supported in ZSM v3.1.
+ *  - 07 Dec 2016 : GPL v3.
+ *
+ * Copyright (c) 2015-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef ATEXIT_H
 
 #define ATEXIT_H
 
-#define ATEXIT_MAX 3		/* Max. # of allowed functions */
+#define ATEXIT_MAX 3          // Max. # of allowed functions
 
-int atexit_now;			/* Counter for # of stored functions */
-WORD atexit_arr[ATEXIT_MAX];	/* Array for stored functions */
+int _atexit_now;              // Counter for # of stored functions
+WORD _atexit_arr[ATEXIT_MAX]; // Array for stored functions
 
-/*	int atexit(void (*func)(void))
-
-	Adds a function to be called when the program terminates normally,
-	with exit() or a return in main() function. Returns 0 on success.
-*/
-
+/**
+ * @fn     int atexit(void (*func)(void))
+ * @brief  Register function to be called when the program terminates normally.
+ *
+ * This function registers a function to be called when the program
+ * terminates normally (either with exit(), or an implicit or
+ * explicit return in the main() function.
+ *
+ * The registered functions will be called in reverse order (last
+ * registered function first).
+ *
+ * @param  func - function to call
+ * @return 0 on sucess, other values on failure
+ */
 int atexit(func)
 WORD func;
 {
-	/* Patch exit() */
+	// Patch exit()
 
 #asm
 	LD A,0CDH
 	LD (exit),A
-	LD HL,exit_patch
+	LD HL,_exit_patch
 	LD (exit + 1),HL
 #endasm
 
-	if(atexit_now < ATEXIT_MAX) {
-		atexit_arr[atexit_now++] = func; return 0;
+	if(_atexit_now < ATEXIT_MAX) {
+		_atexit_arr[_atexit_now++] = func; return 0;
 	}
 
 	return -1;
 }
 
-/*
-*/
+// void _exit_patch(void) : call registered functions in reverse order.
 
-exit_patch()
+_exit_patch()
 {
-	while(atexit_now)
-		atexit_arr[--atexit_now]();
+	while(_atexit_now)
+		_atexit_arr[--_atexit_now]();
 }
+
+// Cleaning
 
 #undef ATEXIT_MAX
 
 #endif
+
+

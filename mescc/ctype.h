@@ -1,52 +1,36 @@
-/*	ctype.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	Characters test and conversion functions.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	19 Dec 2000 : Last revision.
-	16 Apr 2007 : GPL'd.
-
-	int isalpha(char ch)
-	int isdigit(char ch)
-	int isxdigit(char ch)
-	int isalnum(char ch)
-	int isupper(char ch)
-	int islower(char ch)
-	int toupper(char ch)
-	int tolower(char ch)
-*/
-
+/**
+ * @file   ctype.h
+ * @brief  Character tests and conversion functions.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Character tests and conversion functions, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Revisions:
+ *  - 19 Dec 2000 : Last revision.
+ *  - 16 Apr 2007 : GPL'd.
+ *  - 15 Aug 2016 : Documented. GPL v3.
+ *
+ * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef CTYPE_H
 
 #define CTYPE_H
 
-/*	int isalpha(char ch)
-
-	Return TRUE if ch is a letter, else FALSE.
-*/
-
+/**
+ * @fn     int isalpha(char ch)
+ * @brief  Test if ch is a letter.
+ * @param  ch - character to test
+ * @return true or false
+ */
 #asm
 
-isalpha:
+isalpha
 	ld a,l
 	ld hl,0
 	cp 'A'
@@ -57,22 +41,23 @@ isalpha:
 	ret c
 	cp 'z'+1
 	ret nc
-isalpha1:
+isalpha1
 	inc l
 	ret
 
 #endasm
 
-/*	int isdigit(char ch)
-
-	Return TRUE if ch is a decimal digit, else FALSE.
-*/
-
+/**
+ * @fn     int isdigit(char ch)
+ * @brief  Test if ch is a decimal digit.
+ * @param  ch - character to test
+ * @return true or false
+ */
 #asm
 
-isdigit:
+isdigit
 	ld a,l
-        ld hl,0
+    ld hl,0
 	cp '0'
 	ret c
 	cp '9'+1
@@ -82,16 +67,17 @@ isdigit:
 
 #endasm
 
-/*	int isxdigit(char ch)
-
-	Return TRUE if ch is a hex digit, else FALSE.
-*/
-
+/**
+ * @fn     int isxdigit(char ch)
+ * @brief  Test if ch is an hexadecimal digit.
+ * @param  ch - character to test
+ * @return true or false
+ */
 #asm
 
 isxdigit
 	LD	C,L
-	CALL	isdigit
+	CALL isdigit
 	RET	C
 	LD	HL,0
 	LD	A,C
@@ -109,32 +95,34 @@ isxdigit1
 
 #endasm
 
-/*	int isalnum(char ch)
-
-	Return TRUE if ch is a letter or a decimal digit, else FALSE.
-*/
-
+/**
+ * @fn     int isalnum(char ch)
+ * @brief  Test if ch is a letter or a decimal digit.
+ * @param  ch - character to test
+ * @return true or false
+ */
 #asm
 
 isalnum
 	LD	C,L
-	CALL	isdigit
+	CALL isdigit
 	RET	C
 	LD	L,C
 	JP	isalpha
 
 #endasm
 
-/*	int isupper(char ch)
-
-	Return TRUE if ch is uppercase, else FALSE.
-*/
-
+/**
+ * @fn     int isupper(char ch)
+ * @brief  Test if ch is a letter in uppercase.
+ * @param  ch - character to test
+ * @return true or false
+ */
 #asm
 
-isupper:
+isupper
 	ld a,l
-        ld hl,0
+	ld hl,0
 	cp 'A'
 	ret c
 	cp 'Z'+1
@@ -144,32 +132,38 @@ isupper:
 
 #endasm
 
-/*	int islower(char ch)
-
-	Return TRUE if ch is lowercase, else FALSE.
-*/
-
+/**
+ * @fn     int islower(char ch)
+ * @brief  Test if ch is a letter in lowercase.
+ * @param  ch - character to test
+ * @return true or false
+ */
 #asm
 
-islower:
+islower
 	ld a,l
-        ld hl,0
+	ld hl,0
 	cp 'a'
 	ret c
 	cp 'z'+1
 	ret nc
 	inc l
 	ret
+	
 #endasm
 
-/*	int toupper(char ch)
-
-	Return uppercase value of ch.
-*/
-
+/**
+ * @fn     int toupper(char ch)
+ * @brief  Convert letter to uppercase.
+ *
+ * If ch is not a letter in lowercase, returns ch unchanged.
+ *
+ * @param  ch - character to convert
+ * @return ch in uppercase
+ */
 #asm
 
-toupper:
+toupper
 	ld a,l
 	cp 'a'
 	ret c
@@ -178,16 +172,21 @@ toupper:
 	sub 20h
 	ld l,a
 	ret
+	
 #endasm
 
-/*	int tolower(char ch)
-
-	Return lowercase value of ch.
-*/
-
+/**
+ * @fn     int tolower(char ch)
+ * @brief  Convert letter to lowercase.
+ *
+ * If ch is not a letter in uppercase, returns ch unchanged.
+ *
+ * @param  ch - character to convert
+ * @return ch in lowercase
+ */
 #asm
 
-tolower:
+tolower
 	ld a,l
 	cp 'A'
 	ret c
@@ -196,7 +195,9 @@ tolower:
 	add 20h
 	ld l,a
 	ret
+	
 #endasm
 
 #endif
 
+

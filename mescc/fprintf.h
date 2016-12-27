@@ -1,63 +1,50 @@
-/*	fprintf.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	fprint function.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	23 Jan 2001 : Last revision.
-	16 Apr 2007 : GPL'd.
-
-	Public:
-
-	int fprintf(FILE *fp, char *fmt, arg1, arg2, ...)
-
-	Private:
-
-	void xfpfout(int ch)
-	void xfpfend(void)
-
-	Notes:
-
-	See XPRINTF.H
-*/
-
+/**
+ * @file   fprintf.h
+ * @brief  Library for fprintf() function.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Implementation of fprintf() function, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Revisions:
+ *  - 23 Jan 2001 : Last revision.
+ *  - 16 Apr 2007 : GPL'd.
+ *  - 25 Aug 2016 : Documented. GPL v3.
+ *
+ * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef FPRINTF_H
 
 #define FPRINTF_H
 
+// Dependencies
+// ------------
+
 #ifndef XPRINTF_H
-#include <xprintf.h>
+	#include <xprintf.h>
 #endif
 
 #ifndef FILEIO_H
-#include <fileio.h>
+	#include <fileio.h>
 #endif
 
-/*	int fprintf(FILE *fp, char *fmt, arg1, arg2, ...)
-
-	Formatted output to file.
-
-	Return -1 on error, else return number of chars written.
-*/
-
+/**
+ * @fn     int fprintf(FILE *fp, char *fmt, arg1, arg2, ...)
+ * @brief  Formatted output to a file.
+ *
+ * See the documentation for xprintf.h to learn about the string format.
+ *
+ * @param  fp - file pointer
+ * @param  fmt - string format
+ * @param  arg1 - argument #1
+ * @param  arg? - argument #?
+ * @return number or characters written, or -1 on failure.
+ */
 #asm
 
 fprintf:
@@ -87,12 +74,7 @@ fprintf:
 	RET
 #endasm
 
-/*	int xfpfout(char ch)
-
-	Auxiliary function for xprintf.
-
-	Output ch to file, and return TRUE on error, else FALSE.
-*/
+// int xfpfout(char ch) : output ch to a file; return 0 on success, !=0 on failure.
 
 #asm
 
@@ -119,14 +101,7 @@ xfpfout:
 	RET
 #endasm
 
-/*	void xfpfend(void)
-
-	Auxiliary function for xprintf.
-
-	Ends formatted output.
-
-	Currently do nothing.
-*/
+// void xfpfend(void) : end formatted output; currently does nothing.
 
 #asm
 
@@ -136,3 +111,5 @@ xfpfend:
 #endasm
 
 #endif
+
+

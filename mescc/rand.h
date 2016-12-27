@@ -1,76 +1,57 @@
-/*	rand.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	Pseudo-random number generation.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	18 Mar 2015 : 1st version.
-	23 Mar 2015 : Trying to improve rand().
-
-	Public:
-
-	int rand(void)
-	void srand(unsigned seed)
-	
-*/
-
+/**
+ * @file   rand.h
+ * @brief  Pseudo-random number generation.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Pseudo-random number generation, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Revisions:
+ *  - 18 Mar 2015 : 1st version.
+ *  - 23 Mar 2015 : Trying to improve rand().
+ *  - 15 Aug 2016 : Documented. GPL v3.
+ *
+ * Defined macros:
+ *  - RAND_MAX
+ *
+ * Copyright (c) 2015-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef RAND_H
 
 #define RAND_H
 
 #define RAND_MAX 32767
 
-/*	PRIVATE VARIABLES
-*/
+int xs_seed = 1; // Initial value for seed
 
-extern int xs_seed;
-
-#asm
-
-xs_seed: defw 1
-
-#endasm
-
-/*	int rand(void)
-
-	Returns a pseudo-random value between 0 and RAND_MAX (both included).
-*/
-
+/**
+ * @fn     int rand(void)
+ * @brief  Generate a pseudo-random value between 0 and RAND_MAX (both included).
+ * @return value
+ */
 rand()
 {
-	/* return (xs_seed = ((xs_seed * 3) + 1) & 0x7FFF); */
+	// return (xs_seed = ((xs_seed * 3) + 1) & 0x7FFF);
 
 	return (xs_seed = (((xs_seed << 1) + xs_seed) + 1) & 0x7FFF);
 }
 
-/*	void srand(unsigned seed)
-
-	Seeds the pseudo-random number generatod user by rand().
-*/
-
+/**
+ * @fn     void srand(unsigned int seed)
+ * @brief  Seeds the pseudo-random number generator used by rand().
+ * @param  seed - value
+ */
 srand(seed)
-unsigned seed;
+unsigned int seed;
 {
 	xs_seed = seed;
 }
 
 #endif
 
+

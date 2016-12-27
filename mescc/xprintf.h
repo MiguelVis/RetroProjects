@@ -1,172 +1,156 @@
-/*	xprintf.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M
-
-	Formatted output.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	19 Mar 2001 : Last revision.
-	16 Apr 2007 : GPL'd.
-
-	Public:
-
-	int xprintf(funout, funend, adrpars)
-
-	Private:
-
-	void pf_out(char c)	Salida de caracter
-	void pf_s(char *s)	Salida de cadena
-	void pf_cf(char c)	Salida de caracter con formato
-	void pf_sf(char *s)	Salida de cadena con formato
-	void pf_dec(int val)	Salida de decimal con formato
-	void pf_dec2(int val)	Funcion auxiliar
-	void pf_hex(int val)	Salida de hexadecimal con formato
-	void pf_hex2(int val)	Funcion auxiliar
-
-	Todas las funciones de salida con formato llaman a
-	pf_sf, esta a pf_s, y esta a pf_out.
-*/
-
+/**
+ * @file   xprintf.h
+ * @brief  Support library for formatted output.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Support library for formatted output,
+ * for MESCC (Mike's Enhanced Small C Compiler for Z80 & CP/M).
+ *
+ * All functions with formatted output like printf(), fprintf()
+ * and sprintf() call some private functions in this order:
+ *  - pf_sf()
+ *  - pf_s()
+ *  - pf_out()
+ *
+ * Revisions:
+ *  - 19 Mar 2001 : Last revision.
+ *  - 16 Apr 2007 : GPL'd.
+ *  - 09 Dec 2016 : Documented. Optimized. GPL v3.
+ *
+ * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef XPRINTF_H
 
 #define XPRINTF_H
 
+// Dependencies
+// ------------
+
 #ifndef STRING_H
-#include <string.h>
+	#include <string.h>
 #endif
 
-/*
-	VARIABLES GLOBALES
-*/
+// Private globals
+// ---------------
 
-unsigned char xpf_err;	/* TRUE si error */
+BYTE xpf_err;         // True on error
 
-extern int xpf_out;	/* Funcion de salida */
-extern int xpf_end;	/* Funcion de finalizacion */
+extern WORD xpf_out;  // Output function
+extern WORD xpf_end;  // End function
 
-int xpf_fw;		/* Ancho */
-unsigned char xpf_fa;	/* Alineacion: 0-Izquierda, 1-Derecha */
-unsigned char xpf_fz;	/* Rellenado con ceros: 0-No, 1-Si */
+int xpf_fw;           // Field width
+BYTE xpf_fa;          // Field alignment: 0=left, 1=right
+BYTE xpf_fz;          // True on zero filling
 
-int xpf_cnt;	/* Contador de caracteres enviados */
+int xpf_cnt;          // # of characters sent
 
-/*
-	int xprintf(funout, funend, adrpars)
-
-	Devuelve -1 si hay error en la salida.
-
-	%<-><0><ancho><tipo>
-
-	-	Salida alineada a la izquierda, en otro caso, a la derecha.
-	0	Rellenado con ceros en alineacion a la derecha.
-	ancho	Ancho de la salida para alineacion. Si el ancho especificado
-		es menor que el del argumento, la salida se produce sin
-		alineacion. Cuidado con sprintf!!!
-	tipo	d	Entero decimal con signo.
-		u	Entero decimal sin signo.
-		x	Entero hexadecimal.
-		s	Cadena.
-		c	Caracter.
-
-*/
-
+/**
+ * @fn     int xprintf(WORD funout, WORD funend, WORD adrpars)
+ * @brief  Formatted output.
+ *
+ * This function performs formatted output. It is used
+ * by printf(), fprintf() and sprintf() functions.
+ *
+ * The format is indicated in the string as follows:
+ *
+ * %[-][0][w][t]
+ *
+ * | - : Left align (default: right align).
+ * | 0 : Zero filling on right align.
+ * | w : Width for alignment. If the specified width
+ * |     is lower than the argument length, output is
+ * |     done without aligment. Care with sprinf()!
+ * | t : d = Signed decimal integer.
+ * |     u = Unsigned decimal integer.
+ * |     x = Hexadecimal integer.
+ * |     s = String.
+ * |     c = Character.
+ *
+ * @param  funout - function to output a character
+ * @param  funend - function to end output
+ * @param  adrpars - arguments addresses
+ * @return # of characters sent on sucess, -1 on failure
+ */
 xprintf(funout, funend, adrpars)
-int funout, funend;
-int *adrpars;
+WORD funout, funend;
+WORD *adrpars;
 {
-	int *parg;	/* Puntero a los parametros */
-	char *pfor;	/* Puntero a la cadena de formato */
+	WORD *parg;	// Pointer to arguments
+	char *pfor;	// Pointer to formatted string
 	int ivalue;
 	char ch;
 
-	/* Inicializacion */
+	// Setup
+	xpf_out = funout;
+	xpf_end = funend;
 
-	xpf_out=funout;
-	xpf_end=funend;
+	pfor = *adrpars;
+	parg = --adrpars;
 
-	pfor=*adrpars;
-	parg=--adrpars;
+	xpf_err = xpf_cnt = 0;
 
-	xpf_err=xpf_cnt=0;
-
-	/* A recorrer la cadena de formato! */
-
-	while((ch=*pfor++))
+	// Loop
+	while((ch = *pfor++))
 	{
-		/*ch=*pfor++;*/
-
-		if(ch=='%')
+		if(ch == '%')
 		{
-			if(*pfor=='-')
+			// Align
+			if(*pfor == '-')
 			{
-				xpf_fa=0;	/* Izquierda */
-				pfor++;
+				xpf_fa = 0;  // Left align
+				++pfor;
 			}
 			else
-				xpf_fa=1;	/* Derecha */
+				xpf_fa = 1;  // Right align
 
-			if(*pfor=='0')
+			// Zero filling
+			if(*pfor == '0')
 			{
-				xpf_fz=1;
-				pfor++;
+				xpf_fz = 1;  // Zero filling
+				++pfor;
 			}
 			else
-				xpf_fz=0;
+				xpf_fz = 0;
 
-			xpf_fw=0;
+			// Width
+			xpf_fw = 0;
 
-			while(*pfor>='0' && *pfor<='9')
-				xpf_fw=xpf_fw*10+(*pfor++)-'0';
+			while(*pfor >= '0' && *pfor <= '9')
+				xpf_fw = xpf_fw * 10 + (*pfor++) - '0';
 
-			ch=*pfor;
-
-			if(ch=='d')
+			// Type
+			switch(ch = *pfor++)
 			{
-				pfor++;
-				ivalue=*parg--;
-				pf_dec(ivalue);
+				case 'd'  :
+					ivalue = *parg--;
+					pf_dec(ivalue);
+					break;
+				case 'u'  :
+					ivalue = *parg--;
+					pf_udec(ivalue);
+					break;
+				case 'x'  :
+					ivalue = *parg--;
+					pf_hex(ivalue);
+					break;
+				case 'c'  :
+					pf_cf(*parg--);
+					break;
+				case 's'  :
+					pf_sf(*parg--);
+					break;
+				case '\0' :
+					--pfor;
+					// P'abajo
+				default   :
+					pf_out('!');
+					break;
 			}
-			else if(ch=='u')
-			{
-				pfor++;
-				ivalue=*parg--;
-				pf_udec(ivalue);
-			}
-			else if(ch=='x')
-			{
-				pfor++;
-				ivalue=*parg--;
-				pf_hex(ivalue);
-			}
-			else if(ch=='c')
-			{
-				pfor++;
-				pf_cf(*parg--);
-			}
-			else if(ch=='s')
-			{
-				pfor++;
-				pf_sf(*parg--);
-			}
-			else
-				pf_out(ch);
 		}
 		else
 			pf_out(ch);
@@ -180,12 +164,7 @@ int *adrpars;
 	return xpf_err ? -1 : xpf_cnt;
 }
 
-/*
-	void pf_sf(char *s)
-	-------------------
-
-	Salida de cadena con formato.
-*/
+// void pf_sf(char *s) : output formatted string.
 
 pf_sf(s)
 char *s;
@@ -195,23 +174,24 @@ char *s;
 
 	if(xpf_fw)
 	{
-		if((len=strlen(s))<xpf_fw)
+		if((len = strlen(s)) < xpf_fw)
 		{
-			xpf_fw=xpf_fw-len;
-			if(xpf_fa)	/* Derecha */
+			xpf_fw = xpf_fw-len;
+
+			if(xpf_fa)
 			{
-				if(xpf_fz)
-					fill='0';
-				else
-					fill=' ';
+				// Left align
+				fill = (xpf_fz ? '0' : ' ');
+
 				while(xpf_fw--)
 					pf_out(fill);
 				pf_s(s);
-
 			}
-			else		/* Izquierda */
+			else
 			{
+				// Right align
 				pf_s(s);
+
 				while(xpf_fw--)
 					pf_out(' ');
 			}
@@ -223,110 +203,110 @@ char *s;
 	pf_s(s);
 }
 
-/*
-	void pf_cf(char c)
-	------------------
-
-	Salida de caracter con formato.
-*/
+// void pf_cf(char c) : output formatted character.
 
 pf_cf(c)
 char c;
 {
 	char tmp[2];
 
-	tmp[0]=c;
-	tmp[1]=0;
+	tmp[0] = c; tmp[1] = '\0';
 
 	pf_sf(tmp);
 }
 
-unsigned char xpf_dst[7];
-unsigned char *xpf_dpt;
+unsigned char xpf_dst[7];  // Buffer for numbers
+unsigned char *xpf_dpt;    // Buffer pointer
+
+// void pf_dec(int i) : output signed decimal integer.
 
 pf_dec(i)
 int i;
 {
-	xpf_dpt=xpf_dst;
+	xpf_dpt = xpf_dst;
 
-	if(i<0)
+	if(i < 0)
 	{
-		*xpf_dpt++='-';
-		i=-i;
+		*xpf_dpt++ = '-'; i = -i;
 	}
 
 	pf_dec2(i);
 
-	*xpf_dpt=0;
+	*xpf_dpt = '\0';
 
 	pf_sf(xpf_dst);
 }
+
+// void pf_dec2(int i) : helper for pf_dec().
 
 pf_dec2(i)
 int i;
 {
 	int n;
 
-	if(n=i/10)
+	if(n = i / 10)
 		pf_dec2(n);
 
-	*xpf_dpt++=i%10+'0';
+	*xpf_dpt++ = i % 10 + '0';
 }
+
+// void pf_udec(unsigned int i) : output unsigned decimal integer.
 
 pf_udec(i)
 unsigned i;
 {
-	xpf_dpt=xpf_dst;
+	xpf_dpt = xpf_dst;
 
 	pf_udec2(i);
 
-	*xpf_dpt=0;
+	*xpf_dpt = '\0';
 
 	pf_sf(xpf_dst);
 }
+
+// void pf_udec2(unsigned int i) : helper for pf_udec().
 
 pf_udec2(i)
 unsigned i;
 {
 	unsigned n;
 
-	if(n=i/10)
+	if(n = i / 10)
 		pf_udec2(n);
 
-	*xpf_dpt++=i%10+'0';
+	*xpf_dpt++ = i % 10 + '0';
 }
+
+// void pf_hex(unsigned int i) : output hexadecimal integer.
 
 pf_hex(i)
 unsigned i;
 {
-	xpf_dpt=xpf_dst;
+	xpf_dpt = xpf_dst;
 
 	pf_hex2(i);
 
-	*xpf_dpt=0;
+	*xpf_dpt = '\0';
 
 	pf_sf(xpf_dst);
 }
+
+// void pf_hex2(unsigned int i) : helper for pf_hex().
 
 pf_hex2(i)
 unsigned i;
 {
 	unsigned n;
 
-	if(n=i/16)
+	if(n = i / 16)
 		pf_hex2(n);
 
-	i%=16;
+	i %= 16;
 
-	*xpf_dpt++ = i < 10 ? '0'+i : 'A'+i-10;
+	*xpf_dpt++ = i < 10 ? '0' + i : 'A' + i - 10;
 }
 
-/*
-	void pf_s(char *s)
-	------------------
-
-	Salida de cadena.
-*/
+// void pf_s(char *s) : output string.
 
 pf_s(s)
 char *s;
@@ -335,12 +315,7 @@ char *s;
 		pf_out(*s++);
 }
 
-/*
-	void pf_out(char c)
-	-----------------
-
-	Salida de caracter.
-*/
+// void pf_out(char c) : output character.
 
 #asm
 pf_out:
@@ -364,9 +339,7 @@ xpf_out:
 	RET
 #endasm
 
-/*
-	void pf_end(void)
-*/
+// void pf_end(void) : end output.
 
 #asm
 pf_end:
@@ -376,3 +349,5 @@ xpf_end:
 #endasm
 
 #endif
+
+

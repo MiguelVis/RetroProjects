@@ -1,63 +1,44 @@
-/*	conio.h
-
-	Mike's Enhanced Small C Compiler for Z80 & CP/M.
-
-	Console I/O.
-
-	Copyright (c) 1999-2015 Miguel I. Garcia Lopez / FloppySoftware, Spain
-
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License as published by the
-	Free Software Foundation; either version 2, or (at your option) any
-	later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-
-	Revisions:
-
-	22 Jan 2001 : Last revision.
-	16 Apr 2007 : GPL'd.
-	21 Apr 2007 : Changed puts for ANSI compatibility.
-	15 May 2007 : Bug solved - added LF output to puts.
-	13 Jul 2014 : Added kbhit().
-	08 Dec 2014 : Added support for stdin, stdout & stderr.
-	31 Dec 2014 : Solved bug in putstr when characters are > 0x7F.
-	20 Dec 2015 : Added macro CC_CONIO_BIOS to support direct console I/O using BIOS, instead of BDOS.
-	08 Jan 2015 : Modified getch() when access BDOS (fn. 6 instead of 1).
-
-	Public:
-
-	int putch(int ch)
-	int getch(void)
-	int kbhit(void)
-	int getchar(void)
-	int putchar(int ch)
-	int putstr(char *s)
-	int puts(char *s)
-
-	Supports following #defs:
-
-	#define CC_STDIO      Support to stdin, stdout & stderr.
-	#define CC_CONIO_BIOS Support to direct console I/O.
-*/
-
+/**
+ * @file   conio.h
+ * @brief  Console I/O.
+ * @author Miguel I. Garcia Lopez / FloppySoftware
+ *
+ * Console I/O functions, for MESCC (Mike's Enhanced
+ * Small C Compiler for Z80 & CP/M).
+ *
+ * Supports following #defines:
+ *  - CC_STDIO      Support for stdin, stdout & stderr.
+ *  - CC_CONIO_BIOS Support for direct console I/O.
+ *
+ * Revisions:
+ *  - 22 Jan 2001 : Last revision.
+ *  - 16 Apr 2007 : GPL'd.
+ *  - 21 Apr 2007 : Changed puts for ANSI compatibility.
+ *  - 15 May 2007 : Bug solved - added LF output to puts.
+ *  - 13 Jul 2014 : Added kbhit().
+ *  - 08 Dec 2014 : Added support for stdin, stdout & stderr.
+ *  - 31 Dec 2014 : Solved bug in putstr when characters are > 0x7F.
+ *  - 20 Dec 2015 : Added macro CC_CONIO_BIOS to support direct console I/O using BIOS, instead of BDOS.
+ *  - 08 Jan 2015 : Modified getch() when access BDOS (fn. 6 instead of 1).
+ *  - 10 Dec 2016 : Documented. GPL v3.
+ *
+ * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ *
+ * Licensed under the GNU General Public License v3.
+ *
+ * http://www.floppysoftware.es
+ * floppysoftware@gmail.com
+ */
 #ifndef CONIO_H
 
 #define CONIO_H
 
-/*	int putch(int ch)
-
-	Sends character ch to the console.
-	Returns ch.
-*/
-
+/**
+ * @fn     int putch(int ch)
+ * @brief  Send character to the console.
+ * @param  ch - character
+ * @return ch
+ */
 #ifdef CC_CONIO_BIOS
 #asm
 
@@ -89,13 +70,14 @@ putch
 #endasm
 #endif
 
-/*	int getch(void)
-
-	Gets a character from the console without echo. 
-	Waits until a character is available.
-	Returns character.
-*/
-
+/**
+ * @fn     int getch(void)
+ * @brief  Get character from the console without echo. 
+ *
+ * Waits until a character is available.
+ *
+ * @return character
+ */
 #ifdef CC_CONIO_BIOS
 #asm
 
@@ -122,12 +104,11 @@ getch
 #endasm
 #endif
 
-/*	int kbhit(void)
-
-	Tests console input status.
-	Returns !=0 if a character is available, 0 otherwise.
-*/
-
+/**
+ * @fn     int kbhit(void)
+ * @brief  Tests console input status.
+ * @return != 0 if a character is available, else 0.
+ */
 #ifdef CC_CONIO_BIOS
 #asm
 
@@ -151,15 +132,17 @@ kbhit
 #endasm
 #endif
 
-/*	int getchar(void)
-
-	Gets a character from the console or stdin.
-	Waits until a character is available.
-
-	#ifdef  CC_STDIO: Returns a character from stdin, or EOF on end of file or error.
-	#ifndef CC_STDIO: Returns a character from the console. Echoes the character.
-*/
-
+/**
+ * @fn     int getchar(void)
+ * @brief  Get character from the console or stdin.
+ *
+ * Waits until a character is available.
+ *
+ * #ifdef  CC_STDIO: Returns a character from stdin, or EOF on end of file or error.
+ * #ifndef CC_STDIO: Returns a character from the console. Echoes the character.
+ *
+ * @return character on success, else EOF.
+ */
 getchar()
 {
 
@@ -175,14 +158,16 @@ getchar()
 
 }
 
-/*	int putchar(int ch)
-
-	Sends a character to the console or stdout.
-
-	#ifdef  CC_STDIO: Returns ch, or EOF on error.
-	#ifndef CC_STDIO: Returns ch.
-*/
-
+/**
+ * @fn     int putchar(int ch)
+ * @brief  Send character to the console or stdout.
+ *
+ * #ifdef  CC_STDIO: Returns ch, or EOF on error.
+ * #ifndef CC_STDIO: Returns ch.
+ *
+ * @param  ch - character
+ * @return ch on success, else EOF.
+ */
 putchar(ch)
 int ch;
 {
@@ -202,14 +187,16 @@ int ch;
 
 }
 
-/*	int putstr(char *s)
-
-	Sends a string to the console or stdout.
-
-	#ifdef  CC_STDIO: Returns the number of characters sent, or EOF on error.
-	#ifndef CC_STDIO: Returns a non-negative value to indicate success.
-*/
-
+/**
+ * @fn     int putstr(char *s)
+ * @brief  Send string to the console or stdout.
+ *
+ * #ifdef  CC_STDIO: Returns the number of characters sent, or EOF on error.
+ * #ifndef CC_STDIO: Returns a non-negative value to indicate success.
+ *
+ * @param  s - string
+ * @return number of characters sent on success, else EOF.
+ */
 putstr(s)
 char *s;
 {
@@ -242,20 +229,24 @@ char *s;
 
 }
 
-/*	int puts(char *s)
-
-	Sends a string, plus a new line, to the console or stdout.
-
-	#ifdef  CC_STDIO: Returns the number of characters sent, or EOF on error. -- FIXME
-	#ifndef CC_STDIO: Returns a non-negative value to indicate success.
-*/
-
+/**
+ * @fn     int puts(char *s)
+ * @brief  Send string + '\n' to the console or stdout.
+ *
+ * #ifdef  CC_STDIO: Returns the number of characters sent, or EOF on error.
+ * #ifndef CC_STDIO: Returns a non-negative value to indicate success.
+ *
+ * @param  s - string
+ * @return number of characters sent on success, else EOF.
+ */
 puts(s)
 char *s;
 {
 	putstr(s);
 
-	return putchar('\n');
+	return putchar('\n');  /* FIXME */
 }
 
 #endif
+
+
