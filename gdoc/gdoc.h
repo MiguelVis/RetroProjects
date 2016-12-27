@@ -30,13 +30,14 @@
 		16 Apr 2016 : v0.06
 		02 Jun 2016 : v1.00
 		15 Aug 2016 : v1.01
+		11 Dec 2016 : v1.02
 */
 
 /* Program data
    ------------
 */
 #define APP_NAME    "gdoc"
-#define APP_VERSION "v1.01 / 15 Aug 2016"
+#define APP_VERSION "v1.02 / 11 Dec 2016"
 #define APP_COPYRGT "(c) 2016 FloppySoftware"
 #define APP_USAGE   "gdoc [-options...] filename [> destination]\n\n\t-c for C sources (default)\n\t-a for assembler sources\n\t-t for text output (default)\n\t-h for html output"
 
@@ -81,7 +82,7 @@
 /* Max. # of entries in arrays
    ---------------------------
 */
-#define TAG_MAX_DETAILS 32  // Detail lines
+#define TAG_MAX_DETAILS 64  // Detail lines
 #define TAG_MAX_AUTHORS 8   // Authors
 #define TAG_MAX_PARAMS  8   // Parameters
 

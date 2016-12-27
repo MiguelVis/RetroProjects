@@ -52,6 +52,7 @@
 		02 Jun 2016 : 1.00 : First public release.
 		15 Aug 2016 : 1.01 : Solved bug: a couple of <\p> instead of </p>. Added support for simple lists.
 		                     Non proportional font for HTML output.
+		11 Dec 2016 : 1.02 : Incremented max. # of detail lines to 64. Adapted to changes in fileio.h.
 
 	Implemented tags:
 
@@ -76,7 +77,6 @@
 */
 #define CC_STDIO        // Support for stdin, stdout, stderr.
 #define CC_REDIR        // Support for command line redirection - needs CC_STDIO.
-#define CC_FILEIO_SMALL // Exclude fread(), fwrite() and fgets().
 
 /* Standard MESCC library
    ----------------------
