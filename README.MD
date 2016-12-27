@@ -62,6 +62,12 @@ KS
 Keyboard & screen library for CP/M.
 
 
+LOG
+---
+
+Simple logger for MESCC.
+
+
 MESCC
 -----
 
