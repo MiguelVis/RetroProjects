@@ -38,9 +38,10 @@
 	Revisions:
 
 		06 Jan 2016 : Last update of template.
-		02 Jun 2016 : Added stderr support in usage(). Added error(). Added some comments.
-		20 Jul 2016 : Removed CC_FILEIO_SMALL. Added CC_FOPEN_A, CC_FREAD, CC_FWRITE, CC_FGETS.
-		11 Nov 2016 : Updated GPL license to v3.
+		02 Jun 2016 : Add stderr support in usage(). Added error(). Add some comments.
+		20 Jul 2016 : Remove CC_FILEIO_SMALL. Added CC_FOPEN_A, CC_FREAD, CC_FWRITE, CC_FGETS.
+		11 Nov 2016 : Update GPL license to v3.
+		30 Nov 2016 : Add APP_INFO. Update usage(). Improve command line parsing.
 */
 
 /* Defines for MESCC libraries
@@ -90,12 +91,15 @@
 #include <printf.h>
 #include <qsort.h>
 #include <rand.h>
-#include <redir.h>
 #include <setjmp.h>
 #include <sprintf.h>
+#include <stdbool.h>
 #include <string.h>
-#include <xprintf.h>
 #include <z80.h>
+
+#ifdef CC_REDIR
+	#include <redir.h>
+#endif
 
 /* Project libraries
    -----------------
@@ -108,7 +112,8 @@
 #define APP_NAME    "template"
 #define APP_VERSION "v1.00 / 06 Jan 2016"
 #define APP_COPYRGT "(c) 2016 FloppySoftware"
-#define APP_USAGE   "template [-options...] [filename...]"
+#define APP_INFO    "This program does something."
+#define APP_USAGE   "template [-option...] [filename...]"
 
 /* Program entry
    -------------
@@ -117,35 +122,59 @@ main(argc, argv)
 int argc;
 unsigned int argv[]; // char *argv[] - unsupported by MESCC (yet?)
 {
-	char *pch; int i;
+	char *pch; int i, inopt;
 
 	// Show usage if there are no arguments
 
 	if(argc == 1)
 		usage();
 
-	// Check options in command line
+	// Check arguments in command line
 
 	for(i = 1; i < argc; ++i)
 	{
 		pch = argv[i];
 
-		if(*pch == '-')
+		if(*pch == '-' && pch[1])
 		{
-			// Option
+			// Option/s
 
-			switch(pch[1])
+			inopt = 1;
+
+			while(inopt && *(++pch))
 			{
-				case 'A' : break;
-				...
-				default  : error("Bad option"); break;
+				switch(*pch)
+				{
+					// -a
+					case 'A' :
+						// Do someting
+						break;
+
+					// -n256
+					case 'N' :
+						if(*(++pch))
+						{
+							n = atoi(pch);
+						}
+						else
+						{
+							error("Bad argument");
+						}
+						break;
+					...
+					default  :
+						error("Bad option");
+						break;
+				}
 			}
 		}
-		else
-		{
-			// Filename
+	}
 
-		}
+	// Check filenames in command line
+
+	if(i < argc)
+	{
+		// First filename is argv[i]
 	}
 
 	// Success
@@ -159,13 +188,13 @@ unsigned int argv[]; // char *argv[] - unsupported by MESCC (yet?)
 usage()
 {
 #ifdef CC_REDIR
-	fprintf(stderr, "%s %s\n\n", APP_NAME, APP_VERSION);
-	fprintf(stderr, "%s\n\n", APP_COPYRGT);
-	fprintf(stderr, "Usage: %s\n", APP_USAGE);
+	fprintf(stderr, "%s %s - %s\n\n", APP_NAME, APP_VERSION, APP_COPYRGT);
+	fprintf(stderr, "%s\n\n", APP_INFO);
+	fprintf(stderr, "Usage: %s\n\n", APP_USAGE);
 #else
-	printf("%s %s\n\n", APP_NAME, APP_VERSION);
-	printf("%s\n\n", APP_COPYRGT);
-	printf("Usage: %s\n", APP_USAGE);
+	printf("%s %s - %s\n\n", APP_NAME, APP_VERSION, APP_COPYRGT);
+	printf("%s\n\n", APP_INFO);
+	printf("Usage: %s\n\n", APP_USAGE);
 #endif
 
 	exit(0);
