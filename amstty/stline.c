@@ -20,7 +20,7 @@
 
 	Contact:
 
-	www.floppysoftware.vacau.com
+	www.floppysoftware.es
 	cpm-connections.blogspot.com
 	floppysoftware@gmail.com
 
