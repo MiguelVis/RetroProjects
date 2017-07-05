@@ -3,9 +3,9 @@
 +----| Text Editor |
      +-------------+
 
-v1.06 / 10 Jun 2016
+v1.08 / 05 Jul 2017
 
-(c) 2015-2016 Miguel Garcia / FloppySoftware
+(c) 2015-2017 Miguel Garcia / FloppySoftware
 
     www.floppysoftware.es
     cpm-connections.blogspot.com
