@@ -31,6 +31,7 @@
 	10 Jun 2016 : v1.06 : Removed BOX_COL. Added PS_FNAME, PS_INF, PS_LIN_CUR, PS_LIN_NOW,
 	                      PS_LIN_MAX, PS_COL_CUR, PS_COL_NOW, PS_COL_MAX.
 	14 Jun 2016 : v1.07 : Hack for SamaruX.
+	05 Jul 2017 : v1.08
 
 	Notes:
 
@@ -41,9 +42,9 @@
    -------
 */
 #ifdef OS_SAMARUX
-#define TE_VERSION "v1.07 / 14 Jun 2016 for SamaruX"  /* Program version and date */
+#define TE_VERSION "v1.08 / 05 Jul 2017 for SamaruX"  /* Program version and date */
 #else
-#define TE_VERSION "v1.07 / 14 Jun 2016 for CP/M"  /* Program version and date */
+#define TE_VERSION "v1.08 / 05 Jul 2017 for CP/M"  /* Program version and date */
 #endif
 
 /* More defs.

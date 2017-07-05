@@ -47,6 +47,7 @@
 	                      Removed lp_max, box_cols, ps_fname, ps_lin_cur, ps_lin_now, ps_lin_max,
 	                      ps_col_cur, ps_col_now, ps_col_max.
 	14 Jun 2016 : v1.07 : Hack for SamaruX.
+	05 Jul 2017 : v1.08 : Optimizations in NULL comparisons. Include CC_FGETS.
 
 	Notes:
 
@@ -56,8 +57,8 @@
 /* Operating System
    ----------------
 */
-//#define OS_CPM
-#define OS_SAMARUX
+#define OS_CPM
+//#define OS_SAMARUX
 
 /* Libraries
    ---------
@@ -68,6 +69,9 @@
 #define ReadLine InputLine
 #define putstr putstring
 #else
+
+#define CC_FGETS
+
 #include <mescc.h>
 #include <string.h>
 #include <ctype.h>
@@ -155,7 +159,8 @@ int argc, argv[];
 
 	lp_arr = malloc(MAX_LINES * SIZEOF_PTR);
 
-	if(ln_dat == NULL || ln_clp == NULL || fe_dat == NULL || lp_arr == NULL)
+	//if(ln_dat == NULL || ln_clp == NULL || fe_dat == NULL || lp_arr == NULL)
+	if(!ln_dat || !ln_clp || !fe_dat || !lp_arr)
 	{
 		ErrLineMem(); CrtReset(); return 1;
 	}
@@ -460,13 +465,16 @@ LoopInsert()
 	p1 = malloc(left_len + 1);
 	p2 = malloc(right_len + 1);
 
-	if(p1 == NULL || p2 == NULL)
+	//if(p1 == NULL || p2 == NULL)
+	if(!p1 || !p2)
 	{
 		ErrLineMem();
 
-		if(p1 != NULL)
+		//if(p1 != NULL)
+		if(p1)
 			free(p1);
-		if(p2 != NULL)
+		//if(p2 != NULL)
+		if(p2)
 			free(p2);
 
 		return;
@@ -514,7 +522,8 @@ LoopLeftDel()
 		/**ErrLineLong();**/ return;
 	}
 
-	if((p = malloc(len_up + len_cur + 1)) == NULL)
+	//if((p = malloc(len_up + len_cur + 1)) == NULL)
+	if(!(p = malloc(len_up + len_cur + 1)))
 	{
 		ErrLineMem(); return;
 	}
@@ -568,7 +577,8 @@ LoopRightDel()
 		/**ErrLineLong();**/ return;
 	}
 
-	if((p = malloc(len_dn + len_cur + 1)) == NULL)
+	//if((p = malloc(len_dn + len_cur + 1)) == NULL)
+	if(!(p = malloc(len_dn + len_cur + 1)))
 	{
 		ErrLineMem(); return;
 	}
@@ -661,7 +671,8 @@ char *s;
 {
 	CrtClearLine(CRT_ROWS - 1);
 
-	if(s != NULL)
+	//if(s != NULL)
+	if(s)
 		putstr(s);
 
 	/* Set flag for Loop() */
@@ -679,7 +690,8 @@ char *s;
 {
 	SysLine(s);
 
-	if(s != NULL)
+	//if(s != NULL)
+	if(s)
 		putchr(' ');
 
 	putstr("Press ANY key, please: "); getchr();
@@ -699,7 +711,8 @@ char *s;
 
 	SysLine(s);
 
-	if(s != NULL)
+	//if(s != NULL)
+	if(s)
 		putchr(' ');
 
 	putstr("Please, confirm Y/N: ");
@@ -821,7 +834,8 @@ ResetLines()
 
 	for(i = 0; i < MAX_LINES; ++i)
 	{
-		if(lp_arr[i] != NULL)
+		//if(lp_arr[i] != NULL)
+		if(lp_arr[i])
 		{
 			free(lp_arr[i]); lp_arr[i] = NULL;
 		}
@@ -871,7 +885,8 @@ char *fn;
 
 	SysLine("Reading file.");
 
-	if((fp = fopen(fn, "r")) == NULL)
+	//if((fp = fopen(fn, "r")) == NULL)
+	if(!(fp = fopen(fn, "r")))
 	{
 		ErrLineOpen(); return -1;
 	}
@@ -880,7 +895,8 @@ char *fn;
 
 	for(i = 0; i < 32000; ++i)
 	{
-		if(fgets(ln_dat, ln_max + 2, fp) == NULL) /* ln_max + CR + ZERO */
+		//if(fgets(ln_dat, ln_max + 2, fp) == NULL) /* ln_max + CR + ZERO */
+		if(!fgets(ln_dat, ln_max + 2, fp)) /* ln_max + CR + ZERO */
 			break;
 
 		if(i == MAX_LINES)
@@ -897,7 +913,8 @@ char *fn;
 			ErrLineLong(); ++code; break;
 		}
 
-		if((lp_arr[i] = malloc(len + 1)) == NULL)
+		//if((lp_arr[i] = malloc(len + 1)) == NULL)
+		if(!(lp_arr[i] = malloc(len + 1)))
 		{
 			ErrLineMem(); ++code; break;
 		}
@@ -975,7 +992,8 @@ char *fn;
 
 	/* Check if file exists */
 
-	if((fp = fopen(fn, "r")) != NULL)
+	//if((fp = fopen(fn, "r")) != NULL)
+	if((fp = fopen(fn, "r")))
 	{
 		fclose(fp);
 
@@ -1010,7 +1028,8 @@ char *fn;
 
 	/* Open the file */
 
-	if((fp = fopen(fn, "w")) == NULL)
+	//if((fp = fopen(fn, "w")) == NULL)
+	if(!(fp = fopen(fn, "w")))
 	{
 		ErrLineOpen(); return -1;
 	}
@@ -1664,7 +1683,8 @@ BfEdit()
 
 		strcpy(lp_arr[lp_cur], ln_dat);
 	}
-	else if((buf = malloc(len + 1)) == NULL)
+	//else if((buf = malloc(len + 1)) == NULL)
+	else if(!(buf = malloc(len + 1)))
 	{
 		ErrLineMem(); /* FIX-ME: Re-print the line with old contents? */
 	}
