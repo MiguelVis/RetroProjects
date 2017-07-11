@@ -44,6 +44,12 @@ CPMX
 Some Unix-like tools for CP/M.
 
 
+DYNARR
+------
+
+Management library for dynamic arrays of strings.
+
+
 EXAMPLES
 --------
 
