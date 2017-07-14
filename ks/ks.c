@@ -65,11 +65,13 @@ unsigned int argv[]; // char *argv[] - unsupported by MESCC (yet?)
 {
 	// Check command line arguments
 	if(argc != 2) {
-		printf("Usage: ks tty_name"); return;
+		printf("Usage: ks tty_name\n"); return;
 	}
 
 	// Start KS
-	KsInit(argv[1]);
+	if(KsInit(KsGetCode(argv[1])) == -1) {
+		printf("Unknown TTY: %s\n", argv[1]); return;
+	}
 
 	KsClrScr();
 

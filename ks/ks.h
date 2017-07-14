@@ -2,9 +2,16 @@
  * @file
  * @brief Keyboard & screen functions library for CP/M & MESCC.
  *
- * The functionality of this library is similar to the curses / ncurses
- * libraries for Unix: a common interface for keyboard and screen devices
+ * This library offers a common interface for keyboard and screen devices
  * under CP/M.
+ *
+ * Supported TTYs:
+ * - KS_VT52      for generic VT52   80x24
+ * - KS_VT100     for generic VT100  80x25
+ * - KS_PCW       for Amstrad PCW    90x31
+ * - KS_CPC       for Amstrad CPC    24x80 under CP/M Plus
+ * - KS_SPECTRUM  for Spectrum +3    51x23
+ * - KS_KAYPRO    for Kaypro         24x80
  */
 
 /*	ks.h
@@ -32,6 +39,7 @@
 	03 Sep 2016 : Work begins.
 	29 Sep 2016 : Rename functions.
 	03 Oct 2016 : Reworked KsInit() and others. Added support for reverse and underline.
+	14 Jul 2017 : Added TTY names.
 
 	Public:
 
@@ -41,14 +49,23 @@
 /* Public defines
    --------------
 */
+#define KS_VT52     0
+#define KS_VT100    1
+#define KS_PCW      2
+#define KS_CPC      3
+#define KS_SPECTRUM 4
+#define KS_KAYPRO   5
 
 /* Private defines
    ---------------
 */
+#define XKS_TTYS    6  // Number of supported TTYs
 
 /* Private globals
    ---------------
 */
+WORD xks_names[XKS_TTYS];  // TTY names by code -- char *xks_names[]
+
 int xks_rows;      // Screen rows
 int xks_cols;      // Screen columns
 BYTE *xks_clrscr;  // Clear screen
@@ -61,67 +78,105 @@ BYTE *xks_yuline;  // Underline on
 BYTE *xks_nuline;  // Underline off
 
 /**
- * @fn    int KsInit(char *tty_name)
- * @brief Initialize the KS library.
- *
- * Supported TTY names are:
- * - vt52
- * - vt100
- * - pcw
- * - cpc
- * - spectrum
- * - kaypro
- *
- * @param   tty_name - TTY name
+ * @fn      int KsInit(char *tty_name)
+ * @brief   Initialize the KS library.
+ * @param   code - TTY code
  * @return  0 on success, -1 on failure
  */
-KsInit(tty_name)
-char *tty_name;
+KsInit(code)
+int code;
 {
+	// Setup BIOS jumps, etc.
 	xKsInit();
 
-	if(!strcmp(tty_name, "vt52")) {
-		xKsInit24x80();
-		xks_clrscr = "\eH\eJ";
-		xks_poscur = "A\eY%r%c";
-	}
-	else if(!strcmp(tty_name, "vt100")) {
-		xks_rows   = 25;
-		xks_cols   = 80;
-		xks_clrscr = "\e[H\e[J";
-		xks_poscur = "B\e[%r;%cH";
-	}
-	else if(!strcmp(tty_name, "pcw")) {
-		xks_rows   = 31;
-		xks_cols   = 90;
-		xKsInitAmstrad();
-	}
-	else if(!strcmp(tty_name, "cpc")) {
-		xKsInit24x80();
-		xKsInitAmstrad();
-	}
-	else if(!strcmp(tty_name, "spectrum")) {
-		xks_rows   = 23;
-		xks_cols   = 51;
-		xKsInitAmstrad();
+	// Setup TTY
+	switch(code) {
+		case KS_VT52 :
+			xKsInit24x80();
+			xks_clrscr = "\eH\eJ";
+			xks_poscur = "A\eY%r%c";
+			break;
 
-		KsPutRawCh('\e'); KsPutRawCh('3'); KsPutRawCh(1);
-	}
-	else if(!strcmp(tty_name, "kaypro")) {
-		xKsInit24x80();
-		xks_clrscr = "?"; *xks_clrscr = 26; // ^Z
-		xks_poscur = "A\e=%r%c";
-	}
-	else {
-		return -1;
+		case KS_VT100 :
+			xks_rows   = 25;
+			xks_cols   = 80;
+			xks_clrscr = "\e[H\e[J";
+			xks_poscur = "B\e[%r;%cH";
+			break;
+
+		case KS_PCW :
+			xks_rows   = 31;
+			xks_cols   = 90;
+			xKsInitAmstrad();
+			break;
+
+		case KS_CPC :
+			xKsInit24x80();
+			xKsInitAmstrad();
+			break;
+
+		case KS_SPECTRUM :
+			xks_rows   = 23;
+			xks_cols   = 51;
+			xKsInitAmstrad();
+
+			KsPutRawCh('\e'); KsPutRawCh('3'); KsPutRawCh(1);
+			break;
+
+		case KS_KAYPRO :
+			xKsInit24x80();
+			xks_clrscr = "?"; *xks_clrscr = 26; // ^Z
+			xks_poscur = "A\e=%r%c";
+			break;
+
+		default :
+			// Unknown tty code
+			return -1;
 	}
 
+	// Success
 	return 0;
 }
 
 KsExit()
 {
 	// Nothing yet
+}
+
+KsGetCode(name)
+char *name;
+{
+	int i;
+
+	if(!xks_names[0]) {
+		xKsNames();
+	}
+
+	for(i = 0; i < XKS_TTYS; ++i) {
+		if(!strcmp(name, xks_names[i])) {
+			// Found
+			return i;
+		}
+	}
+
+	// Unknown tty name
+	return -1;
+}
+
+KsGetName(code)
+int code;
+{
+	if(!xks_names[0]) {
+		xKsNames();
+	}
+
+	if(code >= 0 && code < XKS_TTYS) {
+		// Found
+		return xks_names[code];
+	}
+
+	// Unknown tty code
+	return -1;
 }
 
 KsClrScr()
@@ -275,6 +330,16 @@ xKsInit
 ;	jr   xKsConOut
 
 #endasm
+
+xKsNames()
+{
+	xks_names[KS_VT52]     = "vt52";
+	xks_names[KS_VT100]    = "vt100";
+	xks_names[KS_PCW]      = "pcw";
+	xks_names[KS_CPC]      = "cpc";
+	xks_names[KS_SPECTRUM] = "spectrum";
+	xks_names[KS_KAYPRO]   = "kaypro";
+}
 
 xKsInit24x80()
 {
