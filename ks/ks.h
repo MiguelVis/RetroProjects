@@ -49,8 +49,8 @@
 /* Private globals
    ---------------
 */
-BYTE xks_rows;     // Screen rows
-BYTE xks_cols;     // Screen columns
+int xks_rows;      // Screen rows
+int xks_cols;      // Screen columns
 BYTE *xks_clrscr;  // Clear screen
 BYTE *xks_poscur;  // Position cursor
 BYTE *xks_shwcur;  // Show cursor
@@ -130,7 +130,7 @@ KsClrScr()
 }
 
 KsPosCursor(row, col)
-BYTE row, col;
+int row, col;
 {
 	char *p; int v;
 
@@ -221,7 +221,6 @@ char *s;
 
 
 #asm
-
 KsGetSt:
 	call xKsConInSt
 	ld   h,0
