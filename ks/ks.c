@@ -2,7 +2,7 @@
 
 	Short description.
 
-	Copyright (c) 2016 Miguel Garcia / FloppySoftware
+	Copyright (c) 2016, 2017 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -26,18 +26,18 @@
 
 	To compile with MESCC:
 
-		cc program
-		ccopt program
-		zsm program
-		hextocom program
+		cc ks
+		ccopt ks
+		zsm ks
+		hextocom ks
 
 	Usage:
 
-		program [-options...] [filename...]
+		ks tty_name
 
 	Last revision:
 
-	04 Oct 2016
+	15 Jul 2017
 */
 
 /* Standard MESCC library
@@ -54,7 +54,8 @@
 /* Project libraries
    -----------------
 */
-#include "ks.h"
+#include "ks.h"       // Base
+#include "ks_cent.h"  // Center text
 
 /* Program entry
    -------------
@@ -69,21 +70,21 @@ unsigned int argv[]; // char *argv[] - unsupported by MESCC (yet?)
 	}
 
 	// Start KS
-	if(KsInit(KsGetCode(argv[1])) == -1) {
+	if(KsHello(KsGetCode(argv[1])) == -1) {
 		printf("Unknown TTY: %s\n", argv[1]); return;
 	}
 
-	KsClrScr();
+	KsClear();
 
 	KsCenterStr(1, "Hello World!");
 
 	KsPutStr("\n\n");
 
-	KsPutStr("Can Show / Hide Cursor: "); KsPutStr(KsCanShowCursor() ? "YES" : "NO"); KsPutCh('\n');
+	KsPutStr("Can Show / Hide Cursor: "); KsPutStr(KsCan(KS_CAN_HIDE) ? "YES" : "NO"); KsPutCh('\n');
 
 	KsPutStr("Can Reverse:            ");
 
-	if(KsCanReverse()) {
+	if(KsCan(KS_CAN_REVERSE)) {
 		KsPutStr("YES  "); KsReverse(1); KsPutStr("Reverse"); KsReverse(0);
 	}
 	else {
@@ -94,7 +95,7 @@ unsigned int argv[]; // char *argv[] - unsupported by MESCC (yet?)
 
 	KsPutStr("Can Underline:          ");
 
-	if(KsCanUnderline()) {
+	if(KsCan(KS_CAN_UNDERLINE)) {
 		KsPutStr("YES  "); KsUnderline(1); KsPutStr("Underline"); KsUnderline(0);
 	}
 	else {
@@ -104,5 +105,7 @@ unsigned int argv[]; // char *argv[] - unsupported by MESCC (yet?)
 	KsPutCh('\n');
 
 	// Quit KS
-	KsExit();
+	KsBye();
 }
+
+
