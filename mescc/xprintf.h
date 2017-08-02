@@ -16,6 +16,7 @@
  *  - 19 Mar 2001 : Last revision.
  *  - 16 Apr 2007 : GPL'd.
  *  - 09 Dec 2016 : Documented. Optimized. GPL v3.
+ *  - 02 Aug 2017 : Output '%%' as '%'.
  *
  * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
  *
@@ -58,7 +59,7 @@ int xpf_cnt;          // # of characters sent
  *
  * The format is indicated in the string as follows:
  *
- * %[-][0][w][t]
+ * %[-][0][w]t
  *
  * | - : Left align (default: right align).
  * | 0 : Zero filling on right align.
@@ -70,6 +71,8 @@ int xpf_cnt;          // # of characters sent
  * |     x = Hexadecimal integer.
  * |     s = String.
  * |     c = Character.
+ *
+ * The pair %% outputs a single %.
  *
  * @param  funout - function to output a character
  * @param  funend - function to end output
@@ -99,6 +102,15 @@ WORD *adrpars;
 	{
 		if(ch == '%')
 		{
+			// Character %
+			if(*pfor == '%')
+			{
+				pf_out(ch);
+				++pfor;
+
+				continue;
+			}
+
 			// Align
 			if(*pfor == '-')
 			{
