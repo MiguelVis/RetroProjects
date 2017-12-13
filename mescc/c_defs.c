@@ -49,6 +49,7 @@
 	17 Oct 2016 : v1.16
 	21 Oct 2016 : v1.17
 	24 Oct 2016 : v1.18
+	13 Dec 2017 : v1.19
 */
 
 // Optional #defines
@@ -59,8 +60,8 @@
 // Version
 // -------
 
-#define VERSION	"Mike's Enhanced Small C Compiler v1.18 - 24 Oct 2016"
-#define COPYRGT "(c) 1999-2016 FloppySoftware"
+#define VERSION	"Mike's Enhanced Small C Compiler v1.19 - 13 Dec 2017"
+#define COPYRGT "(c) 1999-2017 FloppySoftware"
 
 // Output types
 // ------------

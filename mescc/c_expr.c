@@ -29,6 +29,7 @@
 	03 Oct 2016 : Added '\e' to ChEsc().
 	13 Oct 2016 : Documented and optimized a bit. Added LVAL_??? names.
 	20 Oct 2016 : Added support for __FILE__ and __LINE__.
+	13 Dec 2017 : Clear lval[LVAL_TYPPTR] in heir11() for [] and function calls.
 
 	Operators precedence:
 
@@ -763,7 +764,7 @@ int *lval;
 				fpop();
 				addfn();
 
-				lval[LVAL_SYMADR] = 0;
+				lval[LVAL_TYPPTR] = lval[LVAL_SYMADR] = 0;
 				lval[LVAL_TYPIND] = ptr[SY_TYPE];
 				k=1;
 			}
@@ -778,7 +779,7 @@ int *lval;
 				}
 				else callfnc(ptr);
 
-				k = lval[LVAL_SYMADR] = 0;
+				k = lval[LVAL_TYPPTR] = lval[LVAL_SYMADR] = 0;
 			}
 			else
 				return k;
