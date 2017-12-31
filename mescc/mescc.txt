@@ -6,11 +6,11 @@
 ]     ] ]       ]     ] ]     ] ]     ]
 ]     ] ]]]]]]]  ]]]]]   ]]]]]   ]]]]]
 
-MESCC v1.17 - 21 Oct 2016
+MESCC v1.19 - 13 Dec 2017
 
 Mike's Enhanced Small C Compiler for Z80 and CP/M
 
-Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware, Spain
+Copyright (c) 1999-2017 Miguel I. Garcia Lopez / FloppySoftware, Spain
 
 www.floppysoftware.es
 cpm-connections.blogspot.com
@@ -32,7 +32,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 See the copying file for more details.
 
-Last update: 19:34 02/08/2017.
+Last update: 17:03 31/12/2017.
 
 
 OVERVIEW
