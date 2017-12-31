@@ -1,4 +1,4 @@
-		    ZSM 3.1, a CP/M Z80 assembler
+		    ZSM 3.2, a CP/M Z80 assembler
 		-------------------------------------
 
 | Changes from version 2.8 documentation have a 'change bar'
@@ -491,6 +491,23 @@ Changes made in version 3.1
    - Modified usage explanation.
 
 By Miguel Garcia / FloppySoftware - 30 Nov 2016.
+
+http://www.floppysoftware.es
+floppysoftware@gmail.com
+
+
+Changes made in version 3.2
+---------------------------
+
+   - Solved bug in rotate op-codes (rl r, rlc r, rr r, rrc r, sla r,
+     sra r, srl r): op-codes with 'c' register were translated to
+     machine code as if the 'e' register was used instead. See S24
+     section.
+   - Added patch from Ed, to restore support for date/time in titles
+     in CP/M 3: "This patched version restores date/time code as
+     assembly-time option (see DATE EQU). Now works with 8080 or Z80.".
+
+By Miguel Garcia / FloppySoftware - 01 Jan 2017.
 
 http://www.floppysoftware.es
 floppysoftware@gmail.com
