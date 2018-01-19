@@ -31,14 +31,15 @@
 		02 Jun 2016 : v1.00
 		15 Aug 2016 : v1.01
 		11 Dec 2016 : v1.02
+		19 Jan 2018 : v1.03
 */
 
 /* Program data
    ------------
 */
 #define APP_NAME    "gdoc"
-#define APP_VERSION "v1.02 / 11 Dec 2016"
-#define APP_COPYRGT "(c) 2016 FloppySoftware"
+#define APP_VERSION "v1.03 / 19 Jan 2018"
+#define APP_COPYRGT "(c) 2016-18 FloppySoftware"
 #define APP_USAGE   "gdoc [-options...] filename [> destination]\n\n\t-c for C sources (default)\n\t-a for assembler sources\n\t-t for text output (default)\n\t-h for html output"
 
 /* Documentation markers for C language

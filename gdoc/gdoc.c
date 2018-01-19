@@ -53,6 +53,7 @@
 		15 Aug 2016 : 1.01 : Solved bug: a couple of <\p> instead of </p>. Added support for simple lists.
 		                     Non proportional font for HTML output.
 		11 Dec 2016 : 1.02 : Incremented max. # of detail lines to 64. Adapted to changes in fileio.h.
+		19 Jan 2018 : 1.03 : Solved bug in line break after list. Join lines in list items.
 
 	Implemented tags:
 
@@ -592,7 +593,7 @@ dump_st1()
 	int i;
 	char *pch;
 	char anchor[7];
-	int li, br;
+	int ul;
 
 	// Skip last detail line if it's empty
 
@@ -650,9 +651,9 @@ dump_st1()
 
 	if(tag_num_details) {
 		
-		// No list, no break
+		// No list
 		
-		li = br = 0;
+		ul = 0;
 		
 		// Open paragraph
 		
@@ -668,48 +669,71 @@ dump_st1()
 			
 			pch = tag_details[i];
 			
-			// List preliminaries
+			// Write line
 			
 			if(*pch == LIST_PREFIX) {
-				if(!li) {
+				
+				// List item
+				
+				if(ul) {
+
+					// List already opened, close previous list item
+
+					if(g_html) {
+						printf("    </li>\n");
+					}
+				}
+				else {
 					
 					// Open list
 					
-					li = 1;
+					ul = 1;
 					
 					if(g_html) {
 						printf("   <ul>\n");
 					}
 				}
-			}
-			else if(li) {
 				
-				// Close list
-				
-				li = 0;
-				
-				if(g_html) {
-					printf("   </ul>\n");
-				}
-				
-				// Break
-				
-				br = 1;
-			}
+				// Open list item
 			
-			// Write line
-			
-			if(li) {
-				
-				// Entry list
-				
 				pch = blanks(++pch);
 				
 				if(g_html) {
-					printf("    <li>%s</li>\n", pch);
+					printf("    <li>\n     %s\n", pch);
 				}
 				else {
 					printf("   - %s\n", pch);
+				}
+			}
+			else if(ul) {
+
+				// List opened, close it if blank line, or join adjacent lines
+
+				//pch = blanks(pch);
+				
+				if(*pch) {
+
+					// Join adjacent lines
+
+					if(g_html) {
+						printf("     %s\n", pch);
+					}
+					else {
+						printf("     %s\n", pch);
+					}
+				}
+				else {
+
+					// Close list
+					
+					ul = 0;
+					
+					if(g_html) {
+						printf("    </li>\n   </ul>\n");
+					}
+					else {
+						printf("\n");
+					}
 				}
 			}
 			else {
@@ -720,7 +744,7 @@ dump_st1()
 					if(*pch) {
 						printf("   %s\n", pch);
 					}
-					else if(!br) {
+					else {
 						printf("   <br>\n   <br>\n");
 					}
 				}
@@ -730,11 +754,11 @@ dump_st1()
 			}
 		}
 		
-		// Close list
+		// Close list if opened
 		
-		if(li) {
+		if(ul) {
 			if(g_html) {
-				printf("   </ul>\n");
+				printf("    </li>\n   </ul>\n");
 			}
 		}
 		
