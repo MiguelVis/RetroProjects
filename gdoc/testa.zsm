@@ -3,6 +3,7 @@
 ; @brief A test for gdoc.
 ;
 ; @author Miguel Garcia / FloppySoftware
+; @copyright (c) 2018 FloppySoftware. Licensed under the GNU General Public License v3.
 ;)
 	org 0100h
 	

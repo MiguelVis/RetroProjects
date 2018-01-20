@@ -9,9 +9,10 @@
  * It is written to be simple but effective, and it has some degree of
  * compatibility with other documentation generator tools as doxygen or javadoc.
  *
- * @author  Miguel I. Garcia Lopez / FloppySoftware
- * @version 1.00
- * @date    10 Apr 2016
+ * @author    Miguel I. Garcia Lopez / FloppySoftware
+ * @version   1.00
+ * @date      10 Apr 2016
+ * @copyright (c) 2016 FloppySoftware. Licensed under the GNU General Public License v3.
  */
 #include <mescc.h>
 #include <printf.h>

@@ -53,7 +53,7 @@
 		15 Aug 2016 : 1.01 : Solved bug: a couple of <\p> instead of </p>. Added support for simple lists.
 		                     Non proportional font for HTML output.
 		11 Dec 2016 : 1.02 : Incremented max. # of detail lines to 64. Adapted to changes in fileio.h.
-		19 Jan 2018 : 1.03 : Solved bug in line break after list. Join lines in list items.
+		19 Jan 2018 : 1.03 : Solved bug in line break after list. Join lines in list items. Added @copyright.
 
 	Implemented tags:
 
@@ -69,7 +69,7 @@
 		- list item
 
 	To do:
-		Implement @see, @bug, @code, @endcode, @warning, @copyright,
+		Implement @see, @bug, @code, @endcode, @warning,
 		@deprecated, @since, @todo, @note, @retval, @var.
 */
 
@@ -126,12 +126,13 @@ int ref_num_fns;                    // # of functions
 /* Tag values in a comment block - step #1
    ---------------------------------------
 */
-char *tag_file;     // @file
-char *tag_fn;       // @fn
-char *tag_brief;    // @brief
-char *tag_date;     // @date
-char *tag_version;  // @version
-char *tag_return;   // @return
+char *tag_file;      // @file
+char *tag_fn;        // @fn
+char *tag_brief;     // @brief
+char *tag_date;      // @date
+char *tag_version;   // @version
+char *tag_copyright; // @copyright
+char *tag_return;    // @return
 
 WORD tag_details[TAG_MAX_DETAILS];  // Text lines for details
 int tag_num_details;                // # of...
@@ -385,6 +386,9 @@ char *buf;
 		else if((val = eat_tag(TAG_VERSION, buf)) != NULL) {    // @version
 			tag_version = need_value(val);
 		}
+		else if((val = eat_tag(TAG_COPYRIGHT, buf)) != NULL) {  // @copyright
+			tag_copyright = need_value(val);
+		}
 		else if((val = eat_tag(TAG_RETURN, buf)) != NULL) {     // @return
 			tag_return = need_value(val);
 		}
@@ -509,11 +513,12 @@ reset_tags()
 
 		free(tag_date);
 		free(tag_version);
+		free(tag_copyright);
 		free(tag_return);
 
 		// Invalidate pointers
 
-		tag_date = tag_version = tag_return = NULL;
+		tag_date = tag_version = tag_copyright = tag_return = NULL;
 
 		// Reset arrays
 
@@ -645,6 +650,12 @@ dump_st1()
 
 	if(tag_date != NULL) {
 		listOne("Date", tag_date);
+	}
+
+	// Copyright
+
+	if(tag_copyright != NULL) {
+		listOne("Copyright", tag_copyright);
 	}
 
 	// Details

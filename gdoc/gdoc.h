@@ -71,14 +71,15 @@
 /* Tags
    ----
 */
-#define TAG_FILE     "file"
-#define TAG_FN       "fn"
-#define TAG_BRIEF    "brief"
-#define TAG_AUTHOR   "author"
-#define TAG_DATE     "date"
-#define TAG_VERSION  "version"
-#define TAG_PARAM    "param"
-#define TAG_RETURN   "return"
+#define TAG_FILE      "file"
+#define TAG_FN        "fn"
+#define TAG_BRIEF     "brief"
+#define TAG_AUTHOR    "author"
+#define TAG_DATE      "date"
+#define TAG_VERSION   "version"
+#define TAG_COPYRIGHT "copyright"
+#define TAG_PARAM     "param"
+#define TAG_RETURN    "return"
 
 /* Max. # of entries in arrays
    ---------------------------
