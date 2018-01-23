@@ -1325,7 +1325,7 @@ MenuAbout()
 	CenterText(row++, "Configured for");
 	CenterText(row++, CRT_NAME);
 	row++;
-	CenterText(row++, "(c) 2015-2016 Miguel Garcia / FloppySoftware");
+	CenterText(row++, "(c) 2015-2017 Miguel Garcia / FloppySoftware");
 	row++;
 	CenterText(row++, "www.floppysoftware.es");
 	CenterText(row++, "cpm-connections.blogspot.com");
