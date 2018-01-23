@@ -264,7 +264,7 @@ Loop()
 			sysln = 0; /* Reset flag */
 		}
 
-		/* Print current column position & line length */
+		/* Print current line number and number of lines */
 
 		CrtLocate(PS_ROW, PS_LIN_CUR); putint("%04d", lp_cur + 1);
 		CrtLocate(PS_ROW, PS_LIN_NOW); putint("%04d", lp_now);
