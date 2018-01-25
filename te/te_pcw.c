@@ -33,8 +33,17 @@
 
 	02 May 2015 : 1st version.
 	02 Jun 2016 : Minor changes.
+	25 Jan 2018 : Find & find next keys.
 
 	Notes:
+
+	The following #defines are optional (the binary will be smaller if you don't use them):
+
+	K_LWORD  -- go to word on the left
+	K_RWORD  -- go to word on the right
+
+	K_FIND   -- find string
+	K_NEXT   -- fint next string
 
 	The Amstrad PCW runs CP/M Plus (v3.1) with a VT52-like emulation,
 	and a 32x90 CRT minus 1 line for system messages (it can be enabled
@@ -85,6 +94,9 @@
 #define K_COPY   18 /* Crl R */
 #define K_PASTE  23 /* Ctl W */
 
+#define K_FIND   10 /* Ctl J */
+#define K_NEXT   4  /* Ctl D */
+
 /* Help
    ----
 */
@@ -98,7 +110,7 @@
 #define H_3 "End    ^\\ [-]      RtDel  ^G [DEL->]"
 #define H_4 "Top    ^P [F7]     PgUp   ^Q [F3]"
 #define H_5 "Bottom ^S [F5]     PgDown ^Z [F1]"
-#define H_6 ""
+#define H_6 "Find   ^J          F.Next ^D"
 #define H_7 "Cut    ^U [CUT]"           
 #define H_8 "Copy   ^R [RELAY]  Intro  ^M [RETURN]"
 #define H_9 "Paste  ^W [PASTE]  Esc    ^[ [EXIT]"
@@ -115,7 +127,7 @@
 #define H_3 "End    ^\\ [-]      RtDel  ^G [BORR->]"
 #define H_4 "Top    ^P [F7]     PgUp   ^Q [F3]"
 #define H_5 "Bottom ^S [F5]     PgDown ^Z [F1]"
-#define H_6 ""
+#define H_6 "Find   ^J         F.Next ^D"
 #define H_7 "Cut    ^U [CORT]"           
 #define H_8 "Copy   ^R [JUST]   Intro  ^M [RETURN]"
 #define H_9 "Paste  ^W [INS]    Esc    ^[ [SAL]"

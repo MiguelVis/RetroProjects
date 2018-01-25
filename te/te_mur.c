@@ -36,6 +36,14 @@
 
 	Notes:
 
+	The following #defines are optional (the binary will be smaller if you don't use them):
+
+	K_LWORD  -- go to word on the left
+	K_RWORD  -- go to word on the right
+
+	K_FIND   -- find string
+	K_NEXT   -- fint next string
+
 	For CPM.EXE / CP/M-80 program EXEcutor for Win32 v0.4 from K. Murakami.
 
 	It emulates a 25x80 VT-100.

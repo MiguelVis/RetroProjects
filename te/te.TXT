@@ -3,9 +3,9 @@
 +----| Text Editor |
      +-------------+
 
-v1.08 / 05 Jul 2017
+v1.09 / 24 Jan 2018
 
-(c) 2015-2017 Miguel Garcia / FloppySoftware
+(c) 2015-2018 Miguel Garcia / FloppySoftware
 
     www.floppysoftware.es
     cpm-connections.blogspot.com
@@ -35,6 +35,7 @@ Examples:
         te_pcw              - To start an empty document
         te_pcw notes.txt    - To edit the document 'notes.txt'.
 
+
 The screen layout
 -----------------
 
@@ -61,7 +62,7 @@ And, finally, the number following 'Len' is:
 
         36      - The length of the current line.
 
-On the last screen line, you will see program messages.
+On the last screen line, you will see program messages and questions.
 
 
 The options menu
@@ -144,8 +145,14 @@ Adaptations for other OS are:
 License
 -------
 
-This program is freeware, and it's licensed under the GPL license.
+This program is freeware, and it's licensed under the GNU GPL license.
 
 See the file 'copying.txt' for more details.
 
-
+
+About this file
+---------------
+
+Of course, this text file has been created and edited with te.
+
+

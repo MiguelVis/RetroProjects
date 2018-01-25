@@ -36,6 +36,17 @@
 	Original code: July 4, 2015.
 
 	02 Jun 2016 : Minor changes.
+	25 Jan 2018 : Find & find next keys.
+
+	Notes:
+
+	The following #defines are optional (the binary will be smaller if you don't use them):
+
+	K_LWORD  -- go to word on the left
+	K_RWORD  -- go to word on the right
+
+	K_FIND   -- find string
+	K_NEXT   -- fint next string
 */
 
 /* Definitions
@@ -81,6 +92,9 @@
 #define K_COPY   18 /* Crl R */
 #define K_PASTE  23 /* Ctl W */
 
+#define K_FIND   2  /* Ctl B */
+#define K_NEXT   4  /* Ctl D */
+
 /* Help
    ----
 */
@@ -93,7 +107,7 @@
 #define H_3 "End    ^\\          RtDel  ^G"
 #define H_4 "Top    ^P          PgUp   ^Q"
 #define H_5 "Bottom ^S          PgDown ^Z"
-#define H_6 ""
+#define H_6 "Find   ^B          F.Next ^D"
 #define H_7 "Cut    ^U"           
 #define H_8 "Copy   ^R          Intro  ^M [RETURN]"
 #define H_9 "Paste  ^W          Esc    [ESC]"

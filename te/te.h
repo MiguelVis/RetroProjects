@@ -32,6 +32,7 @@
 	                      PS_LIN_MAX, PS_COL_CUR, PS_COL_NOW, PS_COL_MAX.
 	14 Jun 2016 : v1.07 : Hack for SamaruX.
 	05 Jul 2017 : v1.08
+	24 Jan 2018 : v1.09
 
 	Notes:
 
@@ -42,9 +43,9 @@
    -------
 */
 #ifdef OS_SAMARUX
-#define TE_VERSION "v1.08 / 05 Jul 2017 for SamaruX"  /* Program version and date */
+#define TE_VERSION "v1.09 / 24 Jan 2018 for SamaruX"  /* Program version and date */
 #else
-#define TE_VERSION "v1.08 / 05 Jul 2017 for CP/M"  /* Program version and date */
+#define TE_VERSION "v1.09 / 24 Jan 2018 for CP/M"  /* Program version and date */
 #endif
 
 /* More defs.
@@ -56,6 +57,8 @@
 #define TAB_COLS 8       /* How many columns has a tab. (usually 8) */
 
 #define FORCED_MAX 128   /* Keyboard forced entry buffer size (for paste, tabs, etc.) */
+
+#define FIND_MAX 32      /* Find string buffer size */
 
 #define PS_ROW     0     /* Information position */
 #define PS_FNAME   4     /* Filename - position in row */

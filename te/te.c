@@ -48,6 +48,7 @@
 	                      ps_col_cur, ps_col_now, ps_col_max.
 	14 Jun 2016 : v1.07 : Hack for SamaruX.
 	05 Jul 2017 : v1.08 : Optimizations in NULL comparisons. Include CC_FGETS.
+	24 Jan 2018 : v1.09 : Added find string and find next string commands.
 
 	Notes:
 
@@ -126,6 +127,15 @@ int fe_get;   /* Get position */
    -----------
 */
 int sysln;    /* NZ when written - for Loop() */
+
+#ifdef K_FIND
+
+/* Find string
+   -----------
+*/
+char find_str[FIND_MAX];
+
+#endif
 
 /* Program entry
    -------------
@@ -318,6 +328,15 @@ Loop()
 			case K_BOTTOM :/* Bottom of document -------------- */
 				LoopBottom();
 				break;
+#ifdef K_FIND
+			case K_FIND :  /* Find string --------------------- */
+				if(SysLineStr(find_str))
+					LoopFind();
+				break;
+			case K_NEXT :  /* Find next string ---------------- */
+				LoopFindNext();
+				break;
+#endif
 			case K_ESC :   /* Escape: show the menu ----------- */
 				if(Menu())
 					run = 0;
@@ -610,6 +629,73 @@ LoopRightDel()
 		Refresh(box_shr + 1, lp_cur + 1);
 }
 
+#ifdef K_FIND
+
+/* Find string
+   -----------
+*/
+LoopFind()
+{
+	int slen, flen, line, row, col, i;
+	char *p;
+
+	row  = box_shr;
+	col  = box_shc;
+	flen = strlen(find_str);
+
+	for(line = lp_cur; line < lp_now; ++line)
+	{
+		for(slen = strlen((p = lp_arr[line])); flen <= (slen - col) && col < slen; ++col)
+		{
+			for(i = 0; i < flen && find_str[i] == p[col + i]; ++i)
+				;
+
+			if(i == flen)
+			{
+				/* Found, set new cursor position and refresh the screen if needed */
+
+				lp_cur = line;
+				box_shc = col;
+
+				if(row < box_rows)
+					box_shr = row;
+				else
+					Refresh((box_shr = 0), lp_cur);
+
+				return 1;
+			}
+		}
+
+		++row; col = 0;
+	}
+
+	/* Not found */
+
+	return 0;
+}
+
+/* Find next string
+   ----------------
+*/
+LoopFindNext()
+{
+	int old_box_shc;
+
+	old_box_shc = box_shc;
+
+	/* Skip current character */
+
+	if(box_shc < strlen(lp_arr[lp_cur]))
+		++box_shc;
+
+	/* Set old cursor position on find failure */
+
+	if(!LoopFind())
+		box_shc = old_box_shc;
+}
+
+#endif
+
 /* Print program layout
    --------------------
 */
@@ -746,6 +832,33 @@ char *fn;
 
 	return 0;
 }
+
+#ifdef K_FIND
+
+/* Ask for a string
+   ----------------
+   Return NZ if entered, else Z.
+*/
+SysLineStr(s)
+char *s;
+{
+	int ch;
+
+	SysLine("String (or [");
+	putstr(CRT_ESC_KEY);
+	putstr("] to cancel): ");
+
+	ch = ReadLine(s, FIND_MAX - 1);
+
+	SysLine(NULL);
+
+	if(ch == K_INTRO && strlen(s))
+			return 1;
+
+	return 0;
+}
+
+#endif
 
 /* Print error message and wait for a key press
    --------------------------------------------
@@ -1325,7 +1438,7 @@ MenuAbout()
 	CenterText(row++, "Configured for");
 	CenterText(row++, CRT_NAME);
 	row++;
-	CenterText(row++, "(c) 2015-2017 Miguel Garcia / FloppySoftware");
+	CenterText(row++, "(c) 2015-2018 Miguel Garcia / FloppySoftware");
 	row++;
 	CenterText(row++, "www.floppysoftware.es");
 	CenterText(row++, "cpm-connections.blogspot.com");
@@ -1633,7 +1746,7 @@ BfEdit()
 #endif
 
 #ifdef K_RWORD
-			case K_RWORD : /* Move one word to the right ------------ */
+			case K_RWORD :  /* Move one word to the right ----------- */
 
 				/* Skip current word */
 
@@ -1647,6 +1760,17 @@ BfEdit()
 
 				++upd_col; ++upd_cur;
 
+				break;
+#endif
+
+#ifdef K_FIND
+			case K_FIND :   /* Find string -------------------------- */
+				run = 0;
+				break;
+
+			case K_NEXT :   /* Find next string --------------------- */
+				if(find_str[0])
+					run = 0;
 				break;
 #endif
 			default :       /* Other: Insert character -------------- */

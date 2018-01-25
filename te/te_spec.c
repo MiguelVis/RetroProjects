@@ -34,8 +34,17 @@
 	06 May 2015 : 1st version.
 	31 Aug 2015 : Minor changes in comments.
 	02 Jun 2016 : Minor changes.
+	25 Jan 2018 : Find & find next keys.
 
 	Notes:
+
+	The following #defines are optional (the binary will be smaller if you don't use them):
+
+	K_LWORD  -- go to word on the left
+	K_RWORD  -- go to word on the right
+
+	K_FIND   -- find string
+	K_NEXT   -- fint next string
 
 	The Spectrum +3 runs CP/M Plus (v3.1) with a VT52-like emulation,
 	and a 24x51 CRT minus 1 line for system messages (it can be enabled
@@ -88,6 +97,9 @@
 #define K_COPY   18 /* Crl R */
 #define K_PASTE  23 /* Ctl W */
 
+#define K_FIND   10 /* Ctl J */
+#define K_NEXT   4  /* Ctl D */
+
 /* Help
    ----
 */
@@ -98,7 +110,7 @@
 #define H_3 "End    ^\\          RtDel  ^G [GRAPH]"
 #define H_4 "Top    ^P          PgUp   ^Q"
 #define H_5 "Bottom ^S          PgDown ^Z"
-#define H_6 ""
+#define H_6 "Find   ^J          F.Next ^D"
 #define H_7 "Cut    ^U"           
 #define H_8 "Copy   ^R          Intro  ^M [ENTER]"
 #define H_9 "Paste  ^W          Esc    ^[ [BREAK]"
