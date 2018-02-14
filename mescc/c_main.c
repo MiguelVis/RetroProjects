@@ -39,25 +39,43 @@
 	01 Nov 2015 : Emit function labels without ':' -- see newfunc().
 	11 Oct 2016 : Changes in doswtch() output to help the optimizer. Extract parser functions to c_parser.c. Documented. Optimized.
 	24 Oct 2016 : Option S to set default type for char to signed or unsigned.
+	14 Feb 2018 : Use malloc() optionally.
 */
 
 // Globals
 // -------
 
-char	glbsymtab[GLB_TABSIZ],	// Global symbol table
-	*glbptr;                // Pointer
+#ifdef C_USEMALLOC
 
-char	locsymtab[LOC_TABSIZ],  // Local symbol table
-	*locptr;                // Pointer
+char *glbsymtab,            // Global symbol table
+	 *glbend,               // End of global symbol table
+     *glbptr;               // Pointer
+
+char *locsymtab,            // Local symbol table
+     *locend,               // End of local symbol table
+	 *locptr;               // Pointer
+
+char *litq;                 // String pool
+int  litptr;                // Index
+
+#else
+
+char glbsymtab[GLB_TABSIZ],	// Global symbol table
+     *glbptr;               // Pointer
+
+char locsymtab[LOC_TABSIZ], // Local symbol table
+	 *locptr;               // Pointer
+
+char litq[STRBUF_SIZ];      // String pool and pointer
+int  litptr;                // Index
+
+#endif
 
 int	wq[WQ_TABSIZ],          // While queue
 	*wqptr;                 // Pointer
 
-char	litq[STRBUF_SIZ];       // String pool and pointer
-int	litptr;
-
-char	line[LN_SIZ];           // Parsing line buffer
-int	lptr;                   // Index
+char line[LN_SIZ];          // Parsing line buffer
+int	 lptr;                  // Index
 
 int	letlab,        // Label letter
 	errstop,       // Pause on error?
@@ -76,8 +94,8 @@ int	letlab,        // Label letter
 	locsiz,        // Size of local variables in a function
 	stksize;       // Stack size for program
 
-char	ipfname[FILENAME_MAX],   // Input file name
-	opfname[FILENAME_MAX];   // Output file name
+char ipfname[FILENAME_MAX],   // Input file name
+	 opfname[FILENAME_MAX];   // Output file name
 
 // C Preprocessor
 // --------------
@@ -89,31 +107,40 @@ int	cppinasm,      // TRUE = #asm active
 	cppiflev,      // #if level
 	cppifact;      // Active #if level
 
-int	cppincs;              // Number of active #includes
-WORD	cppfps[CPPMAXINC];    // FPs for active includes - FILE *cppfps[x]
-int	cpplines[CPPMAXINC];  // Number of current line for active #includes
-char	cppfnames[45];        // Buffer for filenames == CPPMAXINC * FILENAME_MAX
+int  cppincs;              // Number of active #includes
+WORD cppfps[CPPMAXINC];    // FPs for active includes - FILE *cppfps[x]
+int  cpplines[CPPMAXINC];  // Number of current line for active #includes
+char cppfnames[45];        // Buffer for filenames == CPPMAXINC * FILENAME_MAX
 
-char	cpptmp[LN_SIZ];       // Line buffer
-int	cpptmpx;              // Index to line buffer
+char cpptmp[LN_SIZ];       // Line buffer
+int  cpptmpx;              // Index to line buffer
 
-char	cppmac[CPPMACSIZ];    // Macro buffer
-int	cppmacx;              // Index to macro buffer
+#ifdef C_USEMALLOC
 
-int	cpphash[CPPHASHSIZ];  // Hash for macros
+char *cppmac;              // Macro buffer
+int  cppmacx;              // Index to macro buffer
+
+#else
+
+char cppmac[CPPMACSIZ];    // Macro buffer
+int  cppmacx;              // Index to macro buffer
+
+#endif
+
+int  cpphash[CPPHASHSIZ];  // Hash for macros
 
 // File I/O
 // --------
 
 // Current input file
-FILE	*fi_fp;                 // File handle
-char	fi_name[FILENAME_MAX];  // File name
-int	fi_line;                // Line number
-int	fi_eof;                 // TRUE = EOF
+FILE *fi_fp;                 // File handle
+char fi_name[FILENAME_MAX];  // File name
+int  fi_line;                // Line number
+int  fi_eof;                 // TRUE = EOF
 
 // Output file
-FILE	*fo_fp;                 // File handle
-char	fo_name[FILENAME_MAX];  // File name
+FILE *fo_fp;                 // File handle
+char fo_name[FILENAME_MAX];  // File name
 
 // Entry point to compiler
 // ----------------------
@@ -130,6 +157,19 @@ int argc, argv[]; // MESCC doesn't have char *argv[] yet...
 		help();	return;
 	}
 
+#ifdef C_USEMALLOC
+
+	// Alloc memory for buffers
+	if(!(glbsymtab = malloc(GLB_TABSIZ)) || !(locsymtab = malloc(LOC_TABSIZ)) || !(litq = malloc(STRBUF_SIZ)) || !(cppmac = malloc(CPPMACSIZ)))
+	{
+		errinit(ERNOMEM);
+	}
+
+	glbend = glbsymtab + GLB_TABSIZ;
+	locend = locsymtab + LOC_TABSIZ;
+
+#endif
+
 	// Setup default values
 	errstop  = 1;
 	errmax   = 50;
@@ -143,7 +183,7 @@ int argc, argv[]; // MESCC doesn't have char *argv[] yet...
 
 	// Parse options from command line
 	getargs(argc - 1, &argv[1]);
-			
+
 	// Setup globals
 	glbptr = GLB_START;
 	locptr = LOC_START;
@@ -213,7 +253,7 @@ int argcnt, argstr[];
 	char *ptr, *ptr3, *ptr4;
 
 	// Input file name
-	strcpy(ipfname, argstr[0]);	
+	strcpy(ipfname, argstr[0]);
 
 	// Parse options from command line
 	for(i = 1; i < argcnt; ++i)
@@ -223,7 +263,7 @@ int argcnt, argstr[];
 		// -O:AB
 		ptr3 = ptr + 3; // Pointer to A
 		ptr4 = ptr + 4; // Pointer to B
-	
+
 		if(*ptr++ != '-')
 			errcmdl(ERCMDLN);
 
@@ -263,7 +303,7 @@ int argcnt, argstr[];
 			if((errmax = atoi(ptr3)) < 0)
 				errcmdl(ERCMDER);
 		}
-		
+
 		// Letter and start number for labels
 		else if((!memcmp("L:", ptr, 2)) && *ptr3 && *ptr4)
 		{
@@ -274,7 +314,7 @@ int argcnt, argstr[];
 		// Stack size
 		else if((!memcmp("S:", ptr, 2)) && *ptr3)
 		{
-			if((stksize = atoi(ptr3)) < 512)			
+			if((stksize = atoi(ptr3)) < 512)
 				errcmdl(ERCMDST);
 		}
 

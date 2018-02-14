@@ -6,11 +6,11 @@
 ]     ] ]       ]     ] ]     ] ]     ]
 ]     ] ]]]]]]]  ]]]]]   ]]]]]   ]]]]]
 
-MESCC v1.19 - 13 Dec 2017
+MESCC v1.20 - 14 Feb 2018
 
 Mike's Enhanced Small C Compiler for Z80 and CP/M
 
-Copyright (c) 1999-2017 Miguel I. Garcia Lopez / FloppySoftware, Spain
+Copyright (c) 1999-2018 Miguel I. Garcia Lopez / FloppySoftware, Spain
 
 www.floppysoftware.es
 cpm-connections.blogspot.com
@@ -32,7 +32,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 See the copying file for more details.
 
-Last update: 17:03 31/12/2017.
+Last update: 23:08 14/02/2018.
 
 
 OVERVIEW
@@ -198,14 +198,14 @@ CONSTANTS
 
 Decimal integer		Examples: 32, -1, 456.
 Hexadecimal integer	Examples: 0x12, 0xF3, 0xAA34
-Character constants	Examples: 'A', '12', '\t'
+Character		Examples: 'A', '12', '\t', '\0', '\x1A'
 
 
 STRINGS
 =======
 
-Examples:		"This is a text"
-			"Text with a newline\n"
+Examples:	"This is a text"
+		"Text with a newline\n"
 
 
 NAMES
@@ -220,7 +220,7 @@ and the first character can't be numeric.
 ESCAPE SEQUENCES
 ================
 
-Can be included in character constants or strings.
+Can be included in character constants or strings:
 
 \n	Newline, 10 decimal.
 \t	Tab, 9 decimal.
@@ -229,19 +229,33 @@ Can be included in character constants or strings.
 \a	Alarm, 7 decimal.
 \f	Formfeed, 12 decimal.
 \e	Escape, 27 decimal.
-\0	Null, 0 decimal.
+\xNN	Hexadecimal.
+\NNN	Octal.
 
-The characters ', " and \ can be included in character constants or strings with:
+The characters ', " and \ can be included in character constants or strings as:
 
 \'	'
 \"	"
 \\	\
+
+Escape sequences in hexadecimal notation can be 1 or 2 digits, case insensitive:
+
+		'\xF'
+		'\x1a'
+
+Escape sequences in octal notation can be 1, 2 or 3 digits:
+
+		'\0'
+		'\12'
+		'\123'
 
 Examples:	'\0'
 		'\n'
 		'\''
 		"\aError: Can't open"
 		"Filename: \"%s\".\n"
+		"\xA<-Form feed!"
+		"\12<-Form feed!"
 
 
 COMMENTS

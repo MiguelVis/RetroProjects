@@ -50,18 +50,21 @@
 	21 Oct 2016 : v1.17
 	24 Oct 2016 : v1.18
 	13 Dec 2017 : v1.19
+	14 Feb 2018 : Added ERESCSQ and ERNOMEM error codes. Added C_USEMALLOC macro.
+	              v1.20
 */
 
 // Optional #defines
 // -----------------
 
 //#define C_USEPRINTF  // To use printf, fprintf and sprintf
+#define C_USEMALLOC  // To use malloc for buffers
 
 // Version
 // -------
 
-#define VERSION	"Mike's Enhanced Small C Compiler v1.19 - 13 Dec 2017"
-#define COPYRGT "(c) 1999-2017 FloppySoftware"
+#define VERSION	"Mike's Enhanced Small C Compiler v1.20 - 14 Feb 2018"
+#define COPYRGT "(c) 1999-2018 FloppySoftware"
 
 // Output types
 // ------------
@@ -126,13 +129,23 @@
 #define GLB_NUM     450                    // Max. # of globals
 #define GLB_TABSIZ  8100                   // Size: GLB_NUM * SYMSIZE
 #define GLB_START   glbsymtab
+
+#ifdef C_USEMALLOC
+#define GLB_END     glbend
+#else
 #define GLB_END     (GLB_START+GLB_TABSIZ)
+#endif
 
 // Locals
 #define LOC_NUM     32                     // Max. # of locals in a function
 #define LOC_TABSIZ  576                    // Size: LOC_NUM * SYMSIZE
 #define LOC_START   locsymtab
+
+#ifdef C_USEMALLOC
+#define LOC_END     locend
+#else
 #define LOC_END     (LOC_START+LOC_TABSIZ)
+#endif
 
 // Statement types
 // ---------------
@@ -176,7 +189,7 @@
 
 // Error codes
 // -----------
- 
+
 // Compiler
 #define ERCONST  1 // Must be constant
 #define ERARRSZ  2 // Illegal array size
@@ -202,6 +215,7 @@
 #define ERCTSUB 33 // Can't index
 #define ERINVEX 34 // Illegal expression
 #define ERMBLVL 35 // Must be lvalue
+#define ERESCSQ 36 // Bad escape sequence
 
 // Preprocessor
 #define ERASMWE 50 // #asm without #endasm
@@ -224,4 +238,8 @@
 #define ERCMDER 81 // Illegal max. number of errors
 #define ERCMDLB 82 // Illegal label
 #define ERCMDST 83 // Illegal size of stack
+
+// Initialization
+#define ERNOMEM 90 // Not enough memory for buffers
+
 

@@ -27,6 +27,7 @@
 	26 Oct 2015 : Cleaned.
 	27 Nov 2015 : Modified some text messages.
 	11 Oct 2016 : Documented and slightly optimized. Errors by id or message.
+	14 Feb 2018 : Added errors ERESCSQ (bad escape sequence) and ERNOMEM (not enough memory for buffers). Added errinit macro. Added errinit().
 */
 
 // Need a character (it's missing)
@@ -49,6 +50,13 @@ int id;
 {
 	co_str("\nError! "); co_line(errmsg(id));
 	exit(1);
+}
+
+// Initialization error
+errinit(id)
+int id;
+{
+	errcmdl(id);
 }
 
 // File error
@@ -102,7 +110,7 @@ int id;
 errshow(id)
 int id;
 {
-	errshow_str(errmsg(id));	
+	errshow_str(errmsg(id));
 }
 
 // Print error
@@ -113,7 +121,7 @@ char *msg;
 	int i;
 
 	fo_nl(); co_nl();
-	
+
 	comment();
 	fo_str(co_str("Error!")); fo_dec(co_dec_5(++errcnt)); fo_ch(co_ch(' '));
 	fo_str(co_str("Line: ")); fo_dec(co_dec_5(fi_line));  fo_ch(co_ch(' '));
@@ -135,7 +143,7 @@ char *msg;
 	{
 		fo_ch(co_ch(' '));
 	}
-	
+
 	fo_ch(co_ch('^'));
 	fo_nl(); co_nl();
 }
@@ -164,7 +172,7 @@ int id;
 		case EREXWHI : return "Need a while";
 		case ERLTLNG : return "Line too long";
 		case ERTMCAS : return "Too many cases";
-		
+
 		// Expression parser
 		case ERSIZOF : return "Illegal use of sizeof";
 		case EROFSTR : return "String table is full";
@@ -172,7 +180,8 @@ int id;
 		case ERCTSUB : return "Can't index";
 		case ERINVEX : return "Illegal expression";
 		case ERMBLVL : return "Must be lvalue";
-		
+		case ERESCSQ : return "Bad escape sequence";
+
 		// Preprocessor
 		case ERASMWE : return "#asm without #endasm";
 		case EREASWA : return "#endasm without #asm";
@@ -183,19 +192,24 @@ int id;
 		case ERBADCM : return "Illegal # command";
 		case EROFMAC : return "Macro table if full";
 		case ERTMINC : return "Too many active includes";
-		
+
 		// File I/O
 		case EROPEN  : return "Can't open";
 		case ERWRITE : return "Can't write";
 		case ERCLOSE : return "Can't close";
-		
+
 		// Command line
 		case ERCMDLN : return "Illegal option";
 		case ERCMDER : return "Illegal max. number of errors";
 		case ERCMDLB : return "Illegal label";
 		case ERCMDST : return "Illegal size of stack";
+
+		// Initialization
+#ifdef C_USEMALLOC
+		case ERNOMEM : return "Not enough memory for buffers";
+#endif
 	}
-	
+
 	// Unknown error id
 	return "Unknown error";
 }

@@ -30,24 +30,25 @@
 	13 Oct 2016 : Documented and optimized a bit. Added LVAL_??? names.
 	20 Oct 2016 : Added support for __FILE__ and __LINE__.
 	13 Dec 2017 : Clear lval[LVAL_TYPPTR] in heir11() for [] and function calls.
+	14 Feb 2018 : Added support for hexadecimal and octal escape sequences in ChEsc().
 
 	Operators precedence:
 
-	operator	function	associativity
-	--------------	-------------	-------------
-	! ~ ++ -- - * &	heir10		right to left
-	* / %		heir9		left to right
-	+ -		heir8		left to right
-	<< >>		heir7		left to right
-	< <= > >=	heir6		left to right
-	== !=		heir5		left to rigth
-	&		heir4		left to rigth
-	^		heir3		left to right
-	|		heir2		left to right
-	&&		heir1e		left to right
-	||		heir1b		left to right
-	?:		heir1a		right to left
-	=  -= += *= %=	heir1		right to left
+	operator         function       associativity
+	---------------  -------------  -------------
+	! ~ ++ -- - * &  heir10         right to left
+	* / %            heir9          left to right
+	+ -              heir8          left to right
+	<< >>            heir7          left to right
+	< <= > >=        heir6          left to right
+	== !=            heir5          left to rigth
+	&                heir4          left to rigth
+	^                heir3          left to right
+	|                heir2          left to right
+	&&               heir1e         left to right
+	||               heir1b         left to right
+	?:               heir1a         right to left
+	=  -= += *= %=   heir1          right to left
 	/= &= ^= |=
 
 	lval[LVAL_SYMADR] is a symbol table address or 0 for constants
@@ -1163,7 +1164,7 @@ int *val;
 
 ChEsc()
 {
-	char c;
+	int c;
 
 	if(BfNEq('\\'))
 		return BfGet();
@@ -1173,6 +1174,7 @@ ChEsc()
 
 	switch((c = BfGet()))
 	{
+		// Single character
 		case 'n' : return 10;
 		case 't' : return 9;
 		case 'r' : return 13;
@@ -1180,10 +1182,70 @@ ChEsc()
 		case 'a' : return 7;
 		case 'f' : return 12;
 		case 'e' : return 27; /* No ANSI C compliant; supported by GCC and others */
-		case '0' : return 0;
+		case '\\': return '\\';
+
+		// Hexadecimal: \x0 or \x00
+		case 'x' :
+			if(isxdigit(Bf()))
+			{
+				c = ChEscHex();
+
+				if(isxdigit(Bf()))
+				{
+					c = (c << 4) + ChEscHex();
+				}
+
+				return c;
+			}
+			break;
+
+		// Octal: \0 or \00 or \000
+		default :
+			if(ChEscIsOct(c))
+			{
+				c -= '0';
+
+				if(ChEscIsOct(Bf()))
+				{
+					c = ChEscOct(c);
+
+					if(ChEscIsOct(Bf()))
+					{
+						c = ChEscOct(c);
+					}
+				}
+
+				return c;
+			}
+			break;
 	}
 
-	return c;
+	errcont(ERESCSQ);
+
+	return '?';
+}
+
+// Helper for ChEsc()
+
+ChEscHex()
+{
+	return (isdigit(Bf()) ? BfGet() - '0' : toupper(BfGet()) - 'A' + 10);
+}
+
+// Helper for ChEsc()
+
+ChEscIsOct(c)
+int c;
+{
+	return (c >= '0' && c <= '7');
+}
+
+// Helper for ChEsc()
+
+ChEscOct(c)
+int c;
+{
+	return (c << 3) + (BfGet() - '0');
 }
 
 // Error: need lvalue
