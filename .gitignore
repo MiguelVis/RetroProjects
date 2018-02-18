@@ -5,6 +5,7 @@
 # Ignore MESCC tool chain binaries
 cpm.exe
 cpm2.exe
+cpm_player.exe
 cc.com
 cc.COM
 CC.COM

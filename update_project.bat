@@ -5,6 +5,7 @@ rem # Update a MESCC project with fresh binaries and libraries.
 rem #
 rem # Created: 06 Jan 2016
 rem # Updated: 06 Jan 2016
+rem # Updated: 18 Feb 2018
 rem #
 rem # Check command line arguments
 rem #
@@ -19,6 +20,7 @@ rem # Copy binaries
 rem #
 echo Copying binaries...
 copy /Y mescc\cpm.exe %1\
+copy /Y mescc\cpm_player.exe %1\
 copy /Y mescc\cc.com %1\
 copy /Y mescc\ccopt.com %1\
 copy /Y mescc\zsm.com %1\
