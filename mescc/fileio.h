@@ -6,7 +6,12 @@
  * File I/O for MESCC (Mike's Enhanced
  * Small C Compiler for Z80 & CP/M).
  *
- * Supports following #defines:
+ * Support standard macros:
+ *  - FILE
+ *  - EOF
+ *  - FILENAME_MAX
+ *
+ * Supports following macros:
  *  - #define CC_STDIO        To support stdin, stdout & stderr.
  *  - #define CC_FCX          To support FCX (user number in file names, see cpm.h).
  *  - #define CC_FCX_DIR      To support named directories in file names (see cpm.h).
@@ -44,8 +49,9 @@
  *  - 23 Jul 2016 : Added fputs() and support for CC_FPUTS define.
  *  - 10 Dec 2016 : Documented. Optimized. GPL v3.
  *  - 15 Dec 2016 : Optimize NULL comparisons, fgetc(), fputc().
+ *  - 18 Feb 2018 : Document public macros. Rename internal macros and include them in cleaning. Rework remove() and rename(). Added FOPEN_MAX.
  *
- * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ * Copyright (c) 1999-2018 Miguel I. Garcia Lopez / FloppySoftware.
  *
  * Licensed under the GNU General Public License v3.
  *
@@ -59,7 +65,6 @@
 /* Dependencies
    ------------
 */
-
 #ifndef CPM_H
 	#include <cpm.h>
 #endif
@@ -78,71 +83,56 @@
 #endif
 #endif
 
-/* STANDARD DEFs
-   -------------
+/* Public defines
+   --------------
 */
-
-#define FILE unsigned char
-#define EOF -1
+#define FILE      unsigned char
+#define EOF       -1
+#define FOPEN_MAX 99
 
 #ifdef CC_FCX
-
 #ifdef CC_FCX_DIR
-
 #define FILENAME_MAX 22  /* dusrname:filename.typ + ZERO */
-
 #else
-
 #define FILENAME_MAX 17  /* duu:filename.typ + ZERO */
-
 #endif
-
 #else
-
 #define FILENAME_MAX 15  /* d:filename.typ + ZERO */
-
 #endif
 
-/* PRIVATE DEFs
-   ------------
+/* Private defines
+   ---------------
 */
+#define _XF_READ  1   /* Read mode */
+#define _XF_WRITE 2   /* Write mode */
+#define _XF_BIN   4   /* Binary mode */
+#define _XF_EOF   8   /* End of file */
+#define _XF_ERR   16  /* I/O error */
 
-#define XF_READ  1   /* Read mode */
-#define XF_WRITE 2   /* Write mode */
-#define XF_BIN   4   /* Binary mode */
-#define XF_EOF   8   /* End of file */
-#define XF_ERR   16  /* I/O error */
-
-#define XF_IMOD  0   /* Mode (1 byte) */
-#define XF_IPOS  1   /* Position in buffer (1 byte) */
-#define XF_IBUF  2   /* Buffer (128 bytes) */
-#define XF_IFCX  130 /* FCX (37 bytes: USER (1) + FCB (36)) */
+#define _XF_IMOD  0   /* Mode (1 byte) */
+#define _XF_IPOS  1   /* Position in buffer (1 byte) */
+#define _XF_IBUF  2   /* Buffer (128 bytes) */
+#define _XF_IFCX  130 /* FCX (37 bytes: USER (1) + FCB (36)) */
 
 #ifdef CC_FCX
 
-#define XF_ISIZ	 167 /* Data block size */
-#define XF_IRND  164 /* Random record # in FCX */
+#define _XF_ISIZ  167 /* Data block size */
+#define _XF_IRND  164 /* Random record # in FCX */
 
-#define fileop bdos_fcx_a
-#define makefb setfcx
+#define _FILEOP   bdos_fcx_a
+#define _MAKEFCB  setfcx
+
+#define _FCB_SIZE 37
 
 #else
 
-#define XF_ISIZ  166 /* Data block size */
-#define XF_IRND  163 /* Random record # in FCB */
+#define _XF_ISIZ  166 /* Data block size */
+#define _XF_IRND  163 /* Random record # in FCB */
 
-#define fileop bdos_a
-#define makefb setfcb
+#define _FILEOP   bdos_a
+#define _MAKEFCB  setfcb
 
-#endif
-
-/* CC_FILEIO_SMALL is now DEPRECATED
-   ---------------------------------
-*/
-
-#ifdef CC_FILEIO_SMALL
-
-!!!! CC_FILEIO_SMALL is now DEPRECATED !!!!
+#define _FCB_SIZE 36
 
 #endif
 
@@ -179,18 +169,18 @@ char *fname, *fmode;
 
 	// Mode
 	if(*fmode == 'r')
-		mode = XF_READ;
+		mode = _XF_READ;
 	else if(*fmode=='w')
-		mode = XF_WRITE;
+		mode = _XF_WRITE;
 #ifdef CC_FOPEN_A
 	else if(*fmode == 'a')
-		mode = XF_WRITE;
+		mode = _XF_WRITE;
 #endif
 	else
 		return NULL;
 
 	if(*(fmode + 1) == 'b')
-		mode |= XF_BIN;
+		mode |= _XF_BIN;
 	else if(*(fmode + 1))
 		return NULL;
 
@@ -199,51 +189,51 @@ char *fname, *fmode;
 		return NULL;
 
 	// Get memory
-	if(!(fp = malloc(XF_ISIZ)))
+	if(!(fp = malloc(_XF_ISIZ)))
 		return NULL;
 
 	// Make FCB
-	if(makefb(fname, fp + XF_IFCX))
+	if(_MAKEFCB(fname, fp + _XF_IFCX))
 	{
 		free(fp);
 		return NULL;
 	}
 
 	// Open file
-	bdos_hl(BF_DMA, fp+XF_IBUF);
+	bdos_hl(BF_DMA, fp+_XF_IBUF);
 
-	if(mode & XF_READ)
+	if(mode & _XF_READ)
 	{
-		if(fileop(BF_OPEN, fp + XF_IFCX) == 255)
+		if(_FILEOP(BF_OPEN, fp + _XF_IFCX) == 255)
 		{
 			free(fp);
 			return NULL;
 		}
 
-		fp[XF_IPOS] = 128;  // No data in buffer
+		fp[_XF_IPOS] = 128;  // No data in buffer
 	}
 #ifdef CC_FOPEN_A
 	else if(*fmode == 'a')
 	{
-		fp[XF_IPOS] = 0;  // No data in buffer
+		fp[_XF_IPOS] = 0;  // No data in buffer
 
-		if(fileop(BF_OPEN, fp + XF_IFCX) != 255)
+		if(_FILEOP(BF_OPEN, fp + _XF_IFCX) != 255)
 		{
-			fileop(BF_FSIZE, fp + XF_IFCX);
+			_FILEOP(BF_FSIZE, fp + _XF_IFCX);
 
-			wp = fp + XF_IRND;
+			wp = fp + _XF_IRND;
 
 			if(*(fmode + 1) != 'b' && *wp)
 			{
 				--(*wp);
 
-				fileop(BF_READRND, fp + XF_IFCX);
+				_FILEOP(BF_READRND, fp + _XF_IFCX);
 
 				for(i = 0; i < 128; ++i)
 				{
-					if(*(fp + XF_IBUF + fp[XF_IPOS]++) == 0x1A)
+					if(*(fp + _XF_IBUF + fp[_XF_IPOS]++) == 0x1A)
 					{
-						--fp[XF_IPOS];
+						--fp[_XF_IPOS];
 						break;
 					}
 				}
@@ -252,7 +242,7 @@ char *fname, *fmode;
 					++(*wp);
 			}
 		}
-		else if(fileop(BF_CREATE, fp + XF_IFCX) == 255)
+		else if(_FILEOP(BF_CREATE, fp + _XF_IFCX) == 255)
 		{
 			free(fp);
 			return NULL;
@@ -261,26 +251,26 @@ char *fname, *fmode;
 #endif
 	else
 	{
-		if(fileop(BF_FIND1ST, fp + XF_IFCX) != 255)
+		if(_FILEOP(BF_FIND1ST, fp + _XF_IFCX) != 255)
 		{
-			if(fileop(BF_DELETE, fp + XF_IFCX) == 255)
+			if(_FILEOP(BF_DELETE, fp + _XF_IFCX) == 255)
 			{
 				free(fp);
 				return NULL;
 			}
 		}
 
-		if(fileop(BF_CREATE, fp + XF_IFCX) == 255)
+		if(_FILEOP(BF_CREATE, fp + _XF_IFCX) == 255)
 		{
 			free(fp);
 			return NULL;
 		}
 
-		fp[XF_IPOS] = 0;  // No data in buffer
+		fp[_XF_IPOS] = 0;  // No data in buffer
 	}
 
 	// Set file mode
-	fp[XF_IMOD] = mode;
+	fp[_XF_IMOD] = mode;
 
 	// Return pointer to FILE
 	return fp;
@@ -315,28 +305,11 @@ FILE *fp;
 #endif
 
 	// File opened for reading and without errors?
-	if(!(fp[XF_IMOD] & XF_READ) || fp[XF_IMOD] & (XF_EOF + XF_ERR))
+	if(!(fp[_XF_IMOD] & _XF_READ) || fp[_XF_IMOD] & (_XF_EOF + _XF_ERR))
 		return EOF;
 
-/**************************************
-	c = xfgetc(fp);
-
-	if(!(fp[XF_IMOD] & XF_BIN))
-	{
-		while(c == '\r')
-			c = xfgetc(fp);
-
-		if(c == 0x1A)
-		{
-			fp[XF_IMOD] |= XF_EOF;
-			c = EOF;
-		}
-	}
-
-*********************************/
-
 	// Read binary
-	if((fp[XF_IMOD] & XF_BIN))
+	if((fp[_XF_IMOD] & _XF_BIN))
 		return xfgetc(fp);
 
 	// Read text
@@ -345,7 +318,7 @@ FILE *fp;
 
 	if(c == 0x1A)
 	{
-		fp[XF_IMOD] |= XF_EOF;
+		fp[_XF_IMOD] |= _XF_EOF;
 		c = EOF;
 	}
 
@@ -362,29 +335,29 @@ FILE *fp;
 	unsigned int *wp;
 #endif
 	// Read next record if needed
-	if(fp[XF_IPOS] == 128)
+	if(fp[_XF_IPOS] == 128)
 	{
-		bdos_hl(BF_DMA, fp+XF_IBUF);
+		bdos_hl(BF_DMA, fp+_XF_IBUF);
 
 #ifdef CC_FOPEN_A
-		if(fileop(BF_READRND, fp + XF_IFCX))
+		if(_FILEOP(BF_READRND, fp + _XF_IFCX))
 #else
-		if(fileop(BF_READSEQ, fp + XF_IFCX))
+		if(_FILEOP(BF_READSEQ, fp + _XF_IFCX))
 #endif
 		{
-			fp[XF_IMOD] |= XF_EOF;
+			fp[_XF_IMOD] |= _XF_EOF;
 			return EOF;
 		}
 
 #ifdef CC_FOPEN_A
-		wp = fp + XF_IRND; ++(*wp);
+		wp = fp + _XF_IRND; ++(*wp);
 #endif
 
-		fp[XF_IPOS] = 0;
+		fp[_XF_IPOS] = 0;
 	}
 
 	// Get character from buffer and increment pointer
-	return *(fp + XF_IBUF + fp[XF_IPOS]++);
+	return *(fp + _XF_IBUF + fp[_XF_IPOS]++);
 }
 
 /**
@@ -412,22 +385,11 @@ FILE *fp;
 #endif
 
 	// File opened for writing and without errors?
-	if(!(fp[XF_IMOD] & XF_WRITE) || fp[XF_IMOD] & (XF_EOF + XF_ERR))
+	if(!(fp[_XF_IMOD] & _XF_WRITE) || fp[_XF_IMOD] & (_XF_EOF + _XF_ERR))
 		return EOF;
 
-/**************
-	if(!(fp[XF_IMOD] & XF_BIN))
-	{
-		if(c == '\n')
-		{
-			if(xfputc('\r', fp) == EOF)
-				return EOF;
-		}
-	}
-***************/
-
 	// Write binary
-	if((fp[XF_IMOD] & XF_BIN))
+	if((fp[_XF_IMOD] & _XF_BIN))
 		return xfputc(c, fp);
 
 	// Write text
@@ -440,12 +402,6 @@ FILE *fp;
 	return xfputc(c, fp);
 }
 
-/*	int xfputc(int c, FILE *fp)
-
-	Funcion auxiliar para fputc. Devuelve valor del
-	caracter escrito, o EOF en caso de error.
-*/
-
 // int xfputc(int c, FILE *fp) : Helper for fputc() - return character, or EOF on error.
 
 xfputc(c,fp)
@@ -457,28 +413,28 @@ FILE *fp;
 #endif
 
 	// Store character in buffer and increment pointer
-	*(fp + XF_IBUF + fp[XF_IPOS]++) = c;
+	*(fp + _XF_IBUF + fp[_XF_IPOS]++) = c;
 
 	// Write record if needed
-	if(fp[XF_IPOS] == 128)
+	if(fp[_XF_IPOS] == 128)
 	{
-		bdos_hl(BF_DMA, fp + XF_IBUF);
+		bdos_hl(BF_DMA, fp + _XF_IBUF);
 
 #ifdef CC_FOPEN_A
-		if(fileop(BF_WRITERND, fp + XF_IFCX))
+		if(_FILEOP(BF_WRITERND, fp + _XF_IFCX))
 #else
-		if(fileop(BF_WRITESEQ, fp + XF_IFCX))
+		if(_FILEOP(BF_WRITESEQ, fp + _XF_IFCX))
 #endif
 		{
-			fp[XF_IMOD] |= XF_ERR;
+			fp[_XF_IMOD] |= _XF_ERR;
 			return EOF;
-		}	
+		}
 
 #ifdef CC_FOPEN_A
-		wp = fp + XF_IRND; ++(*wp);
+		wp = fp + _XF_IRND; ++(*wp);
 #endif
 
-		fp[XF_IPOS] = 0;
+		fp[_XF_IPOS] = 0;
 	}
 
 	// Return character
@@ -503,9 +459,9 @@ FILE *fp;
 #endif
 
 	// Writing mode?
-	if(fp[XF_IMOD] & XF_WRITE)
+	if(fp[_XF_IMOD] & _XF_WRITE)
 	{
-		while(fp[XF_IPOS])
+		while(fp[_XF_IPOS])
 		{
 			if(xfputc(0x1A, fp) == EOF)
 				return EOF;
@@ -513,9 +469,9 @@ FILE *fp;
 	}
 
 	// Close file
-	bdos_hl(BF_DMA, fp + XF_IBUF);
+	bdos_hl(BF_DMA, fp + _XF_IBUF);
 
-	if(fileop(BF_CLOSE, fp + XF_IFCX) == 255)
+	if(_FILEOP(BF_CLOSE, fp + _XF_IFCX) == 255)
 		return EOF;
 
 	// Free buffer memory
@@ -542,7 +498,7 @@ FILE *fp;
 		return 0;
 #endif
 
-	return fp[XF_IMOD] & XF_EOF;
+	return fp[_XF_IMOD] & _XF_EOF;
 }
 
 /**
@@ -562,7 +518,7 @@ FILE *fp;
 		return 0;
 #endif
 
-	return fp[XF_IMOD] & XF_ERR;
+	return fp[_XF_IMOD] & _XF_ERR;
 }
 
 #ifdef CC_FREAD
@@ -582,9 +538,6 @@ int size, nobj;
 FILE *fp;
 {
 	int cobj, csize, c;
-
-	//if(!(fp[XF_IMOD] & XF_READ) || fp[XF_IMOD] & (XF_EOF + XF_ERR))
-	//	return EOF;
 
 	for(cobj = 0; cobj != nobj; ++cobj)
 	{
@@ -619,9 +572,6 @@ int size, nobj;
 FILE *fp;
 {
 	int cobj, csize;
-
-	//if(!(fp[XF_IMOD] & XF_WRITE) || fp[XF_IMOD] & (XF_EOF + XF_ERR))
-	//	return EOF;
 
 	for(cobj = 0; cobj != nobj; ++cobj)
 	{
@@ -712,23 +662,28 @@ char *fname;
 
 	code = 0xFF; /* Error by default */
 
-#ifdef CC_FCX
-	fc = malloc(37);
-#else
-	fc = malloc(36);
-#endif
-
-	if(!makefb(fname, fc))
+	if((fc = malloc(_FCB_SIZE)))
 	{
-		bdos_hl(BF_DMA, 0x80);
+		if(!_MAKEFCB(fname, fc))
+		{
+			bdos_hl(BF_DMA, 0x80);
 
-		code = fileop(BF_DELETE, fc);
+			code = _FILEOP(BF_DELETE, fc);
+		}
+
+		free(fc);
 	}
-
-	free(fc);
 
 	return code != 0xFF ? 0 : -1;
 }
+
+#ifdef CC_FCX
+#define _REN_BUF_SIZE 54 /* 37 + 17 */
+#define _REN_OFFSET   17
+#else
+#define _REN_BUF_SIZE 52 /* 36 + 16 */
+#define _REN_OFFSET   16
+#endif
 
 /**
  * @fn     int rename(char *oldname, char *newname)
@@ -740,54 +695,35 @@ char *fname;
 rename(oldname, newname)
 char *oldname, *newname;
 {
+	BYTE *fcb;
 	int code;
 
 	code = 0xFF; /* Error by default */
 
+	if((fcb = malloc(_REN_BUF_SIZE)))
+	{
+		if(!_MAKEFCB(oldname, fcb))
+		{
+			if(!_MAKEFCB(newname, fcb + _REN_OFFSET))
+			{
+				/* FIXME : drive + user unchecked -- must match! */
 #ifdef CC_FCX
-
-	BYTE *fcx;
-
-	fcx = malloc(54); /* 37 + 17 *** FIXME *** */
-
-	if(!makefb(oldname, fcx))
-	{
-		if(!makefb(newname, fcx + 17))
-		{
-			/* FIXME : drive + user unchecked -- must match! */
-
-			memcpy(fcx + 17, fcx + 18, 16);
-
-			bdos_hl(BF_DMA, 0x0080);
-
-			code = fileop(BF_RENAME, fcx);
-		}
-	}
-
-	free(fcx);
-
-#else
-	BYTE *fcb;
-
-	fcb = malloc(52); /* 36 + 16 *** FIXME *** */
-
-	if(!makefb(oldname, fcb))
-	{
-		if(!makefb(newname, fcb + 16))
-		{
-			/* FIXME : drive + user unchecked -- must match! */
-
-			bdos_hl(BF_DMA, 0x0080);
-
-			code = fileop(BF_RENAME, fcb);
-		}
-	}
-
-	free (fcb);
+				memcpy(fcb + 17, fcb + 18, 16);
 #endif
+				bdos_hl(BF_DMA, 0x0080);
+
+				code = _FILEOP(BF_RENAME, fcb);
+			}
+		}
+
+		free(fcb);
+	}
 
 	return code != 0xFF ? 0 : -1;
 }
+
+#undef _REN_BUF_SIZE
+#undef _REN_OFFSET
 
 // int xfnamb(char *fn) : check if fn is an ambiguous filename -- return 1 if true, else 0.
 
@@ -811,8 +747,24 @@ char *fn;
 }
 
 // Cleaning
-#undef fileop
-#undef makefb
+
+#undef _XF_READ
+#undef _XF_WRITE
+#undef _XF_BIN
+#undef _XF_EOF
+#undef _XF_ERR
+
+#undef _XF_IMOD
+#undef _XF_IPOS
+#undef _XF_IBUF
+#undef _XF_IFCX
+
+#undef _XF_ISIZ
+#undef _XF_IRND
+
+#undef _FILEOP
+#undef _MAKEFCB
+#undef _FCB_SIZE
 
 #endif
 
