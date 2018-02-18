@@ -68,6 +68,12 @@ KS
 Keyboard & screen library for CP/M.
 
 
+LKLIST
+------
+
+Doubly-linked lists management library for MESCC.
+
+
 LOG
 ---
 
