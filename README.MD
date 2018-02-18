@@ -122,12 +122,6 @@ SAMARUX
 A Unix-like shell for CP/M. Includes some built-in and external commands.
 
 
-SNIPPETS
---------
-
-Some useful source code snippets.
-
-
 TE
 --
 
