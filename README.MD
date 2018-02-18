@@ -62,6 +62,12 @@ GDOC
 Documentation generator from C and assembler sources. Supported output formats are plain text and html.
 
 
+GLOB
+----
+
+Filename expansion library for MESCC. It needs LKLIST.
+
+
 KS
 --
 
