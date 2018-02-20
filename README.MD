@@ -125,7 +125,9 @@ A Unix-like shell for CP/M. Includes some built-in and external commands.
 TE
 --
 
-A small text editor for CP/M (highly configurable; there are ports for various machines and operating systems: Amstrad PCW, Amstrad CPC, Spectrum +3, Kaypro, VT-52, VT-100, DOS, Windows, GNU/Linux).
+A small text editor for CP/M (highly configurable; there are ports for various machines, operating systems and CP/M emulators: Amstrad PCW, Amstrad CPC, Spectrum +3, Kaypro, VT-52, VT-100, WordStar-like key bindings, CP/M-80 program EXEcutor from K. Murakami, CP/M Player from Takeda Toshiya, etc.).
+
+It supports basic editing commands plus: find string and find next string, go to a line number, execute macro from file, help screen, etc.
 
 
 UT

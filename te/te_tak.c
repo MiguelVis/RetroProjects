@@ -2,7 +2,7 @@
 
 	Text editor -- version for the Takeda Toshiya's CP/M emulator.
 
-	Copyright (c) 2015-2016 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -33,6 +33,9 @@
 
 	06 May 2015 : 1st version.
 	02 Jun 2016 : Minor changes.
+	25 Jan 2018 : Find & find next keys.
+	26 Jan 2018 : Key to execute macro from file.
+	04 Feb 2018 : Key to go to line #.
 
 	Notes:
 
@@ -43,6 +46,10 @@
 
 	K_FIND   -- find string
 	K_NEXT   -- fint next string
+
+	K_MACRO  -- execute macro from file
+
+	K_GOTO   -- go to line #
 
 	For CPM.EXE / CP/M Player for Win32 console from Takeda Toshiya.
 
@@ -68,10 +75,10 @@
 /* Keys
    ----
 */
-#define K_UP	 5  /* Ctl E */
-#define K_DOWN	 24 /* Ctl X */
-#define K_LEFT	 19 /* Ctl S */
-#define K_RIGHT	 4  /* Ctl D */
+#define K_UP	 5  /* Ctl E -- WS */
+#define K_DOWN	 24 /* Ctl X -- WS*/
+#define K_LEFT	 19 /* Ctl S -- WS*/
+#define K_RIGHT	 4  /* Ctl D -- WS*/
 
 #define K_PGUP	 18 /* Ctl R */
 #define K_PGDOWN 3  /* Ctl C */
@@ -82,9 +89,9 @@
 #define K_TOP    16 /* Ctl P */
 #define K_BOTTOM 6  /* Ctl F */
 
-#define K_TAB    9  /* Ctl I */
+#define K_TAB    9  /* Ctl I -- WS*/
 
-#define K_INTRO	 13 /* Ctl M */
+#define K_INTRO	 13 /* Ctl M -- WS*/
 #define K_ESC	 27 /* Ctl [ */
 
 #define K_RDEL	 127
@@ -93,6 +100,13 @@
 #define K_CUT    21 /* Ctl U */
 #define K_COPY   15 /* Crl O */
 #define K_PASTE  23 /* Ctl W */
+
+#define K_FIND   11 /* Ctl K */
+#define K_NEXT   12 /* Ctl L */
+
+#define K_MACRO  26 /* Ctl Z */
+
+#define K_GOTO   10 /* Ctl J */
 
 /* Help
    ----
@@ -103,8 +117,8 @@
 #define H_3 "End    ^A [END]       RtDel  7F [DELETE]"
 #define H_4 "Top    ^P [CTRL+HOME] PgUp   ^R [PGUP]"
 #define H_5 "Bottom ^F [CTRL+END]  PgDown ^C [PGDN]"
-#define H_6 ""
-#define H_7 "Cut    ^U [F1]"           
+#define H_6 "Find   ^K             F.Next ^L             Go ln. ^J"
+#define H_7 "Cut    ^U [F1]        Tab    ^I [TAB]       Macro  ^Z"
 #define H_8 "Copy   ^O [F2]        Intro  ^M [ENTER]"
 #define H_9 "Paste  ^W [F3]        Esc    ^[ [ESC]"
 
@@ -264,3 +278,4 @@ CrtClearEol()
 	CrtOut(27); putstr("[K");
 }
 
+

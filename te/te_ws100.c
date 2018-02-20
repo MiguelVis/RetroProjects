@@ -2,7 +2,7 @@
 
 	Text editor -- version for VT100 & WordStar keys, under CP/M.
 
-	Copyright (c) 2015 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -36,6 +36,8 @@
 	02 Jun 2016 : Minor changes.
 	11 Jun 2016 : Minor changes in help text.
 	24 Jan 2018 : Find & find next keys.
+	26 Jan 2018 : Key to execute macro from file.
+	04 Feb 2018 : Key to go to line #.
 
 	Notes:
 
@@ -46,6 +48,10 @@
 
 	K_FIND   -- find string
 	K_NEXT   -- fint next string
+
+	K_MACRO  -- execute macro from file
+
+	K_GOTO   -- go to line #
 */
 
 /* Definitions
@@ -74,9 +80,9 @@
 #define K_PGDOWN 18 /* Ctl R -- WS */
 
 #define K_BEGIN	 2  /* Ctl B -- translated from WS */
-#define K_END	 11 /* Ctl K -- translated from WS */
+#define K_END	 20 /* Ctl T -- translated from WS */
 
-#define K_TOP    10 /* Ctl J -- translated from WS */
+#define K_TOP    22 /* Ctl V -- translated from WS */
 #define K_BOTTOM 16 /* Ctl P -- translated from WS */
 
 #define K_TAB    9  /* Ctl I -- WS */
@@ -94,8 +100,12 @@
 #define K_LWORD  1  /* Ctl A -- WS */
 #define K_RWORD  6  /* Ctl F -- WS */
 
-#define K_FIND  20  /* Ctl T -- translated from WS */
-#define K_NEXT  12  /* Ctl L -- WS */
+#define K_FIND   11 /* Ctl K -- translated from WS */
+#define K_NEXT   12 /* Ctl L -- WS */
+
+#define K_MACRO  26 /* Ctl Z */
+
+#define K_GOTO   10 /* Ctl J */
 
 /* Help
    ----
@@ -106,8 +116,8 @@
 #define H_3 "End    ^QD  RtDel  ^G"
 #define H_4 "Top    ^QR  PgUp   ^C  LtWord ^A"
 #define H_5 "Bottom ^QC  PgDown ^R  RtWord ^F"
-#define H_6 "Find   ^QF  F.Next ^L"
-#define H_7 "Cut    ^Y   Tab    ^I"
+#define H_6 "Find   ^QF  F.Next ^L  Go ln. ^J"
+#define H_7 "Cut    ^Y   Tab    ^I  Macro  ^Z"
 #define H_8 "Copy   ^O   Intro  ^M"
 #define H_9 "Paste  ^W   Esc    ^["
 
@@ -262,4 +272,4 @@ CrtClearEol()
 	CrtOut(27); putstr("[K");
 }
 
-
+

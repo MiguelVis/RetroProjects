@@ -3,7 +3,7 @@
 +----| Text Editor |
      +-------------+
 
-v1.09 / 24 Jan 2018
+v1.10 / 20 Feb 2018
 
 (c) 2015-2018 Miguel Garcia / FloppySoftware
 
@@ -93,8 +93,55 @@ To leave the menu, you must press ESCAPE.
 If you start a new document, the 'Save' option will redirect to you to
 the 'save As' option.
 
-The help screen will show the keyboard configuration, that depends
+The help screen will show the keyboard configuration, which depends
 of the program adaptation.
+
+For example, in the case of TE_WS100 (25x80 VT100 and WordStar keys) you
+could see something like this:
+
+        Up     ^E   Left   ^S
+        Down   ^X   Right  ^D
+        Begin  ^QS  LtDel  ^H / 7F
+        End    ^QD  RtDel  ^G
+        Top    ^QR  PgUp   ^C  LtWord ^A
+        Bottom ^QC  PgDown ^R  RtWord ^F
+        Find   ^QF  F.Next ^L  Go ln. ^J
+        Cut    ^Y   Tab    ^I  Macro  ^Z
+        Copy   ^O   Intro  ^M
+        Paste  ^W   Esc    ^[
+
+
+Key bindings
+------------
+
+As you can see in the help screen of example, there are some key bindings
+to perform actions when you are editing the file.
+
+The exact keys you must press to do an action, depend on the adaptation
+you are running, but the meanings are the same:
+
+        - Up, Down, Left, Right: to move the cursor one character at a time.
+        - Begin, End: to move the cursor to the begin or the end of the
+          current line.
+        - Top, Bottom: to move the cursor to the begin or the end of the
+          current file.
+        - PgUp, PgDown: to move the cursor to the previous or next page.
+        - LtWord, RtWord: to move the cursor to the previous or next word.
+        - LtDel, RtDel: to delete the previous or next character.
+        - Find, F.Next: to find a string or repeat the search.
+        - Go ln.: to go to a line number.
+        - Cut, Copy, Paste: to cut, copy or paste a line.
+        - Macro: to execute a macro file.
+        - Tab: to insert spaces as indentation.
+        - Intro: to insert a break or empty line.
+        - Esc: to exit the menu or cancel an action.
+
+Take into account that some actions could not be available in all te
+adaptations to save memory space. These actions are: LtWord, RtWord,
+Find, F.Next, Go ln. and Macro.
+
+If you miss one or more of the mentioned actions, you can edit the exact
+file of the te adaptation and recompile it to include them.
 
 
 File backup
@@ -106,14 +153,55 @@ contents if it exists.
 It is renamed as 'te.bkp'.
 
 
-Adaptation
-----------
+Macros
+------
+
+Macros are a powerful way to perform repetitive tasks at editing level.
+
+For example, you could create a macro with your signature to include it
+in all letters you write.
+
+Or, being a programmer, you could create a gdoc block macro to document
+your own C functions.
+
+Each time you want to run a macro, just press the corresponding key
+for the Macro action, write the filename you choose when you saved it
+to disk, and press the key for the Intro action. That's all.
+
+There are some special symbols you can use in your macros:
+
+        {up} {down} {left} {right}
+        {begin} {end}
+        {top} {bottom}
+        {intro}
+        {tab}
+        {cut} {copy} {paste}
+        {filename}
+
+As you can see, they are self explanatory.
+
+Take into account that line endings in the macro are not translated to Intro
+actions. Use {intro} for that.
+
+If you need to insert the { or } characters in the text of the macro, just
+write \{ and \}.
+
+For example, a macro to insert a banner in the top of the document:
+
+        {top}{intro}{up}
+        =============={intro}
+        FloppySoftware{intro}
+        =============={intro}
+
+
+Adaptations
+-----------
 
 The program adaptation is done by editing a small source code file.
 
 In this file, you must specify the control characters that your
-keyboard send, the help contents, and complete a few C functions to
-clear the screen, etc.
+keyboard sends (the key bindings), the help contents, and complete
+a few C functions to clear the screen, etc.
 
 As there are some adaptations already done, it's possible that your
 machine is already included between them.
@@ -133,7 +221,7 @@ Current CP/M adaptations are:
         - te_kp:    Kaypro II, 4 and 10 (24x80 ADM-3A like terminal),
                     contributed by Stephen S. Mitchell (thanks!).
 
-Adaptations for other OS are:
+Adaptations for other OS are (they are distributed apart):
 
         - Windows 32 bit (25x80), compiled with Pelles C
           and its 'conio.h' library.
@@ -155,4 +243,4 @@ About this file
 
 Of course, this text file has been created and edited with te.
 
-
+

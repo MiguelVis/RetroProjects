@@ -2,7 +2,7 @@
 
 	Text editor -- version for the K. Murakami's CP/M emulator.
 
-	Copyright (c) 2015-2016 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -33,6 +33,7 @@
 
 	03 May 2015 : 1st version.
 	02 Jun 2016 : Minor changes.
+	20 Feb 2018 : Find, find next, macro & go to line # keys.
 
 	Notes:
 
@@ -43,6 +44,10 @@
 
 	K_FIND   -- find string
 	K_NEXT   -- fint next string
+
+	K_MACRO  -- execute macro from file
+
+	K_GOTO   -- go to line #
 
 	For CPM.EXE / CP/M-80 program EXEcutor for Win32 v0.4 from K. Murakami.
 
@@ -94,6 +99,13 @@
 #define K_COPY   15 /* Crl O */
 #define K_PASTE  23 /* Ctl W */
 
+#define K_FIND   11 /* Ctl K */
+#define K_NEXT   12 /* Ctl L */
+
+#define K_MACRO  26 /* Ctl Z */
+
+#define K_GOTO   10 /* Ctl J */
+
 /* Help
    ----
 */
@@ -103,8 +115,8 @@
 #define H_3 "End    ^A         RtDel  7F [DEL->]"
 #define H_4 "Top    ^P         PgUp   ^R [PG UP]"
 #define H_5 "Bottom ^F         PgDown ^C [PG DOWN]"
-#define H_6 ""
-#define H_7 "Cut    ^U"           
+#define H_6 "Find   ^K         F.Next ^L            Go ln. ^J"
+#define H_7 "Cut    ^U         Tab    ^I [TAB]      Macro  ^Z"
 #define H_8 "Copy   ^O         Intro  ^M [RETURN]"
 #define H_9 "Paste  ^W         Esc    ^[ [EXIT]"
 
@@ -214,4 +226,4 @@ CrtClearEol()
 	CrtOut(27); putstr("[K");
 }
 
-
+

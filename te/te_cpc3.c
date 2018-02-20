@@ -2,7 +2,7 @@
 
 	Text editor -- version for the Amstrad CPC with CP/M 3.
 
-	Copyright (c) 2015-2016 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -35,6 +35,7 @@
 	20 Jun 2015 : Modified ESC key name.
 	02 Jun 2016 : Minor changes.
 	25 Jan 2018 : Find & find next keys.
+	20 Feb 2018 : Macro & go to line # keys.
 
 	Notes:
 
@@ -45,6 +46,10 @@
 
 	K_FIND   -- find string
 	K_NEXT   -- fint next string
+
+	K_MACRO  -- execute macro from file
+
+	K_GOTO   -- go to line #
 
 	The Amstrad CPC with CP/M Plus (v3.1) has a VT52-like emulation,
 	and a 25x80 CRT minus 1 line for system messages (it can be enabled
@@ -95,8 +100,12 @@
 #define K_COPY   18 /* Crl R */
 #define K_PASTE  23 /* Ctl W */
 
-#define K_FIND   10 /* Ctl J */
-#define K_NEXT   4  /* Ctl D */
+#define K_FIND   11 /* Ctl K */
+#define K_NEXT   12 /* Ctl L */
+
+#define K_MACRO  24 /* Ctl X */
+
+#define K_GOTO   10 /* Ctl J */
 
 /* Help
    ----
@@ -111,8 +120,8 @@
 #define H_3 "End    ^E         RtDel  ^G [CLR]"
 #define H_4 "Top    ^P         PgUp   ^Q"
 #define H_5 "Bottom ^S         PgDown ^Z"
-#define H_6 "Find   ^J         F.Next ^D"
-#define H_7 "Cut    ^U"           
+#define H_6 "Find   ^K         F.Next ^L          Go ln. ^J"
+#define H_7 "Cut    ^U         Tab    ^I [TAB]    Macro  ^X"
 #define H_8 "Copy   ^R         Intro  ^M [RETURN]"
 #define H_9 "Paste  ^W [COPY]  Esc    ^[ [ESC]"
 
@@ -128,8 +137,8 @@
 #define H_3 "End    ^E          RtDel  ^G [CLR]"
 #define H_4 "Top    ^P          PgUp   ^Q"
 #define H_5 "Bottom ^S          PgDown ^Z"
-#define H_6 "Find   ^J         F.Next ^D"
-#define H_7 "Cut    ^U"           
+#define H_6 "Find   ^J          F.Next ^D          Go ln. ^K"
+#define H_7 "Cut    ^U          Tab    ^I [TAB]    Macro  ^X"
 #define H_8 "Copy   ^R          Intro  ^M [RETURN]"
 #define H_9 "Paste  ^W [COPIA]  Esc    ^[ [ESC]"
 
@@ -241,4 +250,4 @@ CrtClearEol()
 	CrtOut(27); CrtOut('K');
 }
 
-
+

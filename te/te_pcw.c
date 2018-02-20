@@ -2,7 +2,7 @@
 
 	Text editor -- version for the Amstrad PCW.
 
-	Copyright (c) 2015-2016 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -34,6 +34,8 @@
 	02 May 2015 : 1st version.
 	02 Jun 2016 : Minor changes.
 	25 Jan 2018 : Find & find next keys.
+	26 Jan 2018 : Key to execute macro from file.
+	04 Feb 2018 : Key to go to line #.
 
 	Notes:
 
@@ -44,6 +46,10 @@
 
 	K_FIND   -- find string
 	K_NEXT   -- fint next string
+
+	K_MACRO  -- execute macro from file
+
+	K_GOTO   -- go to line #
 
 	The Amstrad PCW runs CP/M Plus (v3.1) with a VT52-like emulation,
 	and a 32x90 CRT minus 1 line for system messages (it can be enabled
@@ -94,8 +100,12 @@
 #define K_COPY   18 /* Crl R */
 #define K_PASTE  23 /* Ctl W */
 
-#define K_FIND   10 /* Ctl J */
-#define K_NEXT   4  /* Ctl D */
+#define K_FIND   11 /* Ctl K */
+#define K_NEXT   12 /* Ctl L */
+
+#define K_MACRO  24 /* Ctl X */
+
+#define K_GOTO   10 /* Ctl J */
 
 /* Help
    ----
@@ -110,8 +120,8 @@
 #define H_3 "End    ^\\ [-]      RtDel  ^G [DEL->]"
 #define H_4 "Top    ^P [F7]     PgUp   ^Q [F3]"
 #define H_5 "Bottom ^S [F5]     PgDown ^Z [F1]"
-#define H_6 "Find   ^J          F.Next ^D"
-#define H_7 "Cut    ^U [CUT]"           
+#define H_6 "Find   ^K          F.Next ^L           Go ln. ^J"
+#define H_7 "Cut    ^U [CUT]    TAB    ^I [TAB]     Macro  ^X"
 #define H_8 "Copy   ^R [RELAY]  Intro  ^M [RETURN]"
 #define H_9 "Paste  ^W [PASTE]  Esc    ^[ [EXIT]"
 
@@ -127,8 +137,8 @@
 #define H_3 "End    ^\\ [-]      RtDel  ^G [BORR->]"
 #define H_4 "Top    ^P [F7]     PgUp   ^Q [F3]"
 #define H_5 "Bottom ^S [F5]     PgDown ^Z [F1]"
-#define H_6 "Find   ^J         F.Next ^D"
-#define H_7 "Cut    ^U [CORT]"           
+#define H_6 "Find   ^K          F.Next ^L           Go ln. ^J"
+#define H_7 "Cut    ^U [CORT]   Tab    ^I [TAB]     Macro  ^X"
 #define H_8 "Copy   ^R [JUST]   Intro  ^M [RETURN]"
 #define H_9 "Paste  ^W [INS]    Esc    ^[ [SAL]"
 
@@ -238,3 +248,4 @@ CrtClearEol()
 	CrtOut(27); CrtOut('K');
 }
 
+

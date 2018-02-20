@@ -2,9 +2,9 @@
 
 	Text editor.
 
-	Defs. for main module.
+	Definitions.
 
-	Copyright (c) 2015-2017 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -33,6 +33,8 @@
 	14 Jun 2016 : v1.07 : Hack for SamaruX.
 	05 Jul 2017 : v1.08
 	24 Jan 2018 : v1.09
+	20 Feb 2018 : v1.10 : Defines for copyright and macros.
+
 
 	Notes:
 
@@ -43,22 +45,32 @@
    -------
 */
 #ifdef OS_SAMARUX
-#define TE_VERSION "v1.09 / 24 Jan 2018 for SamaruX"  /* Program version and date */
+#define VERSION "v1.10 / 20 Feb 2018 for SamaruX"  /* Program version and date */
 #else
-#define TE_VERSION "v1.09 / 24 Jan 2018 for CP/M"  /* Program version and date */
+#define VERSION "v1.10 / 20 Feb 2018 for CP/M"  /* Program version and date */
 #endif
+
+/* Copyright
+   ---------
+*/
+#define COPYRIGHT "(c) 2015-2018 Miguel Garcia / FloppySoftware"
 
 /* More defs.
    ----------
 */
+#define MAX_LINES  512   /* Max. # of text lines: each empty line uses 2 bytes with the Z80 */
 
-#define MAX_LINES 512    /* Max. # of text lines: each empty line uses 2 bytes with the Z80 */
-
-#define TAB_COLS 8       /* How many columns has a tab. (usually 8) */
+#define TAB_COLS   8     /* How many columns has a tab. (usually 8) */
 
 #define FORCED_MAX 128   /* Keyboard forced entry buffer size (for paste, tabs, etc.) */
 
-#define FIND_MAX 32      /* Find string buffer size */
+#define FIND_MAX   32    /* Find string buffer size */
+
+#define MAC_START   '{'  /* Left delimiter for symbol names in macros */
+#define MAC_END     '}'  /* Right delimiter for symbol names in macros */
+#define MAC_ESCAPE  '\\' /* For escaped characters in macros */
+#define MAC_ERROR   '!'  /* Character to alert about errors */
+#define MAC_SYM_MAX  9   /* Max. length of macro symbol name in characters + '\0' */
 
 #define PS_ROW     0     /* Information position */
 #define PS_FNAME   4     /* Filename - position in row */
@@ -76,3 +88,4 @@
 #define getchr CrtIn     /* Get a character from the keyboard */
 #define putchr CrtOut    /* Print a character on screen */
 
+

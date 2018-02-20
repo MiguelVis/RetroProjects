@@ -35,8 +35,9 @@
 
 	Original code: July 4, 2015.
 
-	02 Jun 2016 : Minor changes.
-	25 Jan 2018 : Find & find next keys.
+	02 Jun 2016 : mgl : Minor changes.
+	25 Jan 2018 : mgl : Find & find next keys.
+	20 Feb 2018 : mgl : Macro & go to line # keys.
 
 	Notes:
 
@@ -47,6 +48,10 @@
 
 	K_FIND   -- find string
 	K_NEXT   -- fint next string
+
+	K_MACRO  -- execute macro from file
+
+	K_GOTO   -- go to line #
 */
 
 /* Definitions
@@ -95,6 +100,10 @@
 #define K_FIND   2  /* Ctl B */
 #define K_NEXT   4  /* Ctl D */
 
+#define K_MACRO  24 /* Ctl X */
+
+#define K_GOTO   1  /* Ctl A */
+
 /* Help
    ----
 */
@@ -107,8 +116,8 @@
 #define H_3 "End    ^\\          RtDel  ^G"
 #define H_4 "Top    ^P          PgUp   ^Q"
 #define H_5 "Bottom ^S          PgDown ^Z"
-#define H_6 "Find   ^B          F.Next ^D"
-#define H_7 "Cut    ^U"           
+#define H_6 "Find   ^B          F.Next ^D          Go ln. ^A"
+#define H_7 "Cut    ^U          Tab    ^I          Macro  ^X"
 #define H_8 "Copy   ^R          Intro  ^M [RETURN]"
 #define H_9 "Paste  ^W          Esc    [ESC]"
 
@@ -202,7 +211,7 @@ int row, col;
 CrtClearLine(row)
 int row;
 {
-	CrtLocate(row, 0); CrtOut(24); 
+	CrtLocate(row, 0); CrtOut(24);
 }
 
 /* Erase from the cursor to the end of the line
@@ -210,7 +219,7 @@ int row;
 */
 CrtClearEol()
 {
-	CrtOut(24); 
+	CrtOut(24);
 }
 
 
