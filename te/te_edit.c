@@ -24,6 +24,7 @@
 
 	30 Jan 2018 : Extracted from te.c.
 	04 Feb 2018 : Support for macros. Go to line #.
+	22 Feb 2018 : Check for buffer changes.
 */
 
 /* Edit current line
@@ -362,26 +363,37 @@ BfEdit()
 		}
 	}
 
-	/* Save changes */
+	/* Update changes if any */
 
 	if(len == old_len)
 	{
-		/* FIX-ME: May be we are just copying the same data if there were no changes */
+		/* Check for changes */
+		if(memcmp(lp_arr[lp_cur], ln_dat, len))
+		{
+			/* Update the changes */
+			strcpy(lp_arr[lp_cur], ln_dat);
 
-		strcpy(lp_arr[lp_cur], ln_dat);
+			/* Changes are not saved */
+			lp_chg = 1;
+		}
 	}
-	//else if((buf = malloc(len + 1)) == NULL)
-	else if(!(buf = malloc(len + 1)))
+	else if((buf = malloc(len + 1)))
 	{
-		ErrLineMem(); /* FIX-ME: Re-print the line with old contents? */
+		/* Update the changes */
+		strcpy(buf, ln_dat);
+
+		/* Free old buffer */
+		free(lp_arr[lp_cur]);
+
+		/* Point to new buffer */
+		lp_arr[lp_cur] = buf;
+
+		/* Changes are not saved */
+		lp_chg = 1;
 	}
 	else
 	{
-		strcpy(buf, ln_dat);
-
-		free(lp_arr[lp_cur]);
-
-		lp_arr[lp_cur] = buf;
+		ErrLineMem(); /* FIX-ME: Re-print the line with old contents? */
 	}
 
 	/* Return last character entered */

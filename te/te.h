@@ -34,6 +34,7 @@
 	05 Jul 2017 : v1.08
 	24 Jan 2018 : v1.09
 	20 Feb 2018 : v1.10 : Defines for copyright and macros.
+	22 Feb 2018 : v1.11
 
 
 	Notes:
@@ -45,9 +46,9 @@
    -------
 */
 #ifdef OS_SAMARUX
-#define VERSION "v1.10 / 20 Feb 2018 for SamaruX"  /* Program version and date */
+#define VERSION "v1.11 / 22 Feb 2018 for SamaruX"  /* Program version and date */
 #else
-#define VERSION "v1.10 / 20 Feb 2018 for CP/M"  /* Program version and date */
+#define VERSION "v1.11 / 22 Feb 2018 for CP/M"  /* Program version and date */
 #endif
 
 /* Copyright

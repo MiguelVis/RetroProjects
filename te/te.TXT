@@ -3,7 +3,7 @@
 +----| Text Editor |
      +-------------+
 
-v1.10 / 20 Feb 2018
+v1.11 / 22 Feb 2018
 
 (c) 2015-2018 Miguel Garcia / FloppySoftware
 
@@ -89,6 +89,10 @@ The options are:
 You can select an option by pressing the character in uppercase.
 
 To leave the menu, you must press ESCAPE.
+
+If you select one of the options New, Open or eXit, and there are any
+changes that are not saved yet, te will ask you for confirmation
+before proceed (both INTRO or Y mean YES).
 
 If you start a new document, the 'Save' option will redirect to you to
 the 'save As' option.
@@ -243,4 +247,4 @@ About this file
 
 Of course, this text file has been created and edited with te.
 
-
+

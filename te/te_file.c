@@ -23,6 +23,7 @@
 	Changes:
 
 	30 Jan 2018 : Extracted from te.c.
+	22 Feb 2018 : Check for buffer changes.
 */
 
 /* Reset lines array
@@ -41,7 +42,7 @@ ResetLines()
 		}
 	}
 
-	lp_cur = lp_now = box_shr = box_shc = 0;
+	lp_cur = lp_now = lp_chg = box_shr = box_shc = 0;
 }
 
 /* New file
@@ -279,7 +280,7 @@ char *fn;
 
 	/* Success */
 
-	return 0;
+	return (lp_chg = 0);
 }
 
 

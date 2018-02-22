@@ -23,6 +23,7 @@
 	Changes:
 
 	30 Jan 2018 : Extracted from te.c.
+	22 Feb 2018 : Ask for confirmation only if changes were not saved. INTRO equals Y on confirmation.
 */
 
 /* Read character from keyboard
@@ -189,7 +190,7 @@ char *s;
 
 	SysLine(NULL);
 
-	return ch == 'Y' ? 1 : 0;
+	return (ch == 'Y' || ch == K_INTRO);
 }
 
 /* Ask for a string
@@ -224,6 +225,15 @@ SysLineFile(fn)
 char *fn;
 {
 	return SysLineStr("Filename", fn, FILENAME_MAX - 1);
+}
+
+/* Ask for confirmation on changes not saved
+   -----------------------------------------
+   Returns NZ if YES, else Z.
+*/
+SysLineChanges()
+{
+	return SysLineConf("The changes will be lost.");
 }
 
 /* Read simple line
@@ -402,9 +412,10 @@ Menu()
 */
 MenuNew()
 {
-	if(lp_now > 1 || strlen(lp_arr[0]))
+	//if(lp_now > 1 || strlen(lp_arr[0]))
+	if(lp_chg)
 	{
-		if(!SysLineConf(NULL))
+		if(!SysLineChanges())
 			return 1;
 	}
 
@@ -421,9 +432,10 @@ MenuOpen()
 {
 	char fn[FILENAME_MAX];
 
-	if(lp_now > 1 || strlen(lp_arr[0]))
+	//if(lp_now > 1 || strlen(lp_arr[0]))
+	if(lp_chg)
 	{
-		if(!SysLineConf(NULL))
+		if(!SysLineChanges())
 			return 1;
 	}
 
@@ -554,7 +566,13 @@ MenuAbout()
 */
 MenuExit()
 {
-	return !SysLineConf(NULL);
+	if(lp_chg)
+	{
+		return !SysLineChanges();
+	}
+
+	/* Quit program */
+	return 0;
 }
 
 

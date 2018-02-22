@@ -51,6 +51,7 @@
 	24 Jan 2018 : v1.09 : Added find string and find next string commands.
 	20 Feb 2018 : v1.10 : Added command to execute macro from file. Split te.c in modules. Added go to line #.
 	                      Disable code for macros from strings, for now.
+	22 Feb 2018 : v1.11 : Ask for confirmation only if changes were not saved.
 
 	Notes:
 
@@ -97,6 +98,7 @@
 WORD *lp_arr; /* Text lines pointers array */
 int   lp_now; /* How man lines are in the array */
 int   lp_cur; /* Current line */
+int   lp_chg; /* 0 if no changes are made */
 
 /* Current line
    ------------
