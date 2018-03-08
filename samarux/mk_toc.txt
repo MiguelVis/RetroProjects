@@ -53,7 +53,8 @@ CHAPTER 3 : BUILT-IN COMMANDS
             3.38 : tee - Duplicate the standard input
             3.39 : true - Return true.
             3.40 : tty - Return user's terminal name.
-            3.41 : ver - Print CP/M version and facts
-            3.42 : wc - Count newlines, words and characters
-            3.43 : whoami - Print the user name
+			3.41 : type - Print information about command type.
+            3.42 : ver - Print CP/M version and facts
+            3.43 : wc - Count newlines, words and characters
+            3.44 : whoami - Print the user name
 

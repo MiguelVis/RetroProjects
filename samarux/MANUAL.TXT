@@ -90,9 +90,10 @@ CHAPTER 3 : BUILT-IN COMMANDS
             3.38 : tee - Duplicate the standard input
             3.39 : true - Return true.
             3.40 : tty - Return user's terminal name.
-            3.41 : ver - Print CP/M version and facts
-            3.42 : wc - Count newlines, words and characters
-            3.43 : whoami - Print the user name
+			3.41 : type - Print information about command type.
+            3.42 : ver - Print CP/M version and facts
+            3.43 : wc - Count newlines, words and characters
+            3.44 : whoami - Print the user name
 
 === oOo ===
 
@@ -1457,9 +1458,9 @@ EXAMPLES
 	batch myscript one two three
 	
 	  $# = 3, $1 = one, $2 = two, $3 = three
-	  
+	
 	  shift
-	  
+	
 	  $# = 2, $1 = two, $2 = three
 
 +--------------+
@@ -1605,7 +1606,32 @@ EXAMPLES
 	tty
 
 +--------------+
-| SECTION 3.41 |  ver
+| SECTION 3.41 |  type
++--------------+
+
+NAME
+	type - Print information about command type
+
+SYNOPSIS
+	type [-abtx] [name ...]
+
+DESCRIPTION
+	The command type prints, for each name, how it would be
+	interpreted if used as a command name.
+
+OPTIONS
+	-a  Print all matches for each name
+	-b  Exclude search for builtins
+	-t  Print a single word instead of a full sentence:
+	    alias, builtin, file or none
+	-x  Exclude search for aliases
+
+EXAMPLES
+	type clear
+	type -t cp mv ls
+
++--------------+
+| SECTION 3.42 |  ver
 +--------------+
 
 NAME
@@ -1625,7 +1651,7 @@ EXAMPLES
 	ver
 
 +--------------+
-| SECTION 3.42 |  wc
+| SECTION 3.43 |  wc
 +--------------+
 
 NAME
@@ -1657,35 +1683,22 @@ NOTES
 	The CR ('\r') characters will not be counted.
 
 +--------------+
-| SECTION 3.42 |  wc
+| SECTION 3.44 |  whoami
 +--------------+
 
 NAME
-	wc - Count newlines, words and characters
+	whoami - Print the user name
 
 SYNOPSIS
-	wc [file ...]
+	whoami
 
 DESCRIPTION
-	The command wc counts the number of newlines, words
-	and characters in files.
-	
-	It prints also a line with totals if more than one
-	file is specified.
-	
-	If no file names are entered, wc reads from the
-	standard input.
-	
-	The - file means the standard input.
+	The command whoami prints the user name.
 
 OPTIONS
 	None.
 
 EXAMPLES
-	wc mytasks.txt
-	grep 2015 diary.doc | wc
+	whoami
 
-NOTES
-	The CR ('\r') characters will not be counted.
-
-
+

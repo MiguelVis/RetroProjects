@@ -1,9 +1,9 @@
 # SamaruX Manual
 #
-# (c) 2015 Miguel I. Garcia Lopez, FloppySoftware, Spain
+# (c) 2015-2018 Miguel I. Garcia Lopez, FloppySoftware, Spain
 #
 # Created:     08 Dec 2014
-# Last edited: 18 Dec 2016
+# Last edited: 08 Mar 2018
 #
 # $NM is NAME
 # $SY is SYNOPSIS
@@ -1022,9 +1022,9 @@ $EX
 batch myscript one two three
 
   $# = 3, $1 = one, $2 = two, $3 = three
-  
+
   shift
-  
+
   $# = 2, $1 = two, $2 = three
 # ========
 @sleep
@@ -1160,6 +1160,25 @@ $OP
 None.
 $EX
 tty
+# ========
+@type
+#
+$NM
+type - Print information about command type
+$SY
+type [-abtx] [name ...]
+$DE
+The command type prints, for each name, how it would be
+interpreted if used as a command name.
+$OP
+-a  Print all matches for each name
+-b  Exclude search for builtins
+-t  Print a single word instead of a full sentence:
+    alias, builtin, file or none
+-x  Exclude search for aliases
+$EX
+type clear
+type -t cp mv ls
 # ========
 @variables
 #
