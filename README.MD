@@ -41,7 +41,7 @@ Management library for configuration files.
 CPMX
 ----
 
-Some Unix-like tools for CP/M.
+Some Unix-like tools for CP/M. Some are for CP/M-86 too.
 
 
 DYNARR
