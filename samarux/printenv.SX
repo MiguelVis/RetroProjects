@@ -12,8 +12,6 @@ goto Quit
 env
 goto Quit
 # PrVar:
-env > printenv.tmp
-grep $1 printenv.tmp
-rm printenv.tmp
+env | grep $1
 # Quit:
 
