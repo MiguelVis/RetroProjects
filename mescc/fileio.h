@@ -50,6 +50,7 @@
  *  - 10 Dec 2016 : Documented. Optimized. GPL v3.
  *  - 15 Dec 2016 : Optimize NULL comparisons, fgetc(), fputc().
  *  - 18 Feb 2018 : Document public macros. Rename internal macros and include them in cleaning. Rework remove() and rename(). Added FOPEN_MAX.
+ *  - 03 May 2018 : Make CC_FPUTS effective (use #ifdef instead of #if).
  *
  * Copyright (c) 1999-2018 Miguel I. Garcia Lopez / FloppySoftware.
  *
@@ -624,7 +625,7 @@ char *str; int size; FILE *fp;
 
 #endif
 
-#if CC_FPUTS
+#ifdef CC_FPUTS
 
 /**
  * @fn     int fputs(char *str, FILE *fp)
