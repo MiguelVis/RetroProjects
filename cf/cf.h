@@ -30,6 +30,7 @@
 	21 Oct 2016 : Solved a couple of bugs in CfRead() and xCfAdd(). Refactorized function names.
 	24 Oct 2016 : Modified CfRead(), CfWrite(), CfSetKey() to support reading and writing empty lines and comments.
 	01 Jan 2017 : Don't destroy CF on error in CfRead().
+	03 May 2018 : Solved bug in quoted strings.
 
 	Supported #defines:
 
@@ -52,26 +53,6 @@
 #ifndef CF_H
 
 #define CF_H
-
-/* Dependencies
-   ------------
-*/
-#include <alloc.h>
-#include <string.h>
-
-#ifdef CF_READ
-	#define CC_FGETS
-	#include <fileio.h>
-	#include <ctype.h>
-#endif
-
-#ifdef CF_WRITE
-	#include <fileio.h>
-#endif
-
-#ifdef CF_GET_UINT
-	#include <ctype.h>
-#endif
 
 /* Public defines
    --------------
@@ -120,7 +101,7 @@ int max;
 
 				// Store the rest of fields
 				cf[XCF_FMAX] = max;
-			
+
 				// Success
 				return cf;
 			}
@@ -154,65 +135,6 @@ CF *cf;
 	// Done
 	return NULL;
 }
-
-/* Add a unique key to a configuration buffer
-   ------------------------------------------
-   Return 0 on success, or -1 on failure.
-*/
-/*********************************************************************************
-cf_add_key(cf, key, value)
-CF *cf; char *key, *value;
-{
-	int entry;
-
-	// Add the key and value, only if key not exists.
-	if((entry = xCfFind(cf[XCF_FKEYS], cf[XCF_FMAX], key)) == -1) {
-
-		// Add the key
-		if((entry = xCfAdd(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
-
-			// Add the value
-			if(xCfSet(cf[XCF_FVALUES], value, entry)) {
-
-				// Success
-				return 0;
-			}
-
-			// Failure
-			xCfDel(cf[XCF_FKEYS], entry);
-		}
-	}
-
-	// Failure
-	return -1;
-}
-*********************************************************************************/
-
-/* Change the value of an existent key
-   -----------------------------------
-   Return 0 on success, or -1 on failure.
-*/
-/********************************************************************************
-cf_chg_key(cf, key, value)
-CF *cf; char *key, *value;
-{
-	int entry;
-
-	// Get entry number
-	if((entry = xCfFind(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
-
-		// Change the value
-		if(xCfSet(cf[XCF_FVALUES], value, entry)) {
-
-			// Success
-			return 0;
-		}
-	}
-
-	// Failure
-	return -1;
-}
-*********************************************************************************/
 
 /* Set the value of a key
    ----------------------
@@ -377,6 +299,11 @@ CF *cf; char *fname; int cmt;
 			// Skip spaces
 			bf = xCfLfSpaces(bf);
 
+			// Remove quotes if any
+			if(!(bf = xCfQuotes(bf))) {
+				err = -1; break;
+			}
+
 			// Check if there is a value
 			if(!(*bf)) {
 				err = -1; break;
@@ -414,7 +341,7 @@ CF *cf; char *fname;
 {
 	FILE *fp;
 	unsigned int *arrk, *arrv;
-	int max, i;
+	int max, i, k;
 	char *s;
 
 	// Open file
@@ -429,29 +356,47 @@ CF *cf; char *fname;
 		for(i = 0; i < max; ++i) {
 			if(arrk[i]) {
 
+				// Get variable name or start of comment
 				s = arrk[i];
 
 				if(*s) {
-#ifndef FPRINTF_H
-					if(*s != '#' && *s != ';') {
-						while(*s) fputc(*s++, fp);
-						fputc(' ', fp); fputc('=', fp);
-					}
-					else {
-						fputc(*s, fp);
-					}
+					// Remember first character of variable name
+					k = *s;
+
+					// Output variable name or start of comment
+					fputs(s, fp);
 
 					fputc(' ', fp);
-					s = arrv[i]; while(*s) fputc(*s++, fp);
 
-					fputc('\n', fp);
-#else
-					fprintf(fp, (*s != '#' && *s != ';') ? "%s = %s\n" : "%s %s\n", arrk[i], arrv[i]);
-#endif
+					// Get variable value or comment
+					s = arrv[i];
+
+					if(k != '#' && k != ';') {
+						fputc('=', fp);
+						fputc(' ', fp);
+
+						// Check for spaces
+						if(strchr(s, ' ')) {
+
+							// Write as "string"
+							fputc('\"', fp);
+							fputs(s, fp);
+							fputc('\"', fp);
+
+						}
+						else {
+							// Write raw
+							fputs(s, fp);
+						}
+					}
+					else {
+						// Write comment
+						fputs(s, fp);
+					}
 				}
-				else {
-					fputc('\n', fp);
-				}
+
+				// End of line
+				fputc('\n', fp);
 			}
 		}
 
@@ -594,29 +539,9 @@ CfGetStr(cf, key, def)
 CF *cf; char *key, *def;
 {
 	char *value;
-	int k;
 
 	// Get value
 	if((value = CfGetKey(cf, key))) {
-
-		// Check for quoted strings
-		if(*value == '\"') {
-			// Get the string length
-			k = strlen(value);
-
-			// Check for trailing quote
-			if(k >= 2 && value[k - 1] == '\"') {
-				// Remove trailing quote
-				value[k - 1] = '\0';
-
-				// Skip quote on the left
-				++value;
-			}
-			else {
-				// Failure
-				return def;
-			}
-		}
 
 		// Return the value
 		return value;
@@ -657,31 +582,8 @@ CF *cf; char *key; int value;
 CfSetStr(cf, key, value)
 CF *cf; char *key, *value;
 {
-	char *tmp;
-	int size, result;
-
-	// Compute size
-	size = strlen(value) + 2;
-
-	// Alloc memory
-	if((tmp = malloc(size))) {
-		// Setup string
-		*tmp = '\"';
-		strcpy(tmp + 1, value);
-		tmp[size - 2] = '\"';
-
-		// Set the key
-		result = CfSetKey(cf, key, tmp);
-
-		// Free allocated memory
-		free(tmp);
-
-		// Return success or failure
-		return result;
-	}
-
-	// Failure
-	return -1;
+	// Return success or failure
+	return CfSetKey(cf, key, value);
 }
 
 #endif
@@ -858,8 +760,8 @@ unsigned int *arr; int entry;
 // -- PRIVATE FUNCTIONS: STRINGS --
 // --------------------------------
 
-/* Skip spaces on the left of a string
-   -----------------------------------
+/* Skip spaces on the left
+   -----------------------
    Return pointer to the first non space character.
 */
 xCfLfSpaces(s)
@@ -873,6 +775,10 @@ char *s;
 	return s;
 }
 
+/* Skip spaces on the right
+   ------------------------
+   Return pointer to the string.
+*/
 xCfRtSpaces(s)
 char *s;
 {
@@ -887,6 +793,35 @@ char *s;
 
 	// Set trailing zero
 	*(++rtp) = '\0';
+
+	// Return pointer to string
+	return s;
+}
+
+/* Remove double quotes if any
+   ---------------------------
+   Return pointer to the string or NULL on error.
+*/
+xCfQuotes(s)
+char *s;
+{
+	int len;
+
+	// Check for "strings"
+	if(*s == '\"') {
+		len = strlen(s);
+
+		if(len > 1 && s[len - 1] == '\"') {
+
+			// Set trailing zero
+			s[len - 1] = '\0';
+
+			// Point to first non quote character
+			++s;
+		}
+		else
+			s = NULL;
+	}
 
 	// Return pointer to string
 	return s;

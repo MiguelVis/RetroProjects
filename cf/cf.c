@@ -40,6 +40,7 @@
 		06 Jul 2016 : Work begins.
 		21 Oct 2016 : Refactorized CF function names.
 		24 Oct 2016 : Added reading and writing of empty lines and comments.
+		03 May 2018 : Write final result.
 */
 
 /* Defines for MESCC libraries
@@ -54,13 +55,14 @@
 //#define CC_FCX          // Support for user number in filenames.
 //#define CC_FCX_DIR      // Support for named user numbers - needs CC_FCX and DirToDrvUsr().
 
-//#define CC_FILEIO_SMALL // Exclude fread(), fwrite() and fgets().
-
 //#define CC_NO_MUL       // Exclude support for MULTIPLICATION.
 //#define CC_NO_DIV       // Exclude support for DIVISION and MODULUS.
 //#define CC_NO_SWITCH    // Exclude support for SWITCH.
 
 #define CC_NO_ARGS      // Exclude support for ARGC and ARGV.
+
+#define CC_FGETS        // fgets()
+#define CC_FPUTS        // fputs()
 
 /* Standard MESCC library
    ----------------------
@@ -73,14 +75,14 @@
    ------------------------
    Leave only what you need.
 */
-//#include <alloc.h>
+#include <alloc.h>
 //#include <atexit.h>
 //#include <bsearch.h>
 //#include <clock.h>
-//#include <conio.h>
+#include <conio.h>
 //#include <cpm.h>
-//#include <ctype.h>
-//#include <fileio.h>
+#include <ctype.h>
+#include <fileio.h>
 //#include <fprintf.h>
 //#include <mem.h>
 #include <printf.h>
@@ -89,7 +91,7 @@
 //#include <redir.h>
 //#include <setjmp.h>
 //#include <sprintf.h>
-//#include <string.h>
+#include <string.h>
 //#include <xprintf.h>
 //#include <z80.h>
 
@@ -191,6 +193,9 @@ main()
 
 	printf("\n");
 
+	if(CfWrite(cf, "test.cf"))
+		error("Can't write test.cf");
+
 	printf("Destroying CF\n\n");
 
 	CfDestroy(cf);
@@ -207,7 +212,7 @@ char *key, *value;
 
 	result = CfSetKey(cf, key, value);
 
-	printf("Set %s = %s%s\n", key, value, result ? " --> ERROR" : "");
+	printf("Set '%s' = '%s'%s\n", key, value, result ? " --> ERROR" : "");
 }
 
 set_bool(key, value)
@@ -217,7 +222,7 @@ char *key; int value;
 
 	result = CfSetBool(cf, key, value);
 
-	printf("Set %s = %s%s\n", key, value ? "true" : "false", result ? " --> ERROR" : "");
+	printf("Set '%s' = '%s'%s\n", key, value ? "true" : "false", result ? " --> ERROR" : "");
 }
 
 set_str(key, value)
@@ -227,7 +232,7 @@ char *key, *value;
 
 	result = CfSetStr(cf, key, value);
 
-	printf("Set %s = \"%s\"%s\n", key, value, result ? " --> ERROR" : "");
+	printf("Set '%s' = '%s'%s\n", key, value, result ? " --> ERROR" : "");
 }
 
 pr_keys(cf)
