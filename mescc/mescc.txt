@@ -6,7 +6,7 @@
 ]     ] ]       ]     ] ]     ] ]     ]
 ]     ] ]]]]]]]  ]]]]]   ]]]]]   ]]]]]
 
-MESCC v1.20 - 14 Feb 2018
+MESCC v1.21 - 03 May 2018
 
 Mike's Enhanced Small C Compiler for Z80 and CP/M
 
@@ -466,7 +466,7 @@ sprintf.h	Formatted output to memory.
 stdbool.h	Boolean type and values.
 string.h	String functions.
 xprintf.h	Support library for printf, fprintf and sprintf.
-z80.h		Z80 specific functions. 
+z80.h		Z80 specific functions.
 
 The ANSI style of C functions declaration is not supported, and the type of
 parameters are indicated only for information.
@@ -896,7 +896,7 @@ char *strchr(char *str, char ch) [S]
 	Search 'ch' in 'str'. Returns a pointer, or 0 if not encountered.
 
 int atoi(char *s) [S]
-	
+
 	Converts a string containing a decimal number to a integer value.
 	Supported + and - signs.
 

@@ -31,6 +31,7 @@
 	20 Oct 2016 : Added support for __FILE__ and __LINE__.
 	13 Dec 2017 : Clear lval[LVAL_TYPPTR] in heir11() for [] and function calls.
 	14 Feb 2018 : Added support for hexadecimal and octal escape sequences in ChEsc().
+	03 May 2018 : Added support for \' and \" in escape sequences.
 
 	Operators precedence:
 
@@ -1175,14 +1176,16 @@ ChEsc()
 	switch((c = BfGet()))
 	{
 		// Single character
-		case 'n' : return 10;
-		case 't' : return 9;
-		case 'r' : return 13;
-		case 'b' : return 8;
-		case 'a' : return 7;
-		case 'f' : return 12;
-		case 'e' : return 27; /* No ANSI C compliant; supported by GCC and others */
-		case '\\': return '\\';
+		case 'n'  : return 10;
+		case 't'  : return 9;
+		case 'r'  : return 13;
+		case 'b'  : return 8;
+		case 'a'  : return 7;
+		case 'f'  : return 12;
+		case 'e'  : return 27; /* No ANSI C compliant; supported by GCC and others */
+		case '\'' : return '\'';
+		case '\"' : return '\"';
+		case '\\' : return '\\';
 
 		// Hexadecimal: \x0 or \x00
 		case 'x' :

@@ -52,6 +52,7 @@
 	13 Dec 2017 : v1.19
 	14 Feb 2018 : Added ERESCSQ and ERNOMEM error codes. Added C_USEMALLOC macro.
 	              v1.20
+	03 May 2018 : v1.21
 */
 
 // Optional #defines
@@ -63,7 +64,7 @@
 // Version
 // -------
 
-#define VERSION	"Mike's Enhanced Small C Compiler v1.20 - 14 Feb 2018"
+#define VERSION	"Mike's Enhanced Small C Compiler v1.21 - 03 May 2018"
 #define COPYRGT "(c) 1999-2018 FloppySoftware"
 
 // Output types
