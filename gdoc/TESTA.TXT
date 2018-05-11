@@ -7,8 +7,24 @@ A test for gdoc.
 Author:
    Miguel Garcia / FloppySoftware
 
+Version:
+   1.00
+
+Date:
+   10 Apr 2016
+
 Copyright:
-   (c) 2018 FloppySoftware. Licensed under the GNU General Public License v3.
+   (c) 2016 FloppySoftware. Licensed under the GNU General Public License v3.
+
+The gdoc program is a documentation generator.
+
+It is written to be simple but effective, and it has some degree of
+compatibility with other documentation generator tools as doxygen or javadoc.
+
+What about item lists?
+   - Item number 1.
+   - Item number 2.
+   - Item number 3.
 
 Functions:
    say
@@ -30,4 +46,4 @@ Parameters:
 Returns:
    all registers destroyed
 
-
+

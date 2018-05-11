@@ -22,6 +22,11 @@ presumably other sources for c-like compilers).
 It is written to be simple but effective, and it has some degree of
 compatibility with other documentation generator tools as doxygen or javadoc.
 
+What about item lists?
+   - Item number 1.
+   - Item number 2.
+   - Item number 3.
+
 Functions:
    main(int argc, WORD argv[]) : int
      -The main function.
@@ -97,4 +102,4 @@ Say bye.
 Say bye to the user. This function should be
 the last called function in the program, but who knows.
 
-
+

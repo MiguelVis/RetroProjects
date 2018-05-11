@@ -61,12 +61,13 @@
 		@fn prototype
 		@brief small explanation
 		@author name  [add more @author tags if needed]
+		@copyright value
 		@version value
 		@date value
 		@param details [add more @param tags if needed]
 		@return details
-		detailed explanation...
 		- list item
+		detailed explanation...
 
 	To do:
 		Implement @see, @bug, @code, @endcode, @warning,
@@ -204,7 +205,7 @@ WORD argv[]; // char *argv[] - unsupported by MESCC (yet?)
 	proc_file();
 
 	// Process the file (step #1)
-	
+
 	++g_step;
 
 	proc_file();
@@ -661,31 +662,31 @@ dump_st1()
 	// Details
 
 	if(tag_num_details) {
-		
+
 		// No list
-		
+
 		ul = 0;
-		
+
 		// Open paragraph
-		
+
 		if(g_html) {
 			printf("  <p>\n");
 		}
-		
+
 		// Write lines
-		
+
 		for(i = 0; i < tag_num_details; ++i) {
-			
+
 			// Pointer to line
-			
+
 			pch = tag_details[i];
-			
+
 			// Write line
-			
+
 			if(*pch == LIST_PREFIX) {
-				
+
 				// List item
-				
+
 				if(ul) {
 
 					// List already opened, close previous list item
@@ -695,20 +696,20 @@ dump_st1()
 					}
 				}
 				else {
-					
+
 					// Open list
-					
+
 					ul = 1;
-					
+
 					if(g_html) {
 						printf("   <ul>\n");
 					}
 				}
-				
+
 				// Open list item
-			
+
 				pch = blanks(++pch);
-				
+
 				if(g_html) {
 					printf("    <li>\n     %s\n", pch);
 				}
@@ -721,7 +722,7 @@ dump_st1()
 				// List opened, close it if blank line, or join adjacent lines
 
 				//pch = blanks(pch);
-				
+
 				if(*pch) {
 
 					// Join adjacent lines
@@ -736,9 +737,9 @@ dump_st1()
 				else {
 
 					// Close list
-					
+
 					ul = 0;
-					
+
 					if(g_html) {
 						printf("    </li>\n   </ul>\n");
 					}
@@ -748,9 +749,9 @@ dump_st1()
 				}
 			}
 			else {
-				
+
 				// Text line
-				
+
 				if(g_html) {
 					if(*pch) {
 						printf("   %s\n", pch);
@@ -764,22 +765,22 @@ dump_st1()
 				}
 			}
 		}
-		
+
 		// Close list if opened
-		
+
 		if(ul) {
 			if(g_html) {
 				printf("    </li>\n   </ul>\n");
 			}
 		}
-		
+
 		// Close paragraph
 
 		if(g_html) {
 			printf("  </p>\n");
 		} else {
 			putchar('\n');
-		}	
+		}
 	}
 
 	// Only for @file

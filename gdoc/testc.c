@@ -9,6 +9,11 @@
  * It is written to be simple but effective, and it has some degree of
  * compatibility with other documentation generator tools as doxygen or javadoc.
  *
+ * What about item lists?
+ * - Item number 1.
+ * - Item number 2.
+ * - Item number 3.
+ *
  * @author    Miguel I. Garcia Lopez / FloppySoftware
  * @version   1.00
  * @date      10 Apr 2016

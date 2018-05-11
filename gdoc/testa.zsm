@@ -2,15 +2,28 @@
 ; @file
 ; @brief A test for gdoc.
 ;
+; The gdoc program is a documentation generator.
+;
+; It is written to be simple but effective, and it has some degree of
+; compatibility with other documentation generator tools as doxygen or javadoc.
+;
+; What about item lists?
+; - Item number 1.
+; - Item number 2.
+; - Item number 3.
+;
 ; @author Miguel Garcia / FloppySoftware
 ; @copyright (c) 2018 FloppySoftware. Licensed under the GNU General Public License v3.
+; @version   1.00
+; @date      10 Apr 2016
+; @copyright (c) 2016 FloppySoftware. Licensed under the GNU General Public License v3.
 ;)
 	org 0100h
-	
+
 	ld   de,hello
 	call say
 	jp   0
-	
+
 ;(
 ; @fn     say
 ; @brief  Prints a string on screen
