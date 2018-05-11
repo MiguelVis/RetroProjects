@@ -32,15 +32,17 @@
 		15 Aug 2016 : v1.01
 		11 Dec 2016 : v1.02
 		19 Jan 2018 : v1.03
+		11 May 2018 : v1.04
 */
 
 /* Program data
    ------------
 */
 #define APP_NAME    "gdoc"
-#define APP_VERSION "v1.03 / 19 Jan 2018"
+#define APP_VERSION "v1.04 / 11 May 2018"
 #define APP_COPYRGT "(c) 2016-18 FloppySoftware"
-#define APP_USAGE   "gdoc [-options...] filename [> destination]\n\n\t-c for C sources (default)\n\t-a for assembler sources\n\t-t for text output (default)\n\t-h for html output"
+#define APP_USAGE   "gdoc [-options...] filename [> destination]"
+#define APP_OPTIONS "\t-c for C source (default)\n\t-a for assembler source\n\t-t for text output (default)\n\t-h for html output\n\t-m for markdown output"
 
 /* Documentation markers for C language
    ------------------------------------
@@ -123,4 +125,4 @@
 #define ERR_TM_FUNCTS  50 // Too many functions at line #
 
 #define ERR_NO_VAL     60 // Missing value at line #
-
+

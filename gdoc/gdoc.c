@@ -39,6 +39,7 @@
 		-a for assembler sources
 		-t for text output (default)
 		-h for html output
+		-m for markdown output
 
 	Revisions:
 
@@ -54,6 +55,7 @@
 		                     Non proportional font for HTML output.
 		11 Dec 2016 : 1.02 : Incremented max. # of detail lines to 64. Adapted to changes in fileio.h.
 		19 Jan 2018 : 1.03 : Solved bug in line break after list. Join lines in list items. Added @copyright.
+		11 May 2018 : 1.04 : Markdown output.
 
 	Implemented tags:
 
@@ -110,7 +112,8 @@ char g_doc_skip   = C_SKIP;   // Character to skip in doc block
 
 char g_buf[LIN_SIZ];  // Buffer for input line from file
 char *g_fname;        // File name
-int g_html;           // True if outputs in HTML format, false for TEXT format
+int g_html;           // True if output is in HTML format
+int g_md;             // True if output is in MARKDOWN format
 FILE *g_fp;           // File handler
 int g_line;           // Line # in process
 int g_step;           // Step
@@ -159,7 +162,8 @@ WORD argv[]; // char *argv[] - unsupported by MESCC (yet?)
 	if(argc == 1) {
 		fprintf(stderr, "%s %s\n\n", APP_NAME, APP_VERSION);
 		fprintf(stderr, "%s\n\n", APP_COPYRGT);
-		fprintf(stderr, "Usage: %s\n", APP_USAGE);
+		fprintf(stderr, "Usage: %s\n\n", APP_USAGE);
+		fprintf(stderr, "%s\n", APP_OPTIONS);
 		exit(0);
 	}
 
@@ -169,16 +173,17 @@ WORD argv[]; // char *argv[] - unsupported by MESCC (yet?)
 		while(*(++pch)) {
 			switch(*pch)
 			{
-				case 'A' : g_doc_begin = A_BEGIN;      // ASSEMBLER sources
+				case 'A' : g_doc_begin = A_BEGIN;       // ASSEMBLER sources
 				           g_doc_end   = A_END;
 				           g_doc_skip  = A_SKIP;
 				           break;
-				case 'C' : g_doc_begin = C_BEGIN;      // C sources
+				case 'C' : g_doc_begin = C_BEGIN;       // C sources
 				           g_doc_end   = C_END;
 				           g_doc_skip  = C_SKIP;
 				           break;
-				case 'T' : g_html = 0; break;          // TEXT output
-				case 'H' : g_html = 1; break;          // HTML output
+				case 'T' : g_html = g_md = 0; break;    // TEXT output
+				case 'H' : g_html = 1; g_md = 0; break; // HTML output
+				case 'M' : g_html = 0; g_md = 1; break; // MARKDOWN output
 				default  : error(ERR_BAD_OPT); break;
 			}
 		}
@@ -704,6 +709,9 @@ dump_st1()
 					if(g_html) {
 						printf("   <ul>\n");
 					}
+					else if(g_md) {
+						putchar('\n');
+					}
 				}
 
 				// Open list item
@@ -712,6 +720,9 @@ dump_st1()
 
 				if(g_html) {
 					printf("    <li>\n     %s\n", pch);
+				}
+				else if(g_md) {
+					printf("- %s\n", pch);
 				}
 				else {
 					printf("   - %s\n", pch);
@@ -822,12 +833,33 @@ int title, level; char *anchor;
 	// Header for HTML output
 
 	if(g_html) {
+		if(level) {
+			printf("   <hr>\n");
+		}
+
 		if(anchor != NULL) {
 			printf("  <h%c id=\"%s\">%s</h%c>\n", '1' + level, anchor, title, '1' + level);
 		}
 		else {
 			printf("  <h%c>%s</h%c>\n", '1' + level, title, '1' + level);
 		}
+
+		return;
+	}
+
+	// Header for MARKDOWN output
+	if(g_md) {
+		if(level) {
+			printf("---\n#");
+		}
+
+		printf("# ");
+
+		if(anchor != NULL) {
+			printf("<a id=\"%s\"></a>", anchor);
+		}
+
+		printf("%s\n", title);
 
 		return;
 	}
@@ -899,6 +931,9 @@ char *title; WORD array[], arrayTwo[]; char *anchor; int size;
 	if(g_html) {
 		printf("  <dl>\n   <dt>%s:</dt>\n", title);
 	}
+	else if(g_md) {
+		printf("%s:  \n", title);
+	}
 	else {
 		printf("%s:\n", title);
 	}
@@ -914,6 +949,32 @@ char *title; WORD array[], arrayTwo[]; char *anchor; int size;
 
 			if(arrayTwo != NULL) {
 				printf("   <dd>&nbsp;- %s</dd>\n", arrayTwo[i]);
+			}
+		}
+		else if(g_md) {
+			printf("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+
+			if(anchor != NULL) {
+				printf("[%s](#%s%d)", array[i], anchor, i);
+			}
+			else {
+				printf("%s", array[i]);
+			}
+
+			if(arrayTwo != NULL || i < size - 1) {
+				printf("  ");
+			}
+
+			putchar('\n');
+
+			if(arrayTwo != NULL) {
+				printf("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- %s", arrayTwo[i]);
+
+				if(i < size - 1) {
+					printf("  ");
+				}
+
+				putchar('\n');
 			}
 		}
 		else {
@@ -1209,3 +1270,4 @@ int err;
 
 	error_ext(err, NULL);
 }
+

@@ -1,0 +1,45 @@
+# testa.zsm
+A test for gdoc.
+
+Author:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Miguel Garcia / FloppySoftware
+
+Version:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.00
+
+Date:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10 Apr 2016
+
+Copyright:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(c) 2016 FloppySoftware. Licensed under the GNU General Public License v3.
+
+The gdoc program is a documentation generator.
+
+It is written to be simple but effective, and it has some degree of
+compatibility with other documentation generator tools as doxygen or javadoc.
+
+What about item lists?
+
+- Item number 1.
+- Item number 2.
+- Item number 3.
+
+Functions:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[say](#fn0)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Prints a string on screen
+
+---
+## <a id="fn0"></a>say
+Prints a string on screen
+
+This function simply prints a string on screen,
+using the BDOS function #9. The string must to
+be terminated with a '$' character.
+
+Parameters:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;de - string
+
+Returns:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;all registers destroyed
+
+
