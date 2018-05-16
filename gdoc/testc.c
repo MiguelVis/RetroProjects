@@ -14,6 +14,10 @@
  * - Item number 2.
  * - Item number 3.
  *
+ * @doclink lib1|Library #1 documentation link
+ * @doclink lib2|Library #2 documentation link
+ * @doclink lib3|Library #3 documentation link
+ *
  * @author    Miguel I. Garcia Lopez / FloppySoftware
  * @version   1.00
  * @date      10 Apr 2016
@@ -21,6 +25,31 @@
  */
 #include <mescc.h>
 #include <printf.h>
+
+/**
+ * @section Introduction
+ *
+ * @brief   The introduction of this gdoc example.
+ *
+ * This is a section named "Introduction", which explains
+ * some aspects about this gdoc example.
+ *
+ * You can follow these links for more information:
+ *
+ * @doclink http://www.floppysoftware.es|FloppySoftware website
+ * @doclink mescc|MESCC documentation link
+ *
+ */
+ 
+/**
+ * @section Another section
+ *
+ * @brief   This is another section of this gdoc example.
+ *
+ * This is a section named "Another section", which tells you
+ * something more about this gdoc example.
+ *
+ */
 
 /**
  * @fn     main(int argc, WORD argv[]) : int

@@ -1,0 +1,6 @@
+cpm gdoc "-H testc.c > testc.htm"
+cpm gdoc "-M testc.c > testc.md"
+cpm gdoc "-T testc.c > testc.txt"
+cpm gdoc "-HA testa.zsm > testa.htm"
+cpm gdoc "-MA testa.zsm > testa.md"
+cpm gdoc "-TA testa.zsm > testa.txt"
