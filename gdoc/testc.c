@@ -1,6 +1,6 @@
 /**
  * @file
- *
+ * @project Test
  * @brief The purpose of this file is to test the gdoc program.
  *
  * The gdoc program is a documentation generator for MESCC source code files (and

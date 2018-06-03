@@ -34,13 +34,14 @@
 		19 Jan 2018 : v1.03
 		11 May 2018 : v1.04
 		16 May 2018 : v1.05
+		22 May 2018 : v1.06
 */
 
 /* Program data
    ------------
 */
 #define APP_NAME    "gdoc"
-#define APP_VERSION "v1.05 / 16 May 2018"
+#define APP_VERSION "v1.06 / 22 May 2018"
 #define APP_COPYRGT "(c) 2016-18 FloppySoftware"
 #define APP_USAGE   "gdoc [-options...] filename [> destination]"
 #define APP_OPTIONS "\t-c for C source (default)\n\t-a for assembler source\n\t-t for text output (default)\n\t-h for html output\n\t-m for markdown output"
@@ -85,6 +86,12 @@
 #define TAG_RETURN    "return"
 #define TAG_SECTION   "section"
 #define TAG_DOCLINK   "doclink"
+#define TAG_PROJECT   "project"
+
+/* Special tag values
+   ------------------
+*/
+#define TAG_FILE_MAIN "MAIN"
 
 /* Max. # of entries in arrays
    ---------------------------
