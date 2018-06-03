@@ -2,7 +2,7 @@
 
 Documentation generator from source files.
 
-**Note: this document is a work in progress and far to be completed (that's not so good for a document generator program!)**
+**Note: this document is a work in progress and far to be completed (that's not so good for a documentation generator program!)**
 
 ## Introduction
 
