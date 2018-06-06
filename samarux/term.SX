@@ -1,0 +1,37 @@
+# -------------------------- #
+# term.sx - Set the TTY type #
+# -------------------------- #
+if $# eq 1 goto Set
+# Usage:
+echo term.sx -- set the terminal type
+echo
+echo Usage: term [type]
+echo
+echo Valid terminal types are:
+echo
+echo - pcw   : Amstrad PCW
+echo - vt52  : VT52
+echo - vt100 : VT100 / ANSI
+goto Quit
+# Set:
+if $1 eq pcw goto SetPCW
+if $1 eq vt52 goto SetVT52
+if $1 eq vt100 goto SetVT100
+goto Usage
+# SetPCW:
+env TERM vt52
+env LINES 31
+env COLUMNS 90
+goto Quit
+# SetVT52:
+env TERM vt52
+env LINES 25
+env COLUMNS 80
+goto Quit
+# SetVT100:
+env TERM vt100
+env LINES 25
+env COLUMNS 80
+goto Quit
+# Quit:
+
