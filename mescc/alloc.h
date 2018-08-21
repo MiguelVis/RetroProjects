@@ -17,6 +17,7 @@
  *  - 26 Aug 2012 : Changed some things for more speed.
  *  - 19 Feb 2015 : Now free() checks if pointer is NULL.
  *  - 15 Aug 2016 : Optimized and documented. GPL v3.
+ *  - 21 Aug 2018 : Optimized a bit.
  *
  * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
  *
@@ -29,13 +30,15 @@
 
 #define ALLOC_H
 
-//#define DEBUG_ALLOC
+//#define XM_DEBUG
+
+#define XM_HDR_SIZE 3  // Header size of block in bytes
+#define XM_INI_SIZE 6  // Size in bytes needed for setup
 
 extern BYTE *ccfreefirst;
 extern WORD ccfreebytes;
 
-BYTE xm_ini,  // 0x69 if initialized
-     *xm_top, // First block
+BYTE *xm_top, // First block
      *xm_end; // Last block
 
 /**
@@ -51,58 +54,59 @@ BYTE xm_ini,  // 0x69 if initialized
  * @return pointer to allocated memory, or null pointer on failure
  */
 malloc(size)
-WORD size;
+unsigned int size;
 {
-	BYTE *memptr;
-	WORD memsize;
+	BYTE *mptr;
+	unsigned int msize;
+	WORD *pw;
 
 	// Setup library if needed
 
-	if(xm_ini != 0x69)
+	if(!xm_top)
 	{
-		if(ccfreebytes < 7)
-			return 0;
+		if(ccfreebytes > XM_INI_SIZE)
+		{
+			xm_top = ccfreefirst;
+			xm_end = xm_top + ccfreebytes - XM_HDR_SIZE;
 
-		xm_top = ccfreefirst;
-		xm_end = xm_top + ccfreebytes - 3;
+			// First block has all free memory
+			*(pw = xm_top) = ccfreebytes - XM_INI_SIZE;
+			xm_top[2] = 0;
 
-		xm_pw(xm_top, ccfreebytes - 6);
-		xm_top[2] = 0;
-
-		xm_pw(xm_end, 0);
-		xm_end[2] = 1;
-
-		xm_ini = 0x69;
+			// Last block uses 0 bytes
+			*(pw = xm_end) = 0;
+			xm_end[2] = 1;
+		}
 	}
 
 	// Search a free block
 
-	for(memptr = xm_top; memptr != xm_end; memptr += memsize + 3)
+	for(mptr = xm_top; mptr != xm_end; mptr += msize + XM_HDR_SIZE)
 	{
-		memsize = xm_gw(memptr);
+		msize = *(pw = mptr);
 
-		if(!memptr[2])
+		if(!mptr[2])
 		{
-			if(memsize >= size)
+			if(msize >= size)
 			{
-				memptr[2] = 1;
+				mptr[2] = 1;
 
-				if(memsize >= size + 3)
+				if(msize >= size + XM_HDR_SIZE)
 				{
-					xm_pw(memptr, size);
-					xm_pw(memptr + size + 3, memsize - size - 3);
-					*(memptr + size + 5) = 0;
+					*(pw = mptr) = size;
+					*(pw = mptr + size + XM_HDR_SIZE) = msize - size - XM_HDR_SIZE;
+					*(mptr + size + 5) = 0;
 				}
 
-#ifdef DEBUG_ALLOC
+#ifdef XM_DEBUG
 	alloc_dbg("malloc", size);
 #endif
-				return memptr + 3;
+				return mptr + XM_HDR_SIZE;
 			}
 		}
 	}
 
-#ifdef DEBUG_ALLOC
+#ifdef XM_DEBUG
 	alloc_dbg("malloc", size);
 #endif
 
@@ -122,8 +126,9 @@ WORD size;
 free(ptr)
 BYTE *ptr;
 {
-	char *memptr;
-	unsigned memsize;
+	BYTE *mptr;
+	unsigned int msize;
+	WORD *pw;
 
 	// Do nothing on null pointer
 
@@ -136,48 +141,32 @@ BYTE *ptr;
 
 	// Join to another free memory blocks if possible
 
-	for(memptr = xm_top; memptr != xm_end; memptr += memsize + 3)
+	for(mptr = xm_top; mptr != xm_end; mptr += msize + XM_HDR_SIZE)
 	{
-		memsize = xm_gw(memptr);
+		msize = *(pw = mptr);
 
-		if(!memptr[2])
+		if(!mptr[2])
 		{
-			if(!(*(memptr + memsize + 5)))
+			if(!(*(mptr + msize + 5)))
 			{
-				memsize += xm_gw(memptr + memsize + 3) + 3;
+				msize += *(pw = mptr + msize + XM_HDR_SIZE) + XM_HDR_SIZE;
 
-				if(!(*(memptr + memsize + 5)))
-					memsize += xm_gw(memptr + memsize + 3) + 3;
+				if(!(*(mptr + msize + 5)))
+					msize += *(pw = mptr + msize + XM_HDR_SIZE) + XM_HDR_SIZE;
 
-				xm_pw(memptr, memsize);
+				*(pw = mptr) = msize;
 
 				break;
 			}
 		}
 	}
 
-#ifdef DEBUG_ALLOC
+#ifdef XM_DEBUG
 	alloc_dbg("free", ptr);
 #endif
 }
 
-// int xm_gw(int *ptr) : get an int from ptr.
-
-xm_gw(ptr)
-WORD *ptr;
-{
-	return *ptr;
-}
-
-// void xm_pw(int *ptr, int val) : put an int into ptr.
-
-xm_pw(ptr, val)
-WORD *ptr, val;
-{
-	*ptr=val;
-}
-
-#ifdef DEBUG_ALLOC
+#ifdef XM_DEBUG
 
 // void alloc_dbg(char *fn, WORD wrd) : Quick and dirty debug.
 
@@ -192,14 +181,14 @@ char *fn; WORD wrd;
 
 	printf("Addr Size       Next Use Data\n");
 
-	for(pb = xm_top; pb != xm_end; pb += size + 3)
+	for(pb = xm_top; pb != xm_end; pb += size + XM_HDR_SIZE)
 	{
 		pw = pb;
 		size = *pw;
 		use = pb[2];
-		memcpy(data, pb + 3, 4);
+		memcpy(data, pb + XM_HDR_SIZE, 4);
 
-		printf("%04x %04x %5u %04x %s \n", pb, size, size, pb + 3 + size, use ? "Used" : "Free");
+		printf("%04x %04x %5u %04x %s \n", pb, size, size, pb + XM_HDR_SIZE + size, use ? "Used" : "Free");
 	}
 
 	getch();
@@ -216,7 +205,9 @@ alloc_sp
 
 // Cleaning
 
-#undef DEBUG_ALLOC
+#undef XM_DEBUG
+#undef XM_HDR_SIZE
+#undef XM_INI_SIZE
 
 #endif
 
