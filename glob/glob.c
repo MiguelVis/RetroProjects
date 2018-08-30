@@ -37,7 +37,8 @@
 
 	Revisions:
 
-		17 Feb 2018 : First version.
+		17 Feb 2018 : v1.00 : First version.
+		30 Aug 2018 : v1.01 : Adapted to last changes in LKLIST API.
 */
 
 /* Defines for MESCC libraries
@@ -107,7 +108,7 @@
    -------------
 */
 #define APP_NAME    "glob"
-#define APP_VERSION "v1.00 / 18 Feb 2018"
+#define APP_VERSION "v1.01 / 30 Aug 2018"
 #define APP_COPYRGT "(c) 2018 FloppySoftware"
 #define APP_INFO    "This program does something."
 #define APP_USAGE   "glob"
@@ -132,8 +133,8 @@ main()
 
 		count = 0;
 
-		for(item = LkGetFirst(lk); item != NULL; item = LkGetNext(lk)) {
-			printf("\t%-3d = '%s'\n", count++, LkGetItemData(item));
+		for(item = LkGetFirst(lk); item != NULL; item = LkGetNext(item)) {
+			printf("\t%-3d = '%s'\n", count++, LkGetData(item));
 		}
 	}
 	else {
