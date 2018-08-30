@@ -37,7 +37,8 @@
 
 	Revisions:
 
-		18 Feb 2018 : Start.
+		18 Feb 2018 : v1.00 : Start.
+		30 Aug 2018 : v1.01 : Adapted to last changes in LKLIST API.
 */
 
 /* Defines for MESCC libraries
@@ -103,7 +104,7 @@
    -------------
 */
 #define APP_NAME    "lklist"
-#define APP_VERSION "v1.00 / 18 Feb 2018"
+#define APP_VERSION "v1.01 / 30 Aug 2018"
 #define APP_COPYRGT "(c) 2018 FloppySoftware"
 #define APP_INFO    "This program does something."
 #define APP_USAGE   "lklist"
@@ -127,15 +128,17 @@ main()
 	//LkPrint(lk);
 
 	LkAddStr(lk, "This is the entry #0.");
-	LkAddStr(lk, "This is the entry #1.");
+	item = LkAddStr(lk, "This is the entry #1.");
 	LkAddStr(lk, "This is the entry #2.");
+
+	LkUpdateStr(lk, item, "This is the SECOND entry.");
 
 	//LkRemove(lk, item);
 
 	printf("%d items:\n\n", LkGetSize(lk));
 
-	for(item = LkGetFirst(lk); item != NULL; item = LkGetNext(lk)) {
-		printf("%s\n", LkGetItemData(item));
+	for(item = LkGetFirst(lk); item != NULL; item = LkGetNext(item)) {
+		printf("%s\n", LkGetData(item));
 	}
 
 	//LkPrint(lk);
@@ -151,6 +154,17 @@ LKLIST *lk;
 char *str;
 {
 	return LkAdd(lk, str, strlen(str) + 1);
+}
+
+/* Update an item from a string
+   ----------------------------
+*/
+LkUpdateStr(lk, item, str)
+LKLIST *lk;
+LKLIST_ITEM *item;
+char *str;
+{
+	return LkUpdate(lk, item, str, strlen(str) + 1);
 }
 
 /* Print error and exit

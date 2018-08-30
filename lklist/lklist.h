@@ -12,6 +12,7 @@
  *
  * Revisions:
  *  - 18 Feb 2018 : Released first public version.
+ *  - 30 Aug 2018 : Added LkUpdate(). Modified and renamed some functions. Removed code related to _LK_CURSOR.
  *
  * Copyright (c) 2018 Miguel I. Garcia Lopez / FloppySoftware.
  *
@@ -44,8 +45,7 @@
 
 #define _LK_FIRST  0  // First item or NULL if empty
 #define _LK_LAST   1  // Last item or NULL if empty
-#define _LK_CURSOR 2  // Cursor or NULL if undefined
-#define _LK_ITEMS  3  // # of items
+#define _LK_ITEMS  2  // # of items
 
 #define _LK_HDRSZ  8  // Size in bytes of header structure
 
@@ -69,7 +69,7 @@ LkAlloc()
 	if((lk = malloc(_LK_HDRSZ))) {
 
 		// Setup as empty
-		lk[_LK_FIRST] = lk[_LK_LAST] = lk[_LK_CURSOR] = NULL;
+		lk[_LK_FIRST] = lk[_LK_LAST] = NULL;
 		lk[_LK_ITEMS] = 0;
 	}
 
@@ -122,99 +122,71 @@ LKLIST *lk;
 
 /**
  * @fn     LKLIST_ITEM *LkGetFirst(LKLIST *lk)
- * @brief  Get first item in a linked list and set cursor.
+ * @brief  Get first item in a linked list.
  * @param  lk = linked list pointer
  * @return item pointer, or NULL if linked list is empty
- *
- * In addition to get the first item in a linked list,
- * this funcion sets the linked list cursor to that item.
  */
 LkGetFirst(lk)
 LKLIST *lk;
 {
-	return (lk[_LK_CURSOR] = lk[_LK_FIRST]);
+	return lk[_LK_FIRST];
 }
 
 /**
  * @fn     LKLIST_ITEM *LkGetLast(LKLIST *lk)
- * @brief  Get last item in a linked list and set cursor.
+ * @brief  Get last item in a linked list.
  * @param  lk = linked list pointer
  * @return item pointer, or NULL if linked list is empty
- *
- * In addition to get the last item in a linked list,
- * this funcion sets the linked list cursor to that item.
  */
 LkGetLast(lk)
 LKLIST *lk;
 {
-	return (lk[_LK_CURSOR] = lk[_LK_LAST]);
+	return lk[_LK_LAST];
 }
 
 /**
- * @fn     LKLIST_ITEM *LkGetPrev(LKLIST *lk)
- * @brief  Get previous item in a linked list according to cursor.
- * @param  lk = linked list pointer
- * @return item pointer, or NULL if there are no previuous items
- *
- * In addition to get the previous item in a linked list according to cursor,
- * this funcion sets the linked list cursor to that item.
+ * @fn     LKLIST_ITEM *LkGetPrev(LKLIST_ITEM *item)
+ * @brief  Get previous item of a linked list item.
+ * @param  item = pointer to item
+ * @return item pointer, or NULL if item is the first one
  */
-LkGetPrev(lk)
-LKLIST *lk;
+LkGetPrev(item)
+LKLIST_ITEM *item;
 {
-	LKLIST_ITEM *item;
-
-	if(lk[_LK_CURSOR]) {
-		item = lk[_LK_CURSOR];
-
-		lk[_LK_CURSOR] = item[_LK_PREV];
-	}
-
-	return lk[_LK_CURSOR];
+	return item[_LK_PREV];
 }
 
 /**
- * @fn     LKLIST_ITEM *LkGetNext(LKLIST *lk)
- * @brief  Get next item in a linked list according to cursor.
- * @param  lk = linked list pointer
- * @return item pointer, or NULL if there are no more items
- *
- * In addition to get the next item in a linked list according to cursor,
- * this funcion sets the linked list cursor to that item.
+ * @fn     LKLIST_ITEM *LkGetNext(LKLIST_ITEM *item)
+ * @brief  Get next item of a linked list item.
+ * @param  item = pointer to item
+ * @return item pointer, or NULL if item is the last one
  */
-LkGetNext(lk)
-LKLIST *lk;
+LkGetNext(item)
+LKLIST_ITEM *item;
 {
-	LKLIST_ITEM *item;
-
-	if(lk[_LK_CURSOR]) {
-		item = lk[_LK_CURSOR];
-
-		lk[_LK_CURSOR] = item[_LK_NEXT];
-	}
-
-	return lk[_LK_CURSOR];
+	return item[_LK_NEXT];
 }
 
 /**
- * @fn     void *LkGetItemData(LKLIST_ITEM *item)
+ * @fn     void *LkGetData(LKLIST_ITEM *item)
  * @brief  Get pointer to item data.
  * @param  item = pointer to item
  * @return data pointer
  */
-LkGetItemData(item)
+LkGetData(item)
 LKLIST_ITEM *item;
 {
 	return item + _LK_DATA;
 }
 
 /**
- * @fn     void *LkGetItemSize(LKLIST_ITEM *item)
+ * @fn     void *LkGetDataSize(LKLIST_ITEM *item)
  * @brief  Get item data size in bytes.
  * @param  item = pointer to item
  * @return data size in bytes
  */
-LkGetItemSize(item)
+LkGetDataSize(item)
 LKLIST_ITEM *item;
 {
 	return item[_LK_SIZE];
@@ -268,6 +240,68 @@ int size;
 	return item;
 }
 
+/**
+ * @fn     LKLIST_ITEM *LkUpdate(LKLIST *lk, LKLIST_ITEM *item, void *data, int size)
+ * @brief  Update an item in a linked list.
+ * @param  lk = linked list pointer
+ * @param  item = pointer to item
+ * @param  data = pointer to data
+ * @param  size = data size in bytes
+ * @return item pointer, or NULL if there is not enough memory
+ */
+LkUpdate(lk, item, data, size)
+LKLIST *lk;
+LKLIST_ITEM *item;
+BYTE *data;
+int size;
+{
+	LKLIST_ITEM *old_item, *prev, *next;
+
+	if(size != item[_LK_SIZE]) {
+		old_item = item;
+
+		if((item = malloc(_LK_ITMSZ + size))) {
+
+			// Setup new item
+			item[_LK_PREV] = prev = old_item[_LK_PREV];
+			item[_LK_NEXT] = next = old_item[_LK_NEXT];
+			item[_LK_SIZE] = size;
+
+			// Modify previous item if any
+			if(prev) {
+				prev[_LK_NEXT] = item;
+			}
+			else {
+				// It's the first one
+				lk[_LK_FIRST] = item;
+			}
+
+			// Modify next item if any
+			if(next) {
+				next[_LK_PREV] = item;
+			}
+			else {
+				// It's the last one
+				lk[_LK_LAST] = item;
+			}
+
+			free(old_item);
+		}
+	}
+
+	if(item) {
+		memcpy(item + _LK_DATA, data, size);
+
+#ifdef _LK_DEBUG
+		printf("LkUpdate = %04xH < %04xH [%d bytes]\n", lk, item, size);
+#endif
+
+	}
+
+	// Success or failure
+	return item;
+}
+
 /* Remove an item
    --------------
 */
@@ -276,9 +310,6 @@ int size;
  * @brief  Remove an item in a linked list.
  * @param  lk = linked list pointer
  * @param  item = pointer to item
- *
- * If the cursor points to the removed item, this function
- * updates it to the next item.
  */
 LkRemove(lk, item)
 LKLIST *lk;
@@ -304,11 +335,6 @@ LKLIST_ITEM *item;
 		lk[_LK_LAST] = item[_LK_PREV];
 	}
 
-	// Check and update cursor if needed
-	if(lk[_LK_CURSOR] == item) {
-		lk[_LK_CURSOR] = item[_LK_NEXT];
-	}
-
 	--lk[_LK_SIZE];
 
 	free(item);
@@ -327,7 +353,7 @@ LKLIST_ITEM *item;
 LkPrint(lk)
 LKLIST *lk;
 {
-	LKLIST_ITEM *item, *next;
+	LKLIST_ITEM *item;
 	int n;
 
 	printf("LkPrint : first item = %04xH\n", lk[_LK_FIRST]);
@@ -336,14 +362,12 @@ LKLIST *lk;
 
 	n = 0;
 
-	for(item = lk[_LK_FIRST]; item != NULL; item = next) {
+	for(item = lk[_LK_FIRST]; item != NULL; item = item[_LK_NEXT]) {
 
 		printf("LkPrint : #%5u = %04xH\n", n, item);
 		printf("LkPrint : #%5u = prev %04xH\n", n, item[_LK_PREV]);
 		printf("LkPrint : #%5u = next %04xH\n", n, item[_LK_NEXT]);
 		printf("LkPrint : #%5u = size %d\n\n", n, item[_LK_SIZE]);
-
-		next = item[_LK_NEXT];
 
 		++n;
 	}
@@ -356,7 +380,6 @@ LKLIST *lk;
 */
 #undef _LK_FIRST
 #undef _LK_LAST
-#undef _LK_CURSOR
 #undef _LK_ITEMS
 
 #undef _LK_HDRSZ
