@@ -1,0 +1,323 @@
+	ORG
+	ORG	0100H
+;
+nnnn:	EQU	1234H
+DE:	EQU	6789H
+INDEX	EQU	10
+LABEL	EQU	1234H
+;
+	EQU
+;
+	RLC	Z
+;
+	CALL
+	CALL	
+	CALL	;NOTHING
+	CALL	Z,	
+	CALL	Z,
+	CALL	Z,	;LABEL
+	CALL	(HL)
+;
+LABEL2	EQU	$
+;
+	JR
+	JR	
+	JR	;NOTHING
+	JR	Z,	
+	JR	Z,
+	JR	Z,	;LABEL2
+;
+	RST
+	RST	;NOTHING
+;
+RET	EQU	1234H
+;
+	ADD
+	ADD	;A
+	ADD	;(IX+INDEX)
+;
+	ADD	A,
+	ADD	A,	;
+	ADD	HL,
+	ADD	HL,	
+;
+	ADD	B,C
+	ADD	Z,A
+	ADD	A,Z
+	ADD	Z,(HL)
+	ADD	Z,(IX+INDEX)
+	ADD	Z,Z
+	ADD	IX,NZ
+	ADD	HL,NZ
+;
+	ADC	C,B
+	SBC	H,A
+;
+	AND	A,(HL)
+	AND	A,B
+	AND	B,A
+	AND	HL,BC
+;
+	ADC	IX,BC
+	SBC	IX,SP
+;
+	ADD	A,BC
+	ADD	BC,A
+	ADC	BC,A
+;
+	ADD	BC,RET
+;
+	IN	Z,(C)
+;
+	CP		;Should generate a syntax error (*** but
+	CP	;
+	CP	
+	CP
+;
+	LD	A;B
+	LD	A:B
+;
+	LD	(nnnn),B
+	LD	(nnnn),C
+	LD	(nnnn),D
+	LD	(nnnn),E
+;
+	LD	B,(nnnn)
+	LD	C,(nnnn)
+	LD	D,(nnnn)
+	LD	E,(nnnn)
+;
+	LD	A	
+Should generate a 
+;
+	LD	A	;Should generate a 
+	LD	B	;Should 
+;
+	LD	A	;Should	generate a syntax error (*** but doesn't ***)
+;
+	LD	A,DE
+	LD	B,DE
+	LD	C,DE
+	LD	D,DE
+	LD	E,DE
+;
+	LD	A,BC
+	LD	B,BC
+	LD	C,BC
+	LD	D,BC
+	LD	E,BC
+;
+	LD	A,HL
+	LD	B,HL
+	LD	C,HL
+	LD	D,HL
+	LD	E,HL
+;
+	LD	A,AF
+	LD	B,AF
+	LD	C,AF
+	LD	D,AF
+	LD	E,AF
+;
+	LD	BC,AF
+	LD	AF,1234H
+;
+NN:	EQU	0AAH
+;
+	LD	HL	;nnnn
+	LD	DE	;nnnn
+	LD	SP	;HL
+	LD	SP	;(nnnn)
+	LD	(nnnn)
+	LD	(nnnn),
+	LD	(nnnn)	;DE
+	LD	(nnnn),	;DE
+	LD	(HL)
+	LD	(HL),
+	LD	(HL),;DE NN
+	LD	(HL)	;NN
+	LD	(HL),HL
+	LD	(IX+INDEX),HL
+	LD	(IX+HL),C
+	LD	IX,NZ
+	LD	BC,DEFB
+;
+	LD	2,2
+	LD	7,2
+	LD	7,7
+;
+;
+	LD	(NZ),Z
+	LD	(NZ),P
+	LD	(NZ),C
+	LD	(NZ),D
+	LD	(NZ),E
+	LD	(NZ),H
+	LD	(NZ),L
+	LD	(NZ),NN
+;
+	LD	(IX),Z
+	LD	(IX+INDEX),Z
+	LD	(IX-INDEX),Z
+	LD	(IX),P
+	LD	(IX+INDEX),P
+	LD	(IX-INDEX),P
+;
+	LD	(IY),Z
+	LD	(IY+INDEX),Z
+	LD	(IY-INDEX),Z
+	LD	(IY),P
+	LD	(IY+INDEX),P
+	LD	(IY-INDEX),P
+;
+	LD	(NNNN),Z
+	LD	(NNNN),NZ
+;
+	LD	Z,(DE)
+	LD	Z,(NZ)
+	LD	Z,(IX)
+	LD	Z,(IX+INDEX)
+	LD	Z,(IX-INDEX)
+	LD	Z,(IY)
+	LD	Z,(IY+INDEX)
+	LD	Z,(IY-INDEX)
+	LD	Z,(NNNN)
+	LD	Z,Z
+	LD	Z,P
+	LD	Z,C
+	LD	Z,D
+	LD	Z,E
+	LD	Z,H
+	LD	Z,L
+	LD	Z,NN
+;
+	LD	P,(NZ)
+	LD	P,(IX)
+	LD	P,(IX+INDEX)
+	LD	P,(IX-INDEX)
+	LD	P,(IY)
+	LD	P,(IY+INDEX)
+	LD	P,(IY-INDEX)
+	LD	P,Z
+	LD	P,P
+	LD	P,C
+	LD	P,D
+	LD	P,E
+	LD	P,H
+	LD	P,L
+	LD	P,NN
+;
+	IF
+	ENDIF
+;
+	LD	C,(NZ)
+	LD	C,Z
+	LD	C,P
+;
+	LD	D,(NZ)
+	LD	D,Z
+	LD	D,P
+;
+	LD	E,(NZ)
+	LD	E,Z
+	LD	E,P
+;
+	LD	H,(NZ)
+	LD	H,Z
+	LD	H,P
+;
+	LD	NZ,(NNNN)
+	LD	NZ,NNNN
+;
+	LD	L,(NZ)
+	LD	L,Z
+	LD	L,P
+;
+	LD	SP,NZ
+;
+	POP
+	POP	
+	POP	;
+	POP	3
+;
+	POP	NZ
+	POP	Z
+;
+	BIT	
+	BIT	;
+	BIT	8,B
+	BIT	9,A
+	BIT	2,2
+;
+	BIT	2,Z
+;
+	INC	NZ
+	INC	Z
+;
+	DEFS
+	DEFS	
+	DEFS	;
+;
+	DEFB	
+	DEFB	;
+	DEFB	2,2,
+	DEFB	,2,2,
+	DEFB	2,2,	
+;
+	DEFW	
+	DEFW	;
+	DEFW	1234,
+	DEFW	,1234
+	DEFW	1234,4567,
+	DEFW	1234,4567,	
+;
+;
+LABEL3	EQU	1234H
+;
+LABEL3:	LD	A,B
+LABEL3	LD	A,B
+;
+BELAB:	EQU	4567H
+;
+BELAB	LD	A,B
+BELAB:	LD	A,B
+;
+BEBLAB:	EQU	0AABBH
+BEBLAB:	EQU	0CCDDH
+;
+ABLAB	EQU	8899H
+ABLAB	EQU	0EEFFH
+;
+;
+LABEL4	EQU	0AABBH
+;
+	LD	A,LABEL4 . HIGH .
+	LD	A,.HIGH. LABEL4
+;
+	LD	A,.LOW. LABEL4
+	LD	A,LABEL4 .LOW.
+;
+	DEFB	.HIGH. LABEL4
+	DEFB	LABEL4 .HIGH.
+	DEFW	LABEL4 .HIGH.
+;
+	DEFB	.LOW. LABEL4
+	DEFB	LABEL4 .LOW.
+	DEFW	LABEL4 .LOW.
+;
+LABEL:	DB	0	;Define	once....
+LABEL:	DB	0	;Twice for an error (Actualy this three times...!!!)
+;
+	DEFW	1234H * -1
+;
+	LIST
+;The next four lines are junk to see if it is listed.
+	LD	A,B
+	LD	B,A
+	NOP
+	NOP
+;
+	END
+
+;
+	DEFW	1234

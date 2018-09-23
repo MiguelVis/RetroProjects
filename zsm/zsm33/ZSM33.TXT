@@ -1,0 +1,12 @@
+Changes made in version 3.3
+---------------------------
+
+   - Solved bug in DB, DEFB, DW, DEFW pseudo op-codes when there
+     are more than one argument, separated with commas.
+
+By Miguel Garcia / FloppySoftware - 22 Sep 2018.
+
+http://www.floppysoftware.es
+floppysoftware@gmail.com
+
+

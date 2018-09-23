@@ -1,0 +1,1237 @@
+	TITLE	ZSM Test file
+;
+; PSEUDO OPS
+;
+	org	100H
+;
+	defb	0AAH
+NNNN:	defs	2		;SAMPLE	ADDRESS
+	defw	0AABBH
+L1	equ	0AABBH
+INDEX	equ	5		;SAMPLE	INDEX
+NN	equ	20H		;SAMPLE	8 BIT VALUE
+DIS	equ	30H
+;
+	if	0
+; SHOULD NOT BE	ASSEMBLED
+	ld	a,b
+	endif
+	if	1
+; SHOULD BE ASSEMBLED
+	ld	a,b
+	endif
+; TURN LISTING OFF
+	list	off
+; LISTING SHOULD NOT BE	ON
+	ld	a,b
+	list	on
+; LISTING SHOULD BE ON
+;
+;	KNOWN PREVIOUS ERRORS IN Z80ASMUK
+;
+	ld	(hl),-1
+	cp	-1
+	ld	de,-6
+	ld	a,+6
+	ld	a,-6
+	defb	-1
+;
+WACT:	equ	ATKLST
+	ld	hl,WACT
+ATKLST:	db	0,0,0
+;
+; Z80 OPCODES
+;
+	adc	a,(hl)
+	adc	(hl)
+	adc	a,(ix)
+	adc	(ix)
+	adc	a,(ix+INDEX)
+	adc	(ix+INDEX)
+	adc	a,(ix-INDEX)
+	adc	(ix-INDEX)
+	adc	a,(iy)
+	adc	(iy)
+	adc	a,(iy+INDEX)
+	adc	(iy+INDEX)
+	adc	a,(iy-INDEX)
+	adc	(iy-INDEX)
+	adc	a,a
+	adc	a
+	adc	a,b
+	adc	b
+	adc	a,c
+	adc	c
+	adc	a,d
+	adc	d
+	adc	a,e
+	adc	e
+	adc	a,h
+	adc	h
+	adc	a,l
+	adc	l
+	adc	a,NN
+	adc	NN
+	adc	hl,bc
+	adc	hl,de
+	adc	hl,hl
+	adc	hl,sp
+;
+	add	(hl)
+	add	a,(ix)
+	add	(ix)
+	add	a,(ix+INDEX)
+	add	(ix+INDEX)
+	add	a,(ix-INDEX)
+	add	(ix-INDEX)
+	add	a,(iy)
+	add	(iy)
+	add	a,(iy+INDEX)
+	add	(iy+INDEX)
+	add	a,(iy-INDEX)
+	add	(iy-INDEX)
+	add	a,a
+	add	a
+	add	a,b
+	add	b
+	add	a,c
+	add	c
+	add	a,d
+	add	d
+	add	a,e
+	add	e
+	add	a,h
+	add	h
+	add	a,l
+	add	l
+	add	a,NN
+	add	NN
+	add	hl,bc
+	add	hl,de
+	add	hl,hl
+	add	hl,sp
+	add	ix,bc
+	add	ix,de
+	add	ix,ix
+	add	ix,sp
+	add	iy,bc
+	add	iy,de
+	add	iy,iy
+	add	iy,sp
+;
+	and	(hl)
+	and	(ix)
+	and	(ix+INDEX)
+	and	(ix-INDEX)
+	and	(iy)
+	and	(iy+INDEX)
+	and	(iy-INDEX)
+	and	a
+	and	b
+	and	c
+	and	d
+	and	e
+	and	h
+	and	l
+	and	NN
+;
+	bit	0,(hl)
+	bit	0,(ix)
+	bit	0,(ix+INDEX)
+	bit	0,(ix-INDEX)
+	bit	0,(iy)
+	bit	0,(iy+INDEX)
+	bit	0,(iy-INDEX)
+	bit	0,a
+	bit	0,b
+	bit	0,c
+	bit	0,d
+	bit	0,e
+	bit	0,h
+	bit	0,l
+;
+	bit	1,(hl)
+	bit	1,(ix)
+	bit	1,(ix+INDEX)
+	bit	1,(ix-INDEX)
+	bit	1,(iy)
+	bit	1,(iy+INDEX)
+	bit	1,(iy-INDEX)
+	bit	1,a
+	bit	1,b
+	bit	1,c
+	bit	1,d
+	bit	1,e
+	bit	1,h
+	bit	1,l
+;
+	bit	2,(hl)
+	bit	2,(ix)
+	bit	2,(ix+INDEX)
+	bit	2,(ix-INDEX)
+	bit	2,(iy)
+	bit	2,(iy+INDEX)
+	bit	2,(iy-INDEX)
+	bit	2,a
+	bit	2,b
+	bit	2,c
+	bit	2,d
+	bit	2,e
+	bit	2,h
+	bit	2,l
+;
+	bit	3,(hl)
+	bit	3,(ix)
+	bit	3,(ix+INDEX)
+	bit	3,(ix-INDEX)
+	bit	3,(iy)
+	bit	3,(iy+INDEX)
+	bit	3,(iy-INDEX)
+	bit	3,a
+	bit	3,b
+	bit	3,c
+	bit	3,d
+	bit	3,e
+	bit	3,h
+	bit	3,l
+;
+	bit	4,(hl)
+	bit	4,(ix)
+	bit	4,(ix+INDEX)
+	bit	4,(ix-INDEX)
+	bit	4,(iy)
+	bit	4,(iy+INDEX)
+	bit	4,(iy-INDEX)
+	bit	4,a
+	bit	4,b
+	bit	4,c
+	bit	4,d
+	bit	4,e
+	bit	4,h
+	bit	4,l
+;
+	bit	5,(hl)
+	bit	5,(ix)
+	bit	5,(ix+INDEX)
+	bit	5,(ix-INDEX)
+	bit	5,(iy)
+	bit	5,(iy+INDEX)
+	bit	5,(iy-INDEX)
+	bit	5,a
+	bit	5,b
+	bit	5,c
+	bit	5,d
+	bit	5,e
+	bit	5,h
+	bit	5,l
+;
+	bit	6,(hl)
+	bit	6,(ix)
+	bit	6,(ix+INDEX)
+	bit	6,(ix-INDEX)
+	bit	6,(iy)
+	bit	6,(iy+INDEX)
+	bit	6,(iy-INDEX)
+	bit	6,a
+	bit	6,b
+	bit	6,c
+	bit	6,d
+	bit	6,e
+	bit	6,h
+	bit	6,l
+;
+	bit	7,(hl)
+	bit	7,(ix)
+	bit	7,(ix+INDEX)
+	bit	7,(ix-INDEX)
+	bit	7,(iy+INDEX)
+	bit	7,(iy-INDEX)
+	bit	7,a
+	bit	7,b
+	bit	7,c
+	bit	7,d
+	bit	7,e
+	bit	7,h
+	bit	7,l
+;
+	call	c,NNNN
+	call	m,NNNN
+	call	nc,NNNN
+	call	NNNN
+	call	nz,NNNN
+	call	p,NNNN
+	call	pe,NNNN
+	call	po,NNNN
+	call	z,NNNN
+;
+	ccf
+;
+	cp	(hl)
+	cp	(ix)
+	cp	(ix+INDEX)
+	cp	(ix-INDEX)
+	cp	(iy)
+	cp	(iy+INDEX)
+	cp	(iy-INDEX)
+	cp	a
+	cp	b
+	cp	c
+	cp	d
+	cp	e
+	cp	h
+	cp	l
+	cp	NN
+;
+	cpd
+	cpdr
+	cpi
+	cpir
+;
+	cpl
+;
+	daa
+;
+	dec	(hl)
+	dec	(ix)
+	dec	(ix+INDEX)
+	dec	(ix-INDEX)
+	dec	(iy)
+	dec	(iy+INDEX)
+	dec	(iy-INDEX)
+	dec	a
+	dec	b
+	dec	bc
+	dec	c
+	dec	d
+	dec	de
+	dec	e
+	dec	h
+	dec	hl
+	dec	ix
+	dec	iy
+	dec	l
+	dec	sp
+;
+	di
+;
+LAB1:	djnz	LAB1
+;
+	ei
+;
+	ex	(sp),hl
+	ex	(sp),ix
+	ex	(sp),iy
+	ex	af,aF'
+	ex	de,hl
+	exx
+;
+	halt
+;
+	im	0
+	im	1
+	im	2
+;
+	in	a,(C)
+	in	a,(NN)
+	in	b,(C)
+	in	c,(C)
+	in	d,(C)
+	in	e,(C)
+;	in	F,(C)
+	in	h,(C)
+	in	l,(C)
+;
+	inc	(hl)
+	inc	(iy)
+	inc	(iy+INDEX)
+	inc	(iy-INDEX)
+	inc	(ix)
+	inc	(ix+INDEX)
+	inc	(ix-INDEX)
+	inc	a
+	inc	b
+	inc	bc
+	inc	c
+	inc	d
+	inc	de
+	inc	e
+	inc	h
+	inc	hl
+	inc	ix
+	inc	iy
+	inc	l
+	inc	sp
+;
+	ind
+	indr
+	ini
+	inir
+;
+	jp	(hl)
+	jp	(ix)
+	jp	(iy)
+	jp	c,NNNN
+	jp	m,NNNN
+	jp	nc,NNNN
+	jp	NNNN
+	jp	nz,NNNN
+	jp	p,NNNN
+	jp	pe,NNNN
+	jp	po,NNNN
+	jp	z,NNNN
+;
+LAB2:	jr	LAB2
+	jr	c,LAB2
+	jr	nc,LAB2
+	jr	z,LAB2
+	jr	nz,LAB2
+;
+	ld	(bc),a
+	ld	(de),a
+	ld	(hl),a
+	ld	(hl),b
+	ld	(hl),c
+	ld	(hl),d
+	ld	(hl),e
+	ld	(hl),h
+	ld	(hl),l
+	ld	(hl),NN
+;
+	ld	(ix),a
+	ld	(ix+INDEX),a
+	ld	(ix-INDEX),a
+	ld	(ix),b
+	ld	(ix+INDEX),b
+	ld	(ix-INDEX),b
+	ld	(ix),e
+	ld	(ix+INDEX),e
+	ld	(ix-INDEX),e
+	ld	(ix),h
+	ld	(ix+INDEX),h
+	ld	(ix-INDEX),h
+	ld	(ix),l
+	ld	(ix+INDEX),l
+	ld	(ix-INDEX),l
+	ld	(ix),NN
+	ld	(ix+INDEX),NN
+	ld	(ix-INDEX),NN
+;
+	ld	(iy),a
+	ld	(iy+INDEX),a
+	ld	(iy-INDEX),a
+	ld	(iy),b
+	ld	(iy+INDEX),b
+	ld	(iy-INDEX),b
+	ld	(iy),c
+	ld	(iy+INDEX),c
+	ld	(iy-INDEX),c
+	ld	(iy),d
+	ld	(iy+INDEX),d
+	ld	(iy-INDEX),d
+	ld	(iy),e
+	ld	(iy+INDEX),e
+	ld	(iy-INDEX),e
+	ld	(iy),h
+	ld	(iy+INDEX),h
+	ld	(iy-INDEX),h
+	ld	(iy),l
+	ld	(iy+INDEX),l
+	ld	(iy-INDEX),l
+	ld	(iy),NN
+	ld	(iy+INDEX),NN
+	ld	(iy-INDEX),NN
+;
+	ld	(NNNN),a
+	ld	(NNNN),bc
+	ld	(NNNN),de
+	ld	(NNNN),hl
+	ld	(NNNN),ix
+	ld	(NNNN),iy
+	ld	(NNNN),sp
+;
+	ld	a,(bc)
+	ld	a,(de)
+	ld	a,(hl)
+	ld	a,(ix)
+	ld	a,(ix+INDEX)
+	ld	a,(ix-INDEX)
+	ld	a,(iy)
+	ld	a,(iy+INDEX)
+	ld	a,(iy-INDEX)
+	ld	a,(NNNN)
+	ld	a,a
+	ld	a,b
+	ld	a,c
+	ld	a,d
+	ld	a,e
+	ld	a,h
+	ld	a,i
+	ld	a,l
+	ld	a,NN
+	ld	a,r
+;
+	ld	b,(hl)
+	ld	b,(ix)
+	ld	b,(ix+INDEX)
+	ld	b,(ix-INDEX)
+	ld	b,(iy)
+	ld	b,(iy+INDEX)
+	ld	b,(iy-INDEX)
+	ld	b,a
+	ld	b,b
+	ld	b,c
+	ld	b,d
+	ld	b,e
+	ld	b,h
+	ld	b,l
+	ld	b,NN
+;
+	ld	bc,(NNNN)
+	ld	bc,NNNN
+;
+	ld	c,(hl)
+	ld	c,(ix)
+	ld	c,(ix+INDEX)
+	ld	c,(ix-INDEX)
+	ld	c,(iy)
+	ld	c,(iy+INDEX)
+	ld	c,(iy-INDEX)
+	ld	c,a
+	ld	c,b
+	ld	c,c
+	ld	c,d
+	ld	c,e
+	ld	c,h
+	ld	c,l
+	ld	c,NN
+;
+	ld	d,(hl)
+	ld	d,(ix)
+	ld	d,(ix+INDEX)
+	ld	d,(ix-INDEX)
+	ld	d,(iy)
+	ld	d,(iy+INDEX)
+	ld	d,(iy-INDEX)
+	ld	d,a
+	ld	d,b
+	ld	d,c
+	ld	d,d
+	ld	d,e
+	ld	d,h
+	ld	d,l
+	ld	d,NN
+;
+	ld	de,(NNNN)
+	ld	de,NNNN
+;
+	ld	e,(hl)
+	ld	e,(ix)
+	ld	e,(ix+INDEX)
+	ld	e,(ix-INDEX)
+	ld	e,(iy)
+	ld	e,(iy+INDEX)
+	ld	e,(iy-INDEX)
+	ld	e,a
+	ld	e,b
+	ld	e,c
+	ld	e,d
+	ld	e,e
+	ld	e,h
+	ld	e,l
+	ld	e,NN
+;
+	ld	h,(hl)
+	ld	h,(ix)
+	ld	h,(ix+INDEX)
+	ld	h,(ix-INDEX)
+	ld	h,(iy)
+	ld	h,(iy+INDEX)
+	ld	h,(iy-INDEX)
+	ld	h,a
+	ld	h,b
+	ld	h,c
+	ld	h,d
+	ld	h,e
+	ld	h,h
+	ld	h,l
+	ld	h,NN
+;
+	ld	hl,(NNNN)
+	ld	hl,NNNN
+;
+	ld	i,a
+;
+	ld	ix,(NNNN)
+	ld	ix,NNNN
+;
+	ld	iy,(NNNN)
+	ld	iy,NNNN
+;
+	ld	l,(hl)
+	ld	l,(ix)
+	ld	l,(ix+INDEX)
+	ld	l,(ix-INDEX)
+	ld	l,(iy)
+	ld	l,(iy+INDEX)
+	ld	l,(iy-INDEX)
+	ld	l,a
+	ld	l,b
+	ld	l,c
+	ld	l,d
+	ld	l,e
+	ld	l,h
+	ld	l,l
+	ld	l,NN
+;
+	ld	r,a
+;
+	ld	sp,(NNNN)
+	ld	sp,hl
+	ld	sp,ix
+	ld	sp,iy
+	ld	sp,NNNN
+;
+	ldd
+	lddr
+	ldi
+	ldir
+;
+	neg
+;
+	nop
+;
+	or	(hl)
+	or	(ix)
+	or	(ix+INDEX)
+	or	(ix-INDEX)
+	or	(iy)
+	or	(iy+INDEX)
+	or	(iy-INDEX)
+	or	a
+	or	b
+	or	c
+	or	d
+	or	e
+	or	h
+	or	l
+	or	NN
+;
+	otdr
+	otir
+;
+	out	(c),a
+	out	(c),b
+	out	(c),c
+	out	(c),d
+	out	(c),e
+	out	(c),h
+	out	(c),l
+	out	(NN),a
+;
+	outd
+	outi
+;
+	pop	af
+	pop	bc
+	pop	de
+	pop	hl
+	pop	ix
+	pop	iy
+	push	af
+	push	bc
+	push	de
+	push	hl
+	push	ix
+	push	iy
+;
+	res	0,(hl)
+	res	0,(ix)
+	res	0,(ix+INDEX)
+	res	0,(ix-INDEX)
+	res	0,(iy)
+	res	0,(iy+INDEX)
+	res	0,(iy-INDEX)
+	res	0,a
+	res	0,b
+	res	0,c
+	res	0,d
+	res	0,e
+	res	0,h
+	res	0,l
+;
+	res	1,(hl)
+	res	1,(ix)
+	res	1,(ix+INDEX)
+	res	1,(ix-INDEX)
+	res	1,(iy)
+	res	1,(iy+INDEX)
+	res	1,(iy-INDEX)
+	res	1,a
+	res	1,b
+	res	1,c
+	res	1,d
+	res	1,e
+	res	1,h
+	res	1,l
+;
+	res	2,(hl)
+	res	2,(ix)
+	res	2,(ix+INDEX)
+	res	2,(ix-INDEX)
+	res	2,(iy)
+	res	2,(iy+INDEX)
+	res	2,(iy-INDEX)
+	res	2,a
+	res	2,b
+	res	2,c
+	res	2,d
+	res	2,e
+	res	2,h
+	res	2,l
+;
+	res	3,(hl)
+	res	3,(ix)
+	res	3,(ix+INDEX)
+	res	3,(ix-INDEX)
+	res	3,(iy)
+	res	3,(iy+INDEX)
+	res	3,(iy-INDEX)
+	res	3,a
+	res	3,b
+	res	3,c
+	res	3,d
+	res	3,e
+	res	3,h
+	res	3,l
+;
+	res	4,(hl)
+	res	4,(ix)
+	res	4,(ix+INDEX)
+	res	4,(ix-INDEX)
+	res	4,(iy)
+	res	4,(iy+INDEX)
+	res	4,(iy-INDEX)
+	res	4,a
+	res	4,b
+	res	4,c
+	res	4,d
+	res	4,e
+	res	4,h
+	res	4,l
+;
+	res	5,(hl)
+	res	5,(ix)
+	res	5,(ix+INDEX)
+	res	5,(ix-INDEX)
+	res	5,(iy)
+	res	5,(iy+INDEX)
+	res	5,(iy-INDEX)
+	res	5,a
+	res	5,b
+	res	5,c
+	res	5,d
+	res	5,e
+	res	5,h
+	res	5,l
+;
+	res	6,(hl)
+	res	6,(ix)
+	res	6,(ix+INDEX)
+	res	6,(ix-INDEX)
+	res	6,(iy)
+	res	6,(iy+INDEX)
+	res	6,(iy-INDEX)
+	res	6,a
+	res	6,b
+	res	6,c
+	res	6,d
+	res	6,e
+	res	6,h
+	res	6,l
+;
+	res	7,(hl)
+	res	7,(ix)
+	res	7,(ix+INDEX)
+	res	7,(ix-INDEX)
+	res	7,(iy)
+	res	7,(iy+INDEX)
+	res	7,(iy-INDEX)
+	res	7,a
+	res	7,b
+	res	7,c
+	res	7,d
+	res	7,e
+	res	7,h
+	res	7,l
+;
+	ret
+	ret	c
+	ret	m
+	ret	nc
+	ret	nz
+	ret	p
+	ret	pe
+	ret	po
+	ret	z
+;
+	reti
+	retn
+;
+	rl	(hl)
+	rl	(ix)
+	rl	(ix+INDEX)
+	rl	(ix-INDEX)
+	rl	(iy)
+	rl	(iy+INDEX)
+	rl	(iy-INDEX)
+	rl	a
+	rl	b
+	rl	c
+	rl	d
+	rl	e
+	rl	h
+	rl	l
+;
+	rla
+;
+	rlc	(hl)
+	rlc	(ix)
+	rlc	(ix+INDEX)
+	rlc	(ix-INDEX)
+	rlc	(iy)
+	rlc	(iy+INDEX)
+	rlc	(iy-INDEX)
+	rlc	a
+	rlc	b
+	rlc	c
+	rlc	d
+	rlc	e
+	rlc	h
+	rlc	l
+;
+	rlca
+;
+	rld
+;
+	rr	(hl)
+	rr	(ix)
+	rr	(ix+INDEX)
+	rr	(ix-INDEX)
+	rr	(iy)
+	rr	(iy+INDEX)
+	rr	(iy-INDEX)
+	rr	a
+	rr	b
+	rr	c
+	rr	d
+	rr	e
+	rr	h
+	rr	l
+;
+	rra
+;
+	rrc	(hl)
+	rrc	(ix)
+	rrc	(ix+INDEX)
+	rrc	(ix-INDEX)
+	rrc	(iy)
+	rrc	(iy+INDEX)
+	rrc	(iy-INDEX)
+	rrc	a
+	rrc	b
+	rrc	c
+	rrc	d
+	rrc	e
+	rrc	h
+	rrc	l
+;
+	rrca
+;
+	rrd
+;
+	rst	0
+	rst	08H
+	rst	10H
+	rst	18H
+	rst	20H
+	rst	28H
+	rst	30H
+	rst	38H
+;
+	sbc	a,(hl)
+	sbc	(hl)
+	sbc	a,(ix)
+	sbc	(ix+INDEX)
+	sbc	a,(ix-INDEX)
+	sbc	(ix-INDEX)
+	sbc	a,(iy)
+	sbc	(iy+INDEX)
+	sbc	a,(iy-INDEX)
+	sbc	(iy-INDEX)
+	sbc	a,a
+	sbc	a
+	sbc	a,b
+	sbc	b
+	sbc	a,c
+	sbc	c
+	sbc	a,d
+	sbc	d
+	sbc	a,e
+	sbc	e
+	sbc	a,h
+	sbc	h
+	sbc	a,l
+	sbc	l
+	sbc	a,NN
+	sbc	NN
+;
+	sbc	hl,bc
+	sbc	hl,de
+	sbc	hl,hl
+	sbc	hl,sp
+;
+	scf
+;
+	set	0,(hl)
+	set	0,(ix)
+	set	0,(ix+INDEX)
+	set	0,(ix-INDEX)
+	set	0,(iy)
+	set	0,(iy+INDEX)
+	set	0,(iy-INDEX)
+	set	0,a
+	set	0,b
+	set	0,c
+	set	0,d
+	set	0,e
+	set	0,h
+	set	0,l
+;
+	set	1,(hl)
+	set	1,(ix)
+	set	1,(ix+INDEX)
+	set	1,(ix-INDEX)
+	set	1,(iy)
+	set	1,(iy+INDEX)
+	set	1,(iy-INDEX)
+	set	1,a
+	set	1,b
+	set	1,c
+	set	1,d
+	set	1,e
+	set	1,h
+	set	1,l
+;
+	set	2,(hl)
+	set	2,(ix)
+	set	2,(ix+INDEX)
+	set	2,(ix-INDEX)
+	set	2,(iy)
+	set	2,(iy+INDEX)
+	set	2,(iy-INDEX)
+	set	2,a
+	set	2,b
+	set	2,c
+	set	2,d
+	set	2,e
+	set	2,h
+	set	2,l
+;
+	set	3,(hl)
+	set	3,(ix)
+	set	3,(ix+INDEX)
+	set	3,(ix-INDEX)
+	set	3,(iy)
+	set	3,(iy+INDEX)
+	set	3,(iy-INDEX)
+	set	3,a
+	set	3,b
+	set	3,c
+	set	3,d
+	set	3,e
+	set	3,h
+	set	3,l
+;
+	set	4,(hl)
+	set	4,(ix)
+	set	4,(ix+INDEX)
+	set	4,(ix-INDEX)
+	set	4,(iy)
+	set	4,(iy+INDEX)
+	set	4,(iy-INDEX)
+	set	4,a
+	set	4,b
+	set	4,c
+	set	4,d
+	set	4,e
+	set	4,h
+	set	4,l
+;
+	set	5,(hl)
+	set	5,(ix)
+	set	5,(ix+INDEX)
+	set	5,(ix-INDEX)
+	set	5,(iy)
+	set	5,(iy+INDEX)
+	set	5,(iy-INDEX)
+	set	5,a
+	set	5,b
+	set	5,c
+	set	5,d
+	set	5,e
+	set	5,h
+	set	5,l
+;
+	set	6,(hl)
+	set	6,(ix)
+	set	6,(ix+INDEX)
+	set	6,(ix-INDEX)
+	set	6,(iy)
+	set	6,(iy+INDEX)
+	set	6,(iy-INDEX)
+	set	6,a
+	set	6,b
+	set	6,c
+	set	6,d
+	set	6,e
+	set	6,h
+	set	6,l
+;
+	set	7,(hl)
+	set	7,(ix)
+	set	7,(ix+INDEX)
+	set	7,(ix-INDEX)
+	set	7,(iy)
+	set	7,(iy+INDEX)
+	set	7,(iy-INDEX)
+	set	7,a
+	set	7,b
+	set	7,c
+	set	7,d
+	set	7,e
+	set	7,h
+	set	7,l
+;
+	sla	(hl)
+	sla	(ix)
+	sla	(ix+INDEX)
+	sla	(ix-INDEX)
+	sla	(iy)
+	sla	(iy+INDEX)
+	sla	(iy-INDEX)
+	sla	a
+	sla	b
+	sla	c
+	sla	d
+	sla	e
+	sla	h
+	sla	l
+;
+	sra	(hl)
+	sra	(ix)
+	sra	(ix+INDEX)
+	sra	(ix-INDEX)
+	sra	(iy)
+	sra	(iy+INDEX)
+	sra	(iy-INDEX)
+	sra	a
+	sra	b
+	sra	c
+	sra	d
+	sra	e
+	sra	h
+	sra	l
+;
+	srl	(hl)
+	srl	(ix)
+	srl	(ix+INDEX)
+	srl	(ix-INDEX)
+	srl	(iy)
+	srl	(iy+INDEX)
+	srl	(iy-INDEX)
+	srl	a
+	srl	b
+	srl	c
+	srl	d
+	srl	e
+	srl	h
+	srl	l
+;
+	sub	(hl)
+	sub	(ix)
+	sub	(ix+INDEX)
+	sub	(ix-INDEX)
+	sub	(iy)
+	sub	(iy+INDEX)
+	sub	(iy-INDEX)
+	sub	a
+	sub	b
+	sub	c
+	sub	d
+	sub	e
+	sub	h
+	sub	l
+	sub	NN
+;
+	xor	(hl)
+	xor	(ix)
+	xor	(ix+INDEX)
+	xor	(ix-INDEX)
+	xor	(iy)
+	xor	(iy+INDEX)
+	xor	(iy-INDEX)
+	xor	a
+	xor	b
+	xor	c
+	xor	d
+	xor	e
+	xor	h
+	xor	l
+	xor	NN
+;
+	title
+;
+;	EXPRESSION EVALUATION TEST
+;
+ONE:	equ	1
+TWO:	equ	ONE+ONE
+FOUR:	equ	ONE+TWO+ONE
+EIGHT:	equ	FOUR+FOUR+FOUR+FOUR/2	;STRICTLY LEFT TO RIGHT
+;
+VALUE:	equ	10010B .Shl. 8 +34H	;SHOULD	BE 1234H
+;
+	dw	.NOT. VALUE		;COMPLEMENT
+	dw	VALUE .MOD. 16		;MODULO
+	dw	VALUE\16		;ALTERNATIVE MODULO *** new version ***
+;
+	dw	ONE .Shl. 1		;SHIFT LEFT ONCE
+	dw	ONE .Shl. 2		;SHIFT LEFT TWICE
+	dw	ONE .Shl. 3		;SHIFT LEFT 3 TIMES
+	dw	ONE .Shl. 4		;SHIFT LEFT 4 TIMES
+	dw	ONE .Shl. 5		;SHIFT LEFT 5 TIMES
+	dw	ONE .Shl. 6		;SHIFT LEFT 6 TIMES
+	dw	ONE .Shl. 7		;SHIFT LEFT 7 TIMES
+	dw	ONE .Shl. 8		;SHIFT LEFT 8 TIMES
+	dw	ONE .Shl. 9		;SHIFT LEFT 9 TIMES
+	dw	ONE .Shl. 10		;SHIFT LEFT 10 TIMES
+	dw	ONE .Shl. 11		;SHIFT LEFT 11 TIMES
+	dw	ONE .Shl. 12		;SHIFT LEFT 12 TIMES
+	dw	ONE .Shl. 13		;SHIFT LEFT 13 TIMES
+	dw	ONE .Shl. 14		;SHIFT LEFT 14 TIMES
+	dw	ONE .Shl. 15		;SHIFT LEFT 15 TIMES
+	dw	ONE .Shl. 16		;SHIFT LEFT TOO	MANY TIMES
+;
+BIT15:	equ	8000H
+;
+	dw	bit15 .SHR. 1		;SHIFT RIGHT ONCE
+	dw	bit15 .SHR. 2		;SHIFT RIGHT TWICE
+	dw	bit15 .SHR. 3		;SHIFT RIGHT 3 TIMES
+	dw	bit15 .SHR. 4		;SHIFT RIGHT 4 TIMES
+	dw	bit15 .SHR. 5		;SHIFT RIGHT 5 TIMES
+	dw	bit15 .SHR. 6		;SHIFT RIGHT 6 TIMES
+	dw	bit15 .SHR. 7		;SHIFT RIGHT 7 TIMES
+	dw	bit15 .SHR. 8		;SHIFT RIGHT 8 TIMES
+	dw	bit15 .SHR. 9		;SHIFT RIGHT 9 TIMES
+	dw	bit15 .SHR. 10		;SHIFT RIGHT 10	TIMES
+	dw	bit15 .SHR. 11		;SHIFT RIGHT 11	TIMES
+	dw	bit15 .SHR. 12		;SHIFT RIGHT 12	TIMES
+	dw	bit15 .SHR. 13		;SHIFT RIGHT 13	TIMES
+	dw	bit15 .SHR. 14		;SHIFT RIGHT 14	TIMES
+	dw	bit15 .SHR. 15		;SHIFT RIGHT 15	TIMES
+	dw	bit15 .SHR. 16		;SHIFT RIGHT TOO MANY TIMES
+;
+;	LOGICAL	OPERATORS
+;
+	dw	VALUE .AND. 0FF00H
+	dw	VALUE .OR. 0FF00H
+	dw	VALUE .XOR. 0FF00H
+;
+;	HIGH AND LOW BYTE
+;
+	dw	.LOW. VALUE
+	dw	.HIGH. VALUE
+;
+;	COMPARISONS
+;
+	dw	ONE.EQ.TWO
+	dw	ONE.EQ.ONE
+	dw	TWO.EQ.ONE
+;
+	dw	ONE.NE.TWO
+	dw	ONE.NE.ONE
+	dw	TWO.NE.ONE
+;
+	dw	ONE.LT.TWO
+	dw	ONE.LT.ONE
+	dw	TWO.LT.ONE
+;
+	dw	ONE.LE.TWO
+	dw	ONE.LE.ONE
+	dw	TWO.LE.ONE
+;
+	dw	ONE.GT.TWO
+	dw	ONE.GT.ONE
+	dw	TWO.GT.ONE
+;
+	dw	ONE.GE.TWO
+	dw	ONE.GE.ONE
+	dw	TWO.GE.ONE
+;
+;
+	dw	ONE=TWO
+	dw	ONE=ONE
+	dw	TWO=ONE
+;
+	dw	ONE>TWO
+	dw	ONE>ONE
+	dw	TWO>ONE
+;
+	dw	ONE<TWO
+	dw	ONE<ONE
+	dw	TWO<ONE
+;
+valid%:	db 0	; Now an acceptable label
+;
+;
+;	This side should be 'tab'd as the default
+;
+	LIST NOTABS, NOSORT	; multiple list options now work + NOSORT
+;
+;	This side shouldn't & the symbol table should be unsorted
+;
+;	Signed less than
+;
+mone:	equ -one
+vbpos:	equ 30000	; a very big positive signed number
+vbneg:	equ -vbpos	;	     negative
+;
+	dw mone .LESS. 0
+	dw 0 .LESS. mone
+	dw 0 .LESS. 0
+	dw vbneg .LESS. vbpos
+	dw vbpos .LESS. vbneg
+;
+	dw 1234h .shl. 0	; zero shifts ok
+	dw 1234h .shr. 0
+	dw 1234h .shl. mone	; but uses unsigned for how many
+	dw 1234h .shr. mone
+;
+; 	Using the '$' constant ( = value of the pc )
+;	in expressions after the first on a line now
+;	gives the right results...
+;
+				; should be equivalent to:
+	dw Lxxx-$,Lxxx-$	; dw 4, 2
+Lxxx:	dw Lxxx-$,Lxxx-$	; dw 0, -2
+;
+Rxxx:	db Rxxx-$,Rxxx-$,Rxxx-$,Rxxx-$	; db 0, -1, -2, -3
+;
+	jr $+4		; this should still work... ( offset = 2 )
+	jr silly
+silly:	nop
+	end
+,Rxxx-$,Rxxx-$,Rxxx-$	; db 0, -1, -2, -3
+;
+	jr $+4		; this should still work... ( offset = 2 )
+	jr silly
+silly:	nop
