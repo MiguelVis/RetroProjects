@@ -1,0 +1,12 @@
+Changes made in version 3.4
+---------------------------
+
+	- Avoid labels start with '$', it clashes with $ PC ref.
+	- Allow labels start with '_' in expressions.
+
+By Miguel Garcia / FloppySoftware - 10 Oct 2018.
+
+http://www.floppysoftware.es
+floppysoftware@gmail.com
+
+
