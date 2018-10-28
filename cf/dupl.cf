@@ -1,0 +1,10 @@
+# Example of CF file with key duplicates
+jane = user
+.name = "Jane Smith"
+.email = janesmith@mailserver.com
+.group = admin
+
+mike = user
+.name = "Mike Travis"
+.email = miketravis@mailserver.com
+.group = reader

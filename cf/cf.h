@@ -31,6 +31,7 @@
 	24 Oct 2016 : Modified CfRead(), CfWrite(), CfSetKey() to support reading and writing empty lines and comments.
 	01 Jan 2017 : Don't destroy CF on error in CfRead().
 	03 May 2018 : Solved bug in quoted strings.
+	28 Oct 2018 : Add CfAddKey(). Modify CfRead() to allow key duplicates.
 
 	Supported #defines:
 
@@ -136,6 +137,32 @@ CF *cf;
 	return NULL;
 }
 
+/* Add a key, allowing duplicates
+   ------------------------------
+   Return 0 on success, or -1 on failure.
+*/
+CfAddKey(cf, key, value)
+CF *cf; char *key, *value;
+{
+	int entry;
+	
+	if((entry = xCfAdd(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
+
+		// Add the value
+		if(xCfSet(cf[XCF_FVALUES], value, entry)) {
+
+			// Success
+			return 0;
+		}
+
+		// Failure
+		xCfDel(cf[XCF_FKEYS], entry);
+	}
+		
+	// Failure
+	return -1;
+}
+
 /* Set the value of a key
    ----------------------
    Return 0 on success, or -1 on failure.
@@ -157,20 +184,7 @@ CF *cf; char *key, *value;
 	}
 	else {
 		// The key doesn't exists: add it
-		if((entry = xCfAdd(cf[XCF_FKEYS], cf[XCF_FMAX], key)) != -1) {
-
-			// Add the value
-			if(xCfSet(cf[XCF_FVALUES], value, entry)) {
-
-				// Success
-				return 0;
-			}
-
-			// Failure
-			xCfDel(cf[XCF_FKEYS], entry);
-		}
-
-		// Failure
+		return CfAddKey(cf, key, value);
 	}
 
 	// Failure
@@ -211,8 +225,8 @@ CF *cf; char *key;
    ---------------------------------------
    Return 0 on success, or -1 on failure.
 */
-CfRead(cf, fname, cmt)
-CF *cf; char *fname; int cmt;
+CfRead(cf, fname, cmt, dupl)
+CF *cf; char *fname; int cmt, dupl;
 {
 	FILE *fp;
 	int err, k;
@@ -310,7 +324,7 @@ CF *cf; char *fname; int cmt;
 			}
 
 			// Add the key / value pair to the configuration buffer
-			if(CfSetKey(cf, key, bf)) {
+			if(dupl ? CfAddKey(cf, key, bf) : CfSetKey(cf, key, bf)) {
 				//CfDestroy(cf);
 				err = -1;
 				break;

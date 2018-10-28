@@ -41,6 +41,7 @@
 		21 Oct 2016 : Refactorized CF function names.
 		24 Oct 2016 : Added reading and writing of empty lines and comments.
 		03 May 2018 : Write final result.
+		28 Oct 2018 : Don't allow duplicated keys in CfRead().
 */
 
 /* Defines for MESCC libraries
@@ -166,14 +167,14 @@ main()
 
 	printf("Reading test.cf into CF\n\n");
 
-	if(CfRead(cf, "test.cf", 1))
+	if(CfRead(cf, "test.cf", 1, 0))
 		error("Can't read test.cf");
 
 	pr_keys(cf);
 
 	printf("Reading test_2.cf into CF\n\n");
 
-	if((k = CfRead(cf, "test_2.cf", 0)))
+	if((k = CfRead(cf, "test_2.cf", 0, 0)))
 		error("Can't read test_2.cf");
 
 	pr_keys(cf);
