@@ -4,7 +4,7 @@ rem #
 rem # Create a MESCC project.
 rem #
 rem # Created: 06 Jan 2016
-rem # Updated: 06 Jan 2016
+rem # Updated: 18 Dec 2018
 rem #
 rem # Check command line arguments
 rem #
@@ -33,8 +33,10 @@ rem # Project makefile
 rem #
 echo cpm cc %1 > %1\make.bat
 echo cpm ccopt %1 >> %1\make.bat
-echo cpm zsm %1 >> %1\make.bat
+echo cpm zsm %1.@@Z >> %1\make.bat
 echo cpm hextocom %1 >> %1\make.bat
+echo erase %1.zsm >> %1\make.bat
+echo erase %1.hex >> %1\make.bat
 rem #
 rem # Done
 rem #
