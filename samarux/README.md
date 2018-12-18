@@ -140,8 +140,8 @@ Its use it's not compulsory, but highly recommended (and useful).
 
 There are two files for profiling::
 
-- profile.sx: For the CP/M mode.
-- profcpm.sx: For the interactive mode.
+- profile.sx: For the interactive mode.
+- profcpm.sx: For the CP/M mode.
 
 An example of profiling in interactive mode:
 
