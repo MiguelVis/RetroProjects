@@ -98,6 +98,7 @@
 /* Project libraries
    -----------------
 */
+#define LKLIST_KEYS
 #include "lklist.h"
 
 /* Project defs.

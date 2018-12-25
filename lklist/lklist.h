@@ -9,10 +9,12 @@
  * Public macros:
  *  - LKLIST       Linked list
  *  - LKLIST_ITEM  Linked list item
+ *  - LKLIST_KEYS  Extension for key - value pairs.
  *
  * Revisions:
  *  - 18 Feb 2018 : Released first public version.
  *  - 30 Aug 2018 : Added LkUpdate(). Modified and renamed some functions. Removed code related to _LK_CURSOR.
+ *  - 01 Sep 2018 : Added LKLIST_KEYS extension for key - value pairs: LkFindKey(), LkGetKey(), LkSetKey(), LkRemoveKey().
  *
  * Copyright (c) 2018 Miguel I. Garcia Lopez / FloppySoftware.
  *
@@ -345,6 +347,110 @@ LKLIST_ITEM *item;
 
 }
 
+/* Key - value pairs extension
+   ---------------------------
+*/
+#ifdef LKLIST_KEYS
+
+/**
+ * @fn     LKLIST_ITEM *LkFindKey(LKLIST *lk, char *key)
+ * @brief  Find a key in a linked list.
+ * @param  lk = linked list pointer
+ * @param  key = key to find
+ * @return item pointer, or NULL if key does not exist
+ */
+LkFindKey(lk, key)
+LKLIST *lk;
+char *key;
+{
+	LKLIST_ITEM *item;
+
+	for(item = LkGetFirst(lk); item != NULL; item = LkGetNext(item)) {
+		if(strcmp(key, LkGetData(item)) == 0) {
+			return item;
+		}
+	}
+
+	return NULL;
+}
+
+/**
+ * @fn     char *LkGetKey(LKLIST *lk, char *key)
+ * @brief  Return a key value in a linked list.
+ * @param  lk = linked list pointer
+ * @param  key = key to find
+ * @return key value, or NULL if key does not exist
+ */
+LkGetKey(lk, key)
+LKLIST *lk;
+char *key;
+{
+	LKLIST_ITEM *item;
+
+	if((item = LkFindKey(lk, key)) != NULL) {
+		return LkGetData(item) + strlen(key) + 1;
+	}
+
+	return NULL;
+}
+
+/**
+ * @fn     LKLIST_ITEM *LkFindKey(LKLIST *lk, char *key, char *value)
+ * @brief  Add or update a key in a linked list.
+ * @param  lk = linked list pointer
+ * @param  key = key to add or update
+ * @param  value = key value to add or update
+ * @return item pointer, or NULL if there is not enough memory
+ */
+LkSetKey(lk, key, value)
+LKLIST *lk;
+char *key;
+char *value;
+{
+	LKLIST_ITEM *item;
+	char *data;
+	int key_length;
+	int size;
+
+	size = (key_length = strlen(key)) + strlen(value) + 2;
+
+	if((data = malloc(size))) {
+		strcpy(strcpy(data, key) + key_length + 1, value);
+
+		if((item = LkFindKey(lk, key)) == NULL) {
+			item = LkAdd(lk, data, size);
+		}
+		else {
+			item = LkUpdate(lk, item, data, size);
+		}
+
+		free(data);
+
+		return item;
+	}
+
+	return NULL;
+}
+
+/**
+ * @fn     void LkGetKey(LKLIST *lk, char *key)
+ * @brief  Remove a key in a linked list if exists
+ * @param  lk = linked list pointer
+ * @param  key = key to remove
+ */
+LkRemoveKey(lk, key)
+LKLIST *lk;
+char *key;
+{
+	LKLIST_ITEM *item;
+
+	if((item = LkFindKey(lk, key)) != NULL) {
+		LkRemove(lk, item);
+	}
+}
+
+#endif
+
 #ifdef _LK_DEBUG
 
 /* Print linked list data
@@ -378,6 +484,10 @@ LKLIST *lk;
 /* Cleaning
    --------
 */
+#undef LKLIST_KEYS
+
+#undef _LK_DEBUG
+
 #undef _LK_FIRST
 #undef _LK_LAST
 #undef _LK_ITEMS
