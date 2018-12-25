@@ -130,6 +130,12 @@ A small text editor for CP/M (highly configurable; there are ports for various m
 It supports basic editing commands plus: find string and find next string, go to a line number, execute macro from file, help screen, etc.
 
 
+TIMER
+-----
+
+Timer library for MESCC.
+
+
 UT
 --
 
