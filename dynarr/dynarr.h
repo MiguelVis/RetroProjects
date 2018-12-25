@@ -38,73 +38,138 @@
 */
 /////#include <alloc.h>
 /////#include <string.h>
+/////#include <mem.h>
+
+/* Public defines
+   --------------
+*/
+#define DYNARR unsigned int  // void *
 
 /* Private defines
    ---------------
 */
 #define DY_DEBUG
 
-/* Allocate and clear an array
-   ---------------------------
-   Return array address, or NULL on failure.
+#define DY_SIZE   0  // # of entries
+#define DY_DATA   1  // Pointer to vector or null if # of entries == 0
+
+#define DY_FIELDS 2  // # of fields in above structure
+
+/* Allocate a dynamic array
+   ------------------------
+   Return address, or NULL on failure.
 */
-DyAlloc(max)
-int max;
+DyAlloc()
 {
-	unsigned int *arr; // char *arr[]
-	int i;
+	DYNARR *dyn;
 
-	// Alloc memory for the array
-	if((arr = malloc(SIZEOF_PTR * max))) {
+	// Alloc memory for empty structure
+	if((dyn = malloc(DY_FIELDS * SIZEOF_PTR))) {
 
-		// Clear the array
-		for(i = 0; i < max; ++i)
-			arr[i] = NULL;
-
-		// Success
-		return arr;
+		// Setup the array
+		dyn[DY_SIZE] = 0;
+		dyn[DY_DATA] = NULL;
 	}
 
-	// Failure
+#ifdef DY_DEBUG
+	printf("DyAlloc = %u\n", dyn);
+#endif
+
+	// Success or failure
+	return dyn;
+}
+
+/* Free a dynamic array
+   --------------------
+*/
+DyFree(dyn)
+DYNARR *dyn;
+{
+	int dyn_len;
+	WORD *dyn_arr;  // char *[]
+	int i;
+
+	if(dyn) {
+		dyn_len = dyn[DY_SIZE];
+		dyn_arr = dyn[DY_DATA];
+
+		// Free allocated entries if any
+		if(dyn_len) {
+			for(i = 0; i < dyn_len; ++i) {
+#ifdef DY_DEBUG
+	printf("DyFree = %u > %u\n", dyn, dyn_arr[i]);
+#endif
+				free(dyn_arr[i]);
+			}
+		}
+
+#ifdef DY_DEBUG
+	printf("DyFree = %u\n", dyn);
+#endif
+
+		// Free the structure
+		free(dyn);
+	}
+}
+
+/* Get length
+   ----------
+   Return length or -1 on failure.
+*/
+DyLength(dyn)
+DYNARR *dyn;
+{
+	if(dyn) {
+		return dyn[DY_SIZE];
+	}
+
+	//
+	return -1;
+}
+
+/* Get entry
+   ----------
+   Return entry or NULL on failure.
+*/
+DyGet(dyn, entry)
+DYNARR *dyn;
+int entry;
+{
+	WORD *dyn_arr;
+
+	if(dyn && entry >= 0 && entry < dyn[DY_SIZE]) {
+		dyn_arr = dyn[DY_DATA];
+
+		return dyn_arr[entry];
+	}
+
+	//
 	return NULL;
 }
 
-/* Free an array and its entries
-   -----------------------------
-*/
-DyFree(arr, size)
-unsigned int *arr; // char *arr[]
-int size;
-{
-	int i;
-
-	// Free allocated entries
-	for(i = 0; i < size; ++i) {
-		if(arr[i])
-			free(arr[i]);
-	}
-
-	// Free the array
-	free(arr);
-}
-
-/* Find a key
-   ----------
+/* Find a value
+   -------------
    Return entry number, or -1 on failure.
 */
-DyFind(arr, size, key)
-unsigned int *arr; // char *arr[]
-int size; char *key;
+DyFind(dyn, data, size)
+DYNARR *dyn;
+char *data;
+int size;
 {
+	int dyn_len;
+	WORD *dyn_arr;  // char *[]
 	int i;
 
-	// Search for data in the array
-	for(i = 0; i < size; ++i) {
-		if(arr[i]) {
-			if(!strcmp(arr[i], key)) {
+	if(dyn) {
+		dyn_len = dyn[DY_SIZE];
+		dyn_arr = dyn[DY_DATA];
 
-				// Found
-				return i;
+		if(dyn_len) {
+			for(i = 0; i < dyn_len; ++i) {
+				if(!memcmp(dyn_arr[i], data, size)) {
+					// Found
+					return i;
+				}
 			}
 		}
 	}
@@ -113,22 +178,61 @@ int size; char *key;
 	return -1;
 }
 
-/* Add a value to an array
-   -----------------------
+/* Find a string
+   -------------
    Return entry number, or -1 on failure.
 */
-DyAdd(arr, size, data)
-unsigned int *arr; // char *arr[]
-int size; char *data;
+DyFindStr(dyn, str)
+DYNARR *dyn;
+char *str;
 {
-	int i;
+	return DyFind(dyn, str, strlen(str) + 1);
+}
 
-	// Search for unallocated entry in the array
-	for(i = 0; i < size; ++i) {
-		if(!arr[i]) {
+/* Add an entry
+   ------------
+   Return entry number, or -1 on failure.
+*/
+DyAdd(dyn, data, size)
+DYNARR *dyn;
+char *data; // void *
+int size;
+{
+	int dyn_len;
+	WORD *dyn_arr;  // char *[]
+	WORD *arr; // char *[]
+	char *val;
 
-			// Set the value and return success or failure
-			return DySet(arr, data, i) ? i : -1;
+	if(dyn && size) {
+		dyn_len = dyn[DY_SIZE];
+		dyn_arr = dyn[DY_DATA];
+
+		// Alloc space for another entry in vector  -- FIXME: MESCC doesn't have realloc() yet
+		if((arr = malloc((dyn_len + 1) * SIZEOF_PTR))) {
+			if((val = malloc(size))) {
+				// Setup vector
+				if(dyn_len) {
+					memcpy(arr, dyn_arr, dyn_len * SIZEOF_PTR);
+
+					free(dyn_arr);
+				}
+
+				arr[dyn_len] = val;
+
+				memcpy(val, data, size);
+
+				dyn[DY_DATA] = arr;
+				dyn[DY_SIZE] = dyn_len + 1;
+
+#ifdef DY_DEBUG
+	printf("DyAdd = %u < %u [%d bytes]\n",dyn, arr, size);
+#endif
+
+				return dyn_len;
+			}
+
+			// Free
+			free(arr);
 		}
 	}
 
@@ -136,66 +240,97 @@ int size; char *data;
 	return -1;
 }
 
-/* Set a value in an array
-   -----------------------
-   Return pointer to the entry data, or NULL on failure.
+/* Add a string
+   ------------
+   Return entry number, or -1 on failure.
 */
-DySet(arr, data, entry)
-unsigned int *arr; // char *arr[]
-char *data; int entry;
+DyAddStr(dyn, str)
+DYNARR *dyn;
+char *str;
 {
-	char *str;
+#ifdef DY_DEBUG
+	printf("DyAddStr = %u < '%s'\n", dyn, str);
+#endif
 
-	// Allocate memory for data
-	if((str = malloc(strlen(data) + 1))) {
+	return DyAdd(dyn, str, strlen(str) + 1);
+}
 
-		// Free old data if needed
-		if(arr[entry])
-			free(arr[entry]);
 
-		// Copy the data, update the pointer,
-		// and return pointer to the entry data.
-		return (arr[entry] = strcpy(str, data));
+/*
+DySet(dyn, str)
+DYNARR *dyn;
+char *str;
+{
+	return DyAdd(dyn, str, strlen(str) + 1);
+}
+*/
+
+/* Delete an entry
+   ---------------
+   Return entry number, or -1 on failure.
+*/
+DyDel(dyn, entry)
+DYNARR *dyn;
+int entry;
+{
+	int dyn_len;
+	WORD *dyn_arr;  // char *[]
+	WORD *arr; // char *[]
+
+	if(dyn && entry >= 0 && entry < dyn[DY_SIZE]) {
+		dyn_len = dyn[DY_SIZE];
+		dyn_arr = dyn[DY_DATA];
+
+		if(dyn_len > 1) {
+			// Alloc space for new vector  -- FIXME: MESCC doesn't have realloc() yet
+			if(!(arr = malloc((dyn_len - 1) * SIZEOF_PTR))) {
+				// Failure
+				return -1;
+			}
+
+			// ...memcpy(arr, dyn_arr, dyn_len * SIZEOF_PTR);
+
+			if(entry > 0) {
+				memcpy(arr, dyn_arr, entry * SIZEOF_PTR);
+			}
+
+			if(entry < dyn_len - 1) {
+				memcpy(arr + entry * SIZEOF_PTR, dyn_arr + (entry + 1) * SIZEOF_PTR, (dyn_len - 1 - entry) * SIZEOF_PTR);
+			}
+
+			dyn[DY_DATA] = arr;
+		}
+		else {
+			dyn[DY_DATA] = NULL;
+		}
+
+		free(dyn_arr);
+
+		--dyn[DY_SIZE];
+
+#ifdef DY_DEBUG
+	printf("DyDel = %u > entry %d\n", dyn, entry);
+#endif
+
+		return entry;
 	}
 
 	// Failure
-	return NULL;
-}
-
-/* Delete a value in an array
-   --------------------------
-   Return NULL.
-*/
-DyDel(arr, entry)
-unsigned int *arr; // char *arr[]
-int entry;
-{
-	// Free old data if needed
-	if(arr[entry])
-		free(arr[entry]);
-
-	// Update pointer and return NULL
-	return (arr[entry] = NULL);
+	return -1;
 }
 
 #ifdef DY_DEBUG
 
-/* Print array contents
-   --------------------
+/* Print string array contents
+   ---------------------------
 */
-DyPrint(arr, size)
-unsigned int *arr; // char *arr[]
-int size;
+DyPrint(dyn)
+DYNARR *dyn;
 {
 	int i;
 
-	for(i = 0; i < size; ++i) {
-		if(arr[i]) {
-			printf("%03d : '%s'\n", i, arr[i]);
-		}
-		else {
-			printf("%03d : NULL\n", i);
-		}
+	for(i = 0; i < DyLength(dyn); ++i) {
+		printf("%03d : '%s'\n", i, DyGet(dyn, i));
 	}
 }
 

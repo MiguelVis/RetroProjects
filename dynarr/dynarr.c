@@ -80,7 +80,7 @@
 //#include <ctype.h>
 //#include <fileio.h>
 //#include <fprintf.h>
-//#include <mem.h>
+#include <mem.h>
 #include <printf.h>
 //#include <qsort.h>
 //#include <rand.h>
@@ -113,30 +113,28 @@
 /* Project globals
    ---------------
 */
-unsigned int *arr; // char *arr[]
+DYNARR *dyn;
 
 /* Program entry
    -------------
 */
 main()
 {
-	if(!(arr = DyAlloc(MAX_ARR))) {
+	if(!(dyn = DyAlloc())) {
 		error("Not enough memory.");
 	}
 
-	DyAdd(arr, MAX_ARR, "This is the entry #0.");
-	DyAdd(arr, MAX_ARR, "This is the entry #1.");
-	DyAdd(arr, MAX_ARR, "This is the entry #2.");
-	DyAdd(arr, MAX_ARR, "This is the entry #3.");
-	DyAdd(arr, MAX_ARR, "This is the entry #4. Must follow 5 NULL lines.");
+	DyAddStr(dyn, "This is the entry #0.");
+	DyAddStr(dyn, "This is the entry #1.");
+	DyAddStr(dyn, "This is the entry #2.");
 
-	DyDel(arr, 1);
+	DyDel(dyn, 0);
 
-	Dyset(arr, "The above entry should be NULL. This is #2.", 2);
+	//Dyset(dyn, "The above entry should be NULL. This is #2.", 2);
 
-	DyPrint(arr, MAX_ARR);
+	DyPrint(dyn);
 
-	DyFree(arr, MAX_ARR);
+	DyFree(dyn);
 }
 
 /* Print error and exit
