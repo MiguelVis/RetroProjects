@@ -23,23 +23,34 @@
 	To compile with MESCC:
 
 	cc fontch
-	ccopt fontch.zsm
+	ccopt fontch
 	zsm fontch
 	hexcom fontch
 	gencom fontch.com xpcw.rsx
 
 	Changes:
 
-	23 Sep 2015 : 1st version.
+	23 Sep 2015 : v1.00 : 1st version.
+	17 Nov 2016 : v1.01 : Documented a bit.	Minor modifications in usage text.
 */
 
-/* MESCC libraries
+/* Defs. for MESCC
    ---------------
 */
-#include "mescc.h"
-#include "printf.h"
-#include "alloc.h"
-#include "fileio.h"
+#define CC_FREAD   // To include fread()
+#define CC_FWRITE  // To include fwrite()
+
+/* Standard MESCC library
+   ----------------------
+*/
+#include <mescc.h>
+
+/* Standard MESCC libraries
+   ------------------------
+*/
+#include <printf.h>
+#include <alloc.h>
+#include <fileio.h>
 
 /* XPCW libraries
    --------------
@@ -47,7 +58,13 @@
 #include "xpcw.h"
 #include "xchrdef.h"
 
-#define VERSION "1.00 / 23 Sep 2015\n\n(c) 2015 FloppySoftware"
+/* Project defs.
+   -------------
+*/
+#define APP_NAME    "PcwFont"
+#define APP_VERSION "v1.01 / 17 Nov 2016"
+#define APP_COPYRGT "(c) 2015-2016 FloppySoftware"
+#define APP_USAGE   "pcwfont -option filename"
 
 /* Main
    ----
@@ -97,19 +114,6 @@ unsigned int argv[]; /* char *argv[] */
 	/* Exit */
 
 	return 0;
-}
-
-/* Show usage and exit
-   -------------------
-*/
-usage()
-{
-	printf("PCWFONT v%s\n\n", VERSION);
-	printf("Usage: pcwfont -option arguments\n\n");
-	printf("Load font: -L fname\n");
-	printf("Save font: -S fname\n");
-
-	exit(0);
 }
 
 /* Change the internal font from a file
@@ -202,6 +206,20 @@ char *fn;
 	/* Free buffer */
 
 	free(buf);
+}
+
+/* Show usage and exit
+   -------------------
+*/
+usage()
+{
+	printf("%s %s - %s\n\n", APP_NAME, APP_VERSION, APP_COPYRGT);
+	printf("Manage Amstrad PCW fonts.\n\n");
+	printf("Usage: pcwfont -option filename\n\n");
+	printf("Load font: -L fname\n");
+	printf("Save font: -S fname\n");
+
+	exit(0);
 }
 
 /* Print error and exit

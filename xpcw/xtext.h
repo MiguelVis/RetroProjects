@@ -1,3 +1,19 @@
+/**
+ * @file
+ * @project XPCW
+ * @brief Text output library for XPCW.
+ *
+ * This library implements the text output functions for XPCW,
+ * the graphic library for the Amstrad PCW & MESCC.
+ *
+ * Needs the xpcw.h library.
+ *
+ * @author  Miguel Garcia / floppysoftware@gmail.com
+ * @version 1.02
+ * @date    14 Apr 2016
+ *
+ */
+
 /*	xtext.h
 
 	Graphic functions for the Amstrad PCW and MESCC.
@@ -24,18 +40,19 @@
 
 	21 Jul 2015 : v1.00 : First version.
 	17 Aug 2015 : v1.01 : Added PrintChRpt().
-
-	Notes:
-
-	Needs the xpcw.h library.
+	14 Apr 2016 : v1.02 : SetFont() - param is not BYTE *adr; it was char *adr.
+	                      Added source documentation for gdoc.
 */
 
-/* Set the current font
-   --------------------
-   NULL means the internal font.
-*/
+/**
+ * @fn     SetFont(BYTE *adr) : void
+ * @brief  Sets the font for text output.
+ *
+ * @param  adr - font address or NULL for the system font
+ * @return -
+ */
 SetFont(adr)
-char *adr;
+BYTE *adr;
 {
 	x_fun = X_SetFont;
 	x_par[0] = adr;
@@ -43,9 +60,13 @@ char *adr;
 	x_call();
 }
 
-/* Set the text attributes
-   -----------------------
-*/
+/**
+ * @fn     SetTextAtt(BYTE att) : void
+ * @brief  Sets the text attributes.
+ *
+ * @param  att - attributes
+ * @return -
+ */
 SetTextAtt(att)
 BYTE att;
 {
@@ -55,9 +76,14 @@ BYTE att;
 	x_call();
 }
 
-/* Set the text position
-   ---------------------
-*/
+/**
+ * @fn     SetTextRC(int row, int col) : void
+ * @brief  Sets the position on screen for text outputs.
+ *
+ * @param  row - screen row [0..31]
+ * @param  col - screen col [0..89]
+ * @return -
+ */
 SetTextRC(row, col)
 int row, col;
 {
@@ -68,9 +94,13 @@ int row, col;
 	x_call();
 }
 
-/* Print a character
-   -----------------
-*/
+/**
+ * @fn     PrintCh(int ch) : void
+ * @brief  Prints a character on screen.
+ *
+ * @param  ch - character code [0..255]
+ * @return -
+ */
 PrintCh(ch)
 int ch;
 {
@@ -80,10 +110,16 @@ int ch;
 	x_call();
 }
 
-/* Print a character n times
-   -------------------------
-   It's faster than using PrintCh() in a loop.
-*/
+/**
+ * @fn     PrintChRpt(int ch, int n) : void
+ * @brief  Prints n times a character on screen.
+ *
+ * It's faster than printing a character in a loop with PrintCh().
+ *
+ * @param  ch - character code [0..255]
+ * @param  n  - times
+ * @return -
+ */
 PrintChRpt(ch, n)
 int ch, n;
 {
@@ -94,6 +130,13 @@ int ch, n;
 	x_call();
 }
 
+/**
+ * @fn     PrintStr(BYTE *str) : void
+ * @brief  Prints a string on screen.
+ *
+ * @param  str - string
+ * @return -
+ */
 /* Print a string
    --------------
 */
@@ -103,4 +146,3 @@ BYTE *str;
 	while(*str)
 		PrintCh(*str++);
 }
-

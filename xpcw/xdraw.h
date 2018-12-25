@@ -23,6 +23,7 @@
 	Changes:
 
 	21 Jul 2015 : v1.00 : First version.
+	14 Oct 2018 : Added DrawVertLine() and DrawHorzLine(). DrawBox() uses these functions now.
 
 	Notes:
 
@@ -44,8 +45,8 @@ int mode;
 	x_mode = mode;
 }
 
-/* Draw a pixel in the current draw mode
-   -------------------------------------
+/* Draw a pixel in current mode
+   ----------------------------
 */
 DrawPixel(x, y)
 int x, y;
@@ -72,6 +73,36 @@ int x, y;
 	return x_call();
 }
 
+/* Draw vertical line of pixels in current mode
+   --------------------------------------------
+*/
+DrawVertLine(x, y, length)
+int x, y, length;
+{
+	x_fun = X_VertLine;
+	x_par[0] = x;
+	x_par[1] = y;
+	x_par[2] = x_mode;
+	x_par[3] = length;
+
+	x_call();
+}
+
+/* Draw horizontal line of pixels in current mode
+   ----------------------------------------------
+*/
+DrawHorzLine(x, y, length)
+int x, y, length;
+{
+	x_fun = X_HorzLine;
+	x_par[0] = x;
+	x_par[1] = y;
+	x_par[2] = x_mode;
+	x_par[3] = length;
+
+	x_call();
+}
+
 /* Draw a line in the current draw mode
    ------------------------------------
 */
@@ -79,30 +110,30 @@ DrawLine(x0, y0, x1, y1)
 int x0, y0, x1, y1;
 {
 	int dx, sx;
-	int dy, sy; 
+	int dy, sy;
 	int err, e2;
 
-	/**
+	/*
 	dx = abs(x1-x0); sx = x0<x1 ? 1 : -1;
 	dy = abs(y1-y0); sy = y0<y1 ? 1 : -1;
-	**/
+	*/
 
 	dx = x1-x0; if(dx<0) dx=-dx; sx = x0<x1 ? 1 : -1;
 	dy = y1-y0; if(dy<0) dy=-dy; sy = y0<y1 ? 1 : -1;
 
-	/**
+	/*
 	err = (dx>dy ? dx : -dy)/2;
-	**/
+	*/
 
 	err = (dx>dy ? dx : -dy) >> 1;
 
 	while(1) {
 		DrawPixel(x0,y0);
 
-		/**
+		/*
 		if(x0==x1 && y0==y1)
 			break;
-		**/
+		*/
 
 		if(x0==x1) {            /* This is faster in MESCC */
 			if(y0==y1)
@@ -143,7 +174,7 @@ int x0, y0, radius;
 		yh = y >> 1;  /* yh = y / 2 */
 
 
-		/**
+		/*
 		DrawPixel( x + x0,  y + y0);
 		DrawPixel( y + x0,  x + y0);
 		DrawPixel(-x + x0,  y + y0);
@@ -152,7 +183,7 @@ int x0, y0, radius;
 		DrawPixel(-y + x0, -x + y0);
 		DrawPixel( x + x0, -y + y0);
 		DrawPixel( y + x0, -x + y0);
-		**/
+		*/
 
 		DrawPixel( x + x0,  yh + y0);
 		DrawPixel( y + x0,  xh + y0);
@@ -181,13 +212,8 @@ int x0, y0, radius;
 DrawBox(x, y, width, height)
 int x, y, width, height;
 {
-	int tx, ty;
-
-	tx = x + width  - 1;      /* Last x */
-	ty = y + height - 1;      /* Last y */
-
-	DrawLine( x,  y, tx, y ); /* Top */
-	DrawLine(tx,  y, tx, ty); /* Right */
-	DrawLine(tx, ty,  x, ty); /* Bottom */
-	DrawLine( x, ty,  x, y ); /* Left */
+	DrawHorzLine(x, y, width);
+	DrawVertLine(x, y + 1, height - 2);
+	DrawVertLine(x + width - 1, y + 1, height - 2);
+	DrawHorzline(x, y + height - 1, width);
 }

@@ -1,3 +1,21 @@
+/**
+ * @file
+ * @project XPCW
+ * @brief Character definitions library for XPCW.
+ *
+ * This library implements the character definitions functions
+ * for XPCW, the graphic library for the Amstrad PCW & MESCC.
+ *
+ * Its functions deal with the PCW internal font under CP/M Plus.
+ *
+ * Needs the xpcw.h library.
+ *
+ * @author  Miguel Garcia / floppysoftware@gmail.com
+ * @version 1.00
+ * @date    12 Aug 2015
+ *
+ */
+
 /*	xchrdef.h
 
 	Graphic functions for the Amstrad PCW and MESCC.
@@ -23,15 +41,16 @@
 	Changes:
 
 	12 Aug 2015 : v1.00 : First version.
-
-	Notes:
-
-	Needs the xpcw.h library.
 */
 
-/* Set a character definition
-   --------------------------
-*/
+/**
+ * @fn     SetChrDef(int ch, BYTE *def) : void
+ * @brief  Sets the definition of a character.
+ *
+ * @param  ch  - character code: 0..255
+ * @param  def - definition (8 bytes)
+ * @return -
+ */
 SetChrDef(ch, def)
 int ch; BYTE *def;
 {
@@ -43,9 +62,14 @@ int ch; BYTE *def;
 	x_call();
 }
 
-/* Get a character definition
-   --------------------------
-*/
+/**
+ * @fn     GetChrDef(int ch, BYTE *def) : void
+ * @brief  Gets the definition of a character.
+ *
+ * @param  ch  - character code: 0..255
+ * @param  def - definition (8 bytes)
+ * @return -
+ */
 GetChrDef(ch, def)
 int ch; BYTE *def;
 {

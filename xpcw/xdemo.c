@@ -2,7 +2,7 @@
 
 	Demo for the Amstrad PCW graphical and keyboard functions.
 
-	Copyright (c) 2015 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -30,6 +30,7 @@
 	10 Aug 2015 : 1st version.
 	13 Aug 2015 : Added more text attributes. New PCW computer bitmap.
 	17 Aug 2015 : Added use of HelloRsx().
+	14 Oct 2018 : Added use of DrawVertLine() and DrawHorzLine();
 */
 
 /* Some defines for MESCC
@@ -58,8 +59,8 @@
 */
 ClrScr()
 {
-	putch(27); putch('H'); // Just a test #1
-	putch(27); putch('E'); // Just a test #2
+	putch(27); putch('H');
+	putch(27); putch('E');
 }
 
 /* Hide the cursor
@@ -133,14 +134,14 @@ main()
 
 	DrawBox(0, 0, 720, 248);
 
-	/* Draw two vertical lines to make more nice the border */
+	/* Draw two vertical lines to make the border nicer */
 
-	DrawLine(  1, 1,   1, 246);  /* Left */
-	DrawLine(718, 1, 718, 246);  /* Right */
+	DrawVertLine(  1, 1, 246);  /* Left */
+	DrawVertLine(718, 1, 246);  /* Right */
 
 	/* Print title */
 
-	SetTextRC(1, 2); PrintStr("Graphical functions for the Amstrad PCW.");
+	SetTextRC(1, 2); PrintStr("XPCW - Graphical functions for the Amstrad PCW.");
 
 	/* Some text effects */
 
@@ -180,6 +181,18 @@ main()
 	y = 11 * 8 + rad / 2;
 
 	DrawCircle(x, y, rad);
+
+	/* Draw a box */
+
+	SetTextRC(9, 16); PrintStr("Cross & box:");
+
+	x = 16 * 8;
+	y = 11 * 8;
+
+	DrawBox(x, y, 80, 40);
+
+	DrawLine(x, y, x + 80 - 1, y + 40 - 1);
+	DrawLine(x + 80 - 1, y, x, y + 40 - 1);
 
 	/* Wait the RETURN key */
 

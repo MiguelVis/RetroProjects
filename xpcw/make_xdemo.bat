@@ -1,9 +1,6 @@
 cpm cc xdemo
-cpm ccopt xdemo
+rem cpm ccopt xdemo
 cpm zsm xdemo
 cpm hextocom xdemo
-@echo.
-@echo ))) ------------------------- (((
-@echo )))         REMEMBER          (((
-@echo ))) gencom xdemo.com xpcw.rsx (((
-@echo ))) ------------------------- (((
+cpm rsx -A xdemo xpcw
+copy /Y xdemo.com ..\..\cpmio\

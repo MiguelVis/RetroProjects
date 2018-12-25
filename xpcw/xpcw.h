@@ -25,6 +25,7 @@
 	21 Jul 2015 : v1.00 : First version.
 	12 Aug 2015 : v1.01 : Added X_BUFSIZE and X_BUFCOLS.
 	17 Aug 2015 : v1.02 : Added HelloRsx() and X_SIGNATURE.
+	14 Oct 2018 : Added X_VertLine, X_HorzLine.
 
 	Notes:
 
@@ -49,6 +50,8 @@
 #define X_SetTxRC   12
 #define X_PrintCh   13
 #define X_PrintRpt  14
+#define X_VertLine  15
+#define X_HorzLine  16
 
 /* Draw modes
    ----------

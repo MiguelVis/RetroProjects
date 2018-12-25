@@ -17,6 +17,7 @@
 ; 17 Aug 2015 : v1.02 : Added SIGNATURE
 ; 27 Sep 2015 : v1.03 : Solved bug in CalcBmpRC
 ; 10 Oct 2016 : v1.04 : Ensure character # is 0..255 in OutRpt.
+; 14 Oct 2018 : v1.05 : Added VertLine and HorzLine.
 ;
 ; Call format:
 ;
@@ -47,7 +48,7 @@ RAMScreen  equ 05930h  ; Screen data address
 
 BDOS_RSX   equ 60      ; Bdos function to call an RSX
 RSX_FUN	   equ 9       ; RSX subfunction (this RSX)
-FUNCTIONS  equ 15      ; Number of available subfunctions
+FUNCTIONS  equ 17      ; Number of available subfunctions
 
 BUFSIZE    equ 720     ; Buffer size (90 characters * 8 bytes each)
 
@@ -174,6 +175,8 @@ functable:          ; Subfunctions table
 	defw SetRC      ; #12
 	defw OutCh      ; #13
 	defw OutRpt     ; #14
+	defw VertLine   ; #15
+	defw HorzLine   ; #16
 
 ; ------------------------------
 ; Checks if the RSX is in memory
@@ -759,6 +762,78 @@ OutRpt5:
 	call TpaBanks
 
 	ret
+
+; ----------------------------
+; Draw vertical line of pixels
+;
+; Entry: x, y, mode, length
+; Exit:  -
+; ----------------------------
+
+VertLine:
+	call ScrBanks
+	call VertLn0
+	jp   TpaBanks
+
+VertLn0:
+	call CalcXY
+VertLn1:
+	call SetPix0
+	ld   de,(par4)
+	dec  de
+	ld   a,d
+	or   e
+	ret  z
+	ld   (par4),de
+	ld   de,(par2)
+	inc  de
+	ld   (par2),de
+	ld   a,e
+	and  00000111b
+	or   a
+	jr   z,VertLn0
+	inc  hl
+	ld   a,c
+	jr   VertLn1
+
+; ------------------------------
+; Draw horizontal line of pixels
+;
+; Entry: x, y, mode, length
+; Exit:  -
+; ------------------------------
+
+HorzLine:
+	call ScrBanks
+	call HorzLn0
+	jp   TpaBanks
+
+HorzLn0:
+	call CalcXY
+HorzLn1:
+	call SetPix0
+	ld   de,(par4)
+	dec  de
+	ld   a,d
+	or   e
+	ret  z
+	ld   (par4),de
+	ld   de,(par1)
+	inc  de
+	ld   (par1),de
+	ld   a,e
+	and  00000111b
+	or   a
+	jr   z,HorzLn2
+	rr   c
+	ld   a,c
+	jr   HorzLn1
+
+HorzLn2:
+	ld   de,8
+	add  hl,de
+	ld   a,10000000b
+	jr   HorzLn1
 
 ; -------
 ; Helpers
