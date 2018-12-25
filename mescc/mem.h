@@ -10,8 +10,9 @@
  *  - 25 Oct 2000 : Last revision.
  *  - 16 Apr 2007 : GPL'd.
  *  - 25 Aug 2016 : Documented. GPL v3.
+ *  - 25 Dec 2018 : Optimize memset() for speed.
  *
- * Copyright (c) 1999-2016 Miguel I. Garcia Lopez / FloppySoftware.
+ * Copyright (c) 1999-2018 Miguel I. Garcia Lopez / FloppySoftware.
  *
  * Licensed under the GNU General Public License v3.
  *
@@ -32,26 +33,31 @@
  */
 #asm
 
-memset:	POP	AF
-	POP	BC
-	POP	DE
-	POP	HL
-	PUSH	HL
-	PUSH	DE
-	PUSH	BC
-	PUSH	AF
-	PUSH	HL
-memset2:
-	LD	A,B
-	OR	C
-	JR	Z,memset3
-	LD	(HL),E
-	INC	HL
-	DEC	BC
-	JR	memset2
-memset3:
-	POP	HL
-	RET
+memset:
+    POP  AF
+    POP  BC
+    POP  DE
+    POP  HL
+    PUSH HL
+    PUSH DE
+    PUSH BC
+    PUSH AF
+	
+    LD  A,B
+    OR  C
+    RET Z
+	
+    PUSH HL
+	
+    LD  (HL),E
+    LD  D,H
+    LD  E,L
+    INC DE
+    DEC BC
+    LDIR
+
+    POP HL
+    RET
 #endasm
 
 /**
@@ -65,22 +71,22 @@ memset3:
 #asm
 
 memcpy:
-	POP	AF
-	POP	BC
-	POP	HL
-	POP	DE
-	PUSH	DE
-	PUSH	HL
-	PUSH	BC
-	PUSH	AF
-	PUSH	DE
-	LD	A,B
-	OR	C
-	JR	Z,memcpy2
-	LDIR
+    POP  AF
+    POP  BC
+    POP  HL
+    POP  DE
+    PUSH DE
+    PUSH HL
+    PUSH BC
+    PUSH AF
+    PUSH DE
+    LD A,B
+    OR C
+    JR Z,memcpy2
+    LDIR
 memcpy2
-	POP	HL
-	RET
+    POP HL
+    RET
 #endasm
 
 /**
@@ -94,38 +100,38 @@ memcpy2
 #asm
 
 memcmp
-	POP	AF
-	POP	BC
-	POP	HL
-	POP	DE
-	PUSH	DE
-	PUSH	HL
-	PUSH	BC
-	PUSH	AF
+    POP  AF
+    POP  BC
+    POP  HL
+    POP  DE
+    PUSH DE
+    PUSH HL
+    PUSH BC
+    PUSH AF
 
 memcmp1
-	LD	A,C
-	OR	B
-	JR	Z,memcmp2
+    LD  A,C
+    OR  B
+    JR  Z,memcmp2
 
-	DEC	BC
+    DEC BC
 
-	LD	A,(DE)
-	CP	(HL)
-	INC	DE
-	INC	HL
-	JR	Z,memcmp1	
+    LD  A,(DE)
+    CP  (HL)
+    INC DE
+    INC HL
+    JR  Z,memcmp1
 
 memcmp2
-	LD	HL,0
-	RET	Z
-	JR	NC,memcmp3
-	DEC	HL
-	RET
+    LD  HL,0
+    RET Z
+    JR  NC,memcmp3
+    DEC HL
+    RET
 
 memcmp3
-	INC	L
-	RET
+    INC L
+    RET
 #endasm
 
 #endif
