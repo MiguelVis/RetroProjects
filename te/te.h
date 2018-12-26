@@ -35,6 +35,7 @@
 	24 Jan 2018 : v1.09
 	20 Feb 2018 : v1.10 : Defines for copyright and macros.
 	22 Feb 2018 : v1.11
+	26 Dec 2018 : v1.12 : Added MAC_SEP.
 
 
 	Notes:
@@ -46,9 +47,9 @@
    -------
 */
 #ifdef OS_SAMARUX
-#define VERSION "v1.11 / 22 Feb 2018 for SamaruX"  /* Program version and date */
+#define VERSION "v1.12 / 26 Dec 2018 for SamaruX"  /* Program version and date */
 #else
-#define VERSION "v1.11 / 22 Feb 2018 for CP/M"  /* Program version and date */
+#define VERSION "v1.12 / 26 Dec 2018 for CP/M"  /* Program version and date */
 #endif
 
 /* Copyright
@@ -69,6 +70,7 @@
 
 #define MAC_START   '{'  /* Left delimiter for symbol names in macros */
 #define MAC_END     '}'  /* Right delimiter for symbol names in macros */
+#define MAC_SEP     ':'  /* Separator between symbol names and # of repeats */
 #define MAC_ESCAPE  '\\' /* For escaped characters in macros */
 #define MAC_ERROR   '!'  /* Character to alert about errors */
 #define MAC_SYM_MAX  9   /* Max. length of macro symbol name in characters + '\0' */

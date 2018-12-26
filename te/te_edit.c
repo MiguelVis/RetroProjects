@@ -1,4 +1,4 @@
-/*	te_macro.c
+/*	te_edit.c
 
 	Text editor.
 
@@ -25,6 +25,7 @@
 	30 Jan 2018 : Extracted from te.c.
 	04 Feb 2018 : Support for macros. Go to line #.
 	22 Feb 2018 : Check for buffer changes.
+	26 Dec 2018 : Use TAB_COLS instead of 8.
 */
 
 /* Edit current line
@@ -103,22 +104,12 @@ BfEdit()
 			CrtLocate(BOX_ROW + box_shr, box_shc);
 		}
 
-		/* Get character: forced entry or keyboard */
-
-
-
-		if(!(ch = ForceGetCh()))
-
-		{
-			ch = getchr();
-		}
-
-		/* Check character and do action */
+		/* Get character and do action */
 
 		/* Note: This function does preliminary checks in some
 		   keys for Loop(), to avoid wasted time. */
 
-		switch(ch)
+		switch((ch = ForceGetCh()))
 		{
 			case K_LEFT :    /* Move one character to the left ----------- */
 				if(box_shc)
@@ -253,7 +244,7 @@ BfEdit()
 					run = 0;
 				break;
 			case K_TAB :    /* Insert TAB (spaces) ------------------ */
-				i = 8 - box_shc % TAB_COLS;
+				i = TAB_COLS - box_shc % TAB_COLS;
 
 				while(i--)
 				{
@@ -440,15 +431,11 @@ char *s;
 	return 0;
 }
 
-/* Return character from forced entry buffer
-   -----------------------------------------
-   Return Z if no characters left.
+/* Return character from forced entry buffer, or keyboard
+   ------------------------------------------------------
 */
 ForceGetCh()
 {
-#ifdef K_MACRO
-	int ch;
-#endif
 	if(fe_now)
 	{
 		--fe_now;
@@ -458,21 +445,17 @@ ForceGetCh()
 
 		return fe_dat[fe_get++];
 	}
-
+	
 #ifdef K_MACRO
-
-	if((ch = MacroGetCh()))
-	{
-		return ch;
-	}
-	else if(fe_now)
+	MacroGet();
+	
+	if(fe_now)
 	{
 		return ForceGetCh();
-	}
-
+	}	
 #endif
 
-	return '\0';
+	return getchr();
 }
 
 

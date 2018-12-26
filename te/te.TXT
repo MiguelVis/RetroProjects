@@ -3,7 +3,7 @@
 +----| Text Editor |
      +-------------+
 
-v1.11 / 22 Feb 2018
+v1.12 / 26 Dec 2018
 
 (c) 2015-2018 Miguel Garcia / FloppySoftware
 
@@ -169,7 +169,7 @@ Or, being a programmer, you could create a gdoc block macro to document
 your own C functions.
 
 Each time you want to run a macro, just press the corresponding key
-for the Macro action, write the filename you choose when you saved it
+for the Macro action, enter the filename you choose when you saved it
 to disk, and press the key for the Intro action. That's all.
 
 There are some special symbols you can use in your macros:
@@ -183,6 +183,10 @@ There are some special symbols you can use in your macros:
         {filename}
 
 As you can see, they are self explanatory.
+
+Additionally, you can repeat a symbol as in:
+
+        {up:12} 
 
 Take into account that line endings in the macro are not translated to Intro
 actions. Use {intro} for that.
@@ -247,4 +251,4 @@ About this file
 
 Of course, this text file has been created and edited with te.
 
-
+

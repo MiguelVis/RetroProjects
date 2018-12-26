@@ -1,4 +1,4 @@
-/*	te_macro.c
+/*	te_error.c
 
 	Text editor.
 

@@ -24,6 +24,7 @@
 
 	30 Jan 2018 : Extracted from te.c.
 	20 Feb 2018 : Disable code for macros from strings, for now.
+	26 Dec 2018 : Allow # of repeats in macros - ie {up:12}. Rename MacroGetCh() to MacroGet().
 */
 
 /* Run a macro from file
@@ -78,10 +79,8 @@ MacroGetRaw()
 		{
 			return ch;
 		}
-		else
-		{
-			MacroStop();
-		}
+
+		MacroStop();
 	}
 	/*
 	else if(mac_str)
@@ -90,10 +89,8 @@ MacroGetRaw()
 		{
 			return *mac_str++;
 		}
-		else
-		{
-			MacroStop();
-		}
+
+		MacroStop();
 	}
 	*/
 
@@ -101,12 +98,12 @@ MacroGetRaw()
 	return '\0';
 }
 
-/* Read coocked character for macro input
-   --------------------------------------
+/* Process a macro input unit
+   --------------------------
 */
-MacroGetCh()
+MacroGet()
 {
-	int i, ch;
+	int i, n, ch;
 	char sym[MAC_SYM_MAX];
 
 	/* Continue if there is a character available */
@@ -118,79 +115,102 @@ MacroGetCh()
 		{
 			if((ch = MacroGetRaw()))
 			{
-				return ch;
+				ForceCh(ch);
+			}
+			else
+			{
+				/* Error: missing escaped character */
+				ForceCh(MAC_ERROR);
+				
+				MacroStop();
 			}
 
-			/* Error: bad escaped character */
-			MacroStop();
-
-			return MAC_ERROR;
+			return;
 		}
 
 		/* Return character if it's not the start of a symbol */
 		if(ch != MAC_START)
 		{
-			return ch;
+			ForceCh(ch);
+			return;
 		}
 
-		/* Get symbol name like {name} --> "name" */
-
-		/*
-		for(i = 0; i < MAC_SYM_MAX - 1; ++i)
-		{
-			ch = MacroGetRaw();
-
-			if(ch && ch != MAC_END)
-			{
-				sym[i] = tolower(ch);
-			}
-			else
-			{
-				break;
-			}
-		}
-		*/
-
+		/* Get symbol name like {up} or {up:12} --> "up" */
 		for(i = 0; isalpha(ch = MacroGetRaw()) && i < MAC_SYM_MAX - 1; ++i)
 		{
 			sym[i] = tolower(ch);
 		}
 
-		if(i && ch == MAC_END)
+		if(i)
 		{
-			/* End of string */
+			/* End of symbol name */
 			sym[i] = '\0';
 
-			/* Find symbol name and return its associated character */
-			if     (!strcmp(sym, "up"))     return K_UP;
-			else if(!strcmp(sym, "down"))   return K_DOWN;
-			else if(!strcmp(sym, "left"))   return K_LEFT;
-			else if(!strcmp(sym, "right"))  return K_RIGHT;
-			else if(!strcmp(sym, "begin"))  return K_BEGIN;
-			else if(!strcmp(sym, "end"))    return K_END;
-			else if(!strcmp(sym, "top"))    return K_TOP;
-			else if(!strcmp(sym, "bottom")) return K_BOTTOM;
-			else if(!strcmp(sym, "intro"))  return K_INTRO;
-			else if(!strcmp(sym, "tab"))    return K_TAB;
-			else if(!strcmp(sym, "cut"))    return K_CUT;
-			else if(!strcmp(sym, "copy"))   return K_COPY;
-			else if(!strcmp(sym, "paste"))  return K_PASTE;
-			else if(!strcmp(sym, "filename"))
+			/* Get # of repeats if any - ie: {up:12} --> 12 */
+			if(ch == MAC_SEP)
 			{
-				ForceStr(CurrentFile());
+				n = 0;
 
-				return '\0';
+				while(isdigit(ch = MacroGetRaw()))
+					n = n * 10 + ch - '0';
+
+				if(n < 0 || n > FORCED_MAX)
+				{
+					n = 0;
+				}
+			}
+			else
+			{
+				n = 1;
+			}
+
+			if(n && ch == MAC_END)
+			{
+				/* Do command action */
+				ch = 0;
+
+				if     (!strcmp(sym, "up"))     ch = K_UP;
+				else if(!strcmp(sym, "down"))   ch = K_DOWN;
+				else if(!strcmp(sym, "left"))   ch = K_LEFT;
+				else if(!strcmp(sym, "right"))  ch = K_RIGHT;
+				else if(!strcmp(sym, "begin"))  ch = K_BEGIN;
+				else if(!strcmp(sym, "end"))    ch = K_END;
+				else if(!strcmp(sym, "top"))    ch = K_TOP;
+				else if(!strcmp(sym, "bottom")) ch = K_BOTTOM;
+				else if(!strcmp(sym, "intro"))  ch = K_INTRO;
+				else if(!strcmp(sym, "tab"))    ch = K_TAB;
+				else if(!strcmp(sym, "cut"))    ch = K_CUT;
+				else if(!strcmp(sym, "copy"))   ch = K_COPY;
+				else if(!strcmp(sym, "paste"))  ch = K_PASTE;
+
+				if(ch)
+				{
+					while(n--)
+					{
+						if(ForceCh(ch))
+							break;
+					}
+
+					return;
+				}
+
+				/* Special commands */
+				if(!strcmp(sym, "filename"))
+				{
+					while(n--)
+						ForceStr(CurrentFile());
+
+					return;
+				}
 			}
 		}
 
-		/* Error: symbol name not found, too large, or EOF */
+		/* Error: symbol name not found, bad formed, too large, bad # of repeats */
 		MacroStop();
 
-		return MAC_ERROR;
+		ForceCh(MAC_ERROR);
+		return;
 	}
-
-	/* No character available */
-	return '\0';
 }
 
 
