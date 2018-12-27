@@ -32,7 +32,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 See the copying file for more details.
 
-Last update: 23:08 14/02/2018.
+Last update: 27 Dec 2018.
 
 
 OVERVIEW
@@ -656,14 +656,15 @@ only in text mode.
 On binary mode, no conversion is done.
 
 
-#define CC_STDIO        to support stdin, stdout & stderr.
-#define CC_FCX          to support FCX (user number in file names, see cpm.h).
-#define CC_FCX_DIR      to support named directories in file names (see cpm.h).
-#define CC_FOPEN_A      to include "a" and "ab" modes for fopen().
-#define CC_FREAD        to include fread().
-#define CC_FWRITE       to include fwrite().
-#define CC_FGETS        to include fgets().
-#define CC_FPUTS	to include fputs().
+#define CC_STDIO     to support stdin, stdout & stderr.
+#define CC_FCX       to support FCX (user number in file names, see cpm.h).
+#define CC_FCX_DIR   to support named directories in file names (see cpm.h).
+#define CC_FOPEN_A   to include "a" and "ab" modes for fopen().
+#define CC_FREAD     to include fread().
+#define CC_FWRITE    to include fwrite().
+#define CC_FGETS     to include fgets().
+#define CC_FPUTS     to include fputs().
+#define CC_FSIZE     to include fsize().
 
 FILE *fopen(char *fname, char *fmode) [S]
 
@@ -707,16 +708,20 @@ char *fgets(char *str, int size, FILE *fp) [S]
 
 int remove(char *fname) [S]
 
-	Delete file. Return nonzero if errors.
+	Delete file. Return nonzero on errors.
 
 int rename(char *oldname, char *newname) [S]
 
-	Rename file. Return nonzero if errors.
+	Rename file. Return nonzero on errors.
 
 int fputs(char *str, FILE *fp) [S]
 
-	Writes a string. Returns a non-negative number on success (the
+	Write a string. Return a non-negative number on success (the
 	number of characters written), else EOF.
+	
+int fsize(char *fname)
+
+	Get the file size in units of 128 bytes. Return -1 on errors.
 
 
 fprintf.h

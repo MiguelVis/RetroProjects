@@ -21,6 +21,7 @@
  *  - #define CC_FWRITE       To include fwrite().
  *  - #define CC_FGETS        To include fgets().
  *  - #define CC_FPUTS        To include fputs().
+ *  - #define CC_FSIZE        To include fsize().
  *
  * Revisions:
  *  - 19 Mar 2001 : Last revision.
@@ -51,6 +52,7 @@
  *  - 15 Dec 2016 : Optimize NULL comparisons, fgetc(), fputc().
  *  - 18 Feb 2018 : Document public macros. Rename internal macros and include them in cleaning. Rework remove() and rename(). Added FOPEN_MAX.
  *  - 03 May 2018 : Make CC_FPUTS effective (use #ifdef instead of #if).
+ *  - 27 Dec 2018 : Added fsize().
  *
  * Copyright (c) 1999-2018 Miguel I. Garcia Lopez / FloppySoftware.
  *
@@ -726,8 +728,51 @@ char *oldname, *newname;
 #undef _REN_BUF_SIZE
 #undef _REN_OFFSET
 
-// int xfnamb(char *fn) : check if fn is an ambiguous filename -- return 1 if true, else 0.
+#ifdef CC_FSIZE
 
+#ifdef CC_FCX
+#define _FSZ_RR 34
+#else
+#define _FSZ_RR 33
+#endif
+
+/**
+ * @fn     int fsize(char *fname)
+ * @brief  Get the file size in units of 128 bytes.
+ * @param  fname - filename
+ * @return file size on success, else -1
+ */
+fsize(fname)
+char *fname;
+{
+	BYTE *fc;
+	int recs;
+
+	recs = -1; /* Error by default */
+
+	if((fc = malloc(_FCB_SIZE)))
+	{
+		if(!_MAKEFCB(fname, fc))
+		{
+			bdos_hl(BF_DMA, 0x80);
+
+			if(_FILEOP(BF_FSIZE, fc) != 0xFF)
+			{
+				recs = fc[_FSZ_RR] + (fc[_FSZ_RR + 1] << 8);
+			}
+		}
+
+		free(fc);
+	}
+
+	return recs;
+}
+
+#undef _FSZ_RR
+
+#endif
+
+// int xfnamb(char *fn) : check if fn is an ambiguous filename -- return 1 if true, else 0.
 xfnamb(fn)
 char *fn;
 {
@@ -748,7 +793,6 @@ char *fn;
 }
 
 // Cleaning
-
 #undef _XF_READ
 #undef _XF_WRITE
 #undef _XF_BIN
