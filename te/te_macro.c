@@ -4,7 +4,7 @@
 
 	Macros.
 
-	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2019 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -25,6 +25,7 @@
 	30 Jan 2018 : Extracted from te.c.
 	20 Feb 2018 : Disable code for macros from strings, for now.
 	26 Dec 2018 : Allow # of repeats in macros - ie {up:12}. Rename MacroGetCh() to MacroGet().
+	29 Dec 2018 : Added MacroRunning().
 */
 
 /* Run a macro from file
@@ -50,6 +51,14 @@ char *s;
 }
 */
 
+/* Tell if a macro is running
+   --------------------------
+*/
+MacroRunning()
+{
+	return mac_fp != NULL /* || mac_str != NULL */;
+}
+
 /* Stop a macro
    ------------
 */
@@ -61,6 +70,9 @@ MacroStop()
 	}
 
 	mac_fp = /*mac_str =*/ NULL;
+
+	/* Flag end of input */
+	//ForceCh(K_EOF);
 }
 
 /* Read raw character from macro input
@@ -109,7 +121,6 @@ MacroGet()
 	/* Continue if there is a character available */
 	if((ch = MacroGetRaw()))
 	{
-
 		/* Check for escaped characters */
 		if(ch == MAC_ESCAPE)
 		{
@@ -120,8 +131,8 @@ MacroGet()
 			else
 			{
 				/* Error: missing escaped character */
-				ForceCh(MAC_ERROR);
-				
+				ErrLine("Bad escape sequence.");
+
 				MacroStop();
 			}
 
@@ -169,19 +180,26 @@ MacroGet()
 				/* Do command action */
 				ch = 0;
 
-				if     (!strcmp(sym, "up"))     ch = K_UP;
-				else if(!strcmp(sym, "down"))   ch = K_DOWN;
-				else if(!strcmp(sym, "left"))   ch = K_LEFT;
-				else if(!strcmp(sym, "right"))  ch = K_RIGHT;
-				else if(!strcmp(sym, "begin"))  ch = K_BEGIN;
-				else if(!strcmp(sym, "end"))    ch = K_END;
-				else if(!strcmp(sym, "top"))    ch = K_TOP;
-				else if(!strcmp(sym, "bottom")) ch = K_BOTTOM;
-				else if(!strcmp(sym, "intro"))  ch = K_INTRO;
-				else if(!strcmp(sym, "tab"))    ch = K_TAB;
-				else if(!strcmp(sym, "cut"))    ch = K_CUT;
-				else if(!strcmp(sym, "copy"))   ch = K_COPY;
-				else if(!strcmp(sym, "paste"))  ch = K_PASTE;
+				if     (MatchStr(sym, "up"))       ch = K_UP;
+				else if(MatchStr(sym, "down"))     ch = K_DOWN;
+				else if(MatchStr(sym, "left"))     ch = K_LEFT;
+				else if(MatchStr(sym, "right"))    ch = K_RIGHT;
+				else if(MatchStr(sym, "begin"))    ch = K_BEGIN;
+				else if(MatchStr(sym, "end"))      ch = K_END;
+				else if(MatchStr(sym, "top"))      ch = K_TOP;
+				else if(MatchStr(sym, "bottom"))   ch = K_BOTTOM;
+				else if(MatchStr(sym, "intro"))    ch = K_INTRO;
+				else if(MatchStr(sym, "tab"))      ch = K_TAB;
+				else if(MatchStr(sym, "cut"))      ch = K_CUT;
+				else if(MatchStr(sym, "copy"))     ch = K_COPY;
+				else if(MatchStr(sym, "paste"))    ch = K_PASTE;
+				else if(MatchStr(sym, "delete"))   ch = K_DELETE;
+				else if(MatchStr(sym, "clrclip"))  ch = K_CLRCLP;
+
+#if OPT_BLOCK
+				else if(MatchStr(sym, "blkstart")) ch = K_BLK_START;
+				else if(MatchStr(sym, "blkend"))   ch = K_BLK_END;
+#endif
 
 				if(ch)
 				{
@@ -195,7 +213,7 @@ MacroGet()
 				}
 
 				/* Special commands */
-				if(!strcmp(sym, "filename"))
+				if(MatchStr(sym, "filename"))
 				{
 					while(n--)
 						ForceStr(CurrentFile());
@@ -206,10 +224,9 @@ MacroGet()
 		}
 
 		/* Error: symbol name not found, bad formed, too large, bad # of repeats */
-		MacroStop();
+		ErrLine("Bad symbol.");
 
-		ForceCh(MAC_ERROR);
-		return;
+		MacroStop();
 	}
 }
 

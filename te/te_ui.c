@@ -4,7 +4,7 @@
 
 	User interface.
 
-	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2019 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -24,6 +24,10 @@
 
 	30 Jan 2018 : Extracted from te.c.
 	22 Feb 2018 : Ask for confirmation only if changes were not saved. INTRO equals Y on confirmation.
+	16 Jan 2019 : Modified Refresh() to show block selection. Added RefreshBlock().
+	19 Jan 2019 : Added ShowFilename().
+	23 Jan 2019 : Refactorized MenuHelp().
+	30 Jan 2019 : Added putchrx().
 */
 
 /* Read character from keyboard
@@ -32,7 +36,7 @@
 /* **************************** SEE #define
 getchr()
 {
-	return CrtIn();
+	return GetKey();
 }
 ******************************* */
 
@@ -47,6 +51,17 @@ int ch;
 }
 ******************************* */
 
+/* Print character on screen X times
+   ---------------------------------
+*/
+putchrx(ch, n)
+int ch, n;
+{
+	while(n--) {
+		putchr(ch);
+	}
+}
+
 /* Print string on screen
    ----------------------
 */
@@ -54,7 +69,7 @@ putstr(s)
 char *s;
 {
 	while(*s)
-		CrtOut(*s++);
+		putchr(*s++);
 }
 
 /* Print string + '\n' on screen
@@ -63,7 +78,7 @@ char *s;
 putln(s)
 char *s;
 {
-	putstr(s); CrtOut('\n');
+	putstr(s); putchr('\n');
 }
 
 /* Print number on screen
@@ -87,27 +102,21 @@ Layout()
 	int i, k;
 
 	/* Clear screen */
-
 	CrtClear();
 
 	/* Header */
-
 	putln("te:");
 
 	/* Information layout */
-
 	CrtLocate(PS_ROW, PS_INF); putstr(PS_TXT);
 
 	/* Max. # of lines */
-
 	CrtLocate(PS_ROW, PS_LIN_MAX); putint("%04d", MAX_LINES);
 
 	/* # of columns */
-
 	CrtLocate(PS_ROW, PS_COL_MAX); putint("%02d", CRT_COLS);
 
 	/* Ruler */
-
 	CrtLocate(BOX_ROW - 1, 0);
 
 	for(i = k = 0; i < CRT_COLS; ++i)
@@ -124,11 +133,28 @@ Layout()
 	}
 
 	/* System line separator */
-
 	CrtLocate(CRT_ROWS - 2, 0);
 
+	/*
 	for(i = CRT_COLS; i; --i)
 		putchr(SYS_LINE_SEP);
+	*/
+
+	putchrx(SYS_LINE_SEP, CRT_COLS);
+}
+
+/* Print filename
+   --------------
+*/
+ShowFilename()
+{
+	char *s;
+
+	CrtLocate(PS_ROW, PS_FNAME);
+
+	putstr((s = CurrentFile()));
+
+	putchrx(' ', FILENAME_MAX - strlen(s) - 1);
 }
 
 /* Print message on system line
@@ -140,12 +166,10 @@ char *s;
 {
 	CrtClearLine(CRT_ROWS - 1);
 
-	//if(s != NULL)
 	if(s)
 		putstr(s);
 
 	/* Set flag for Loop() */
-
 	sysln = 1;
 }
 
@@ -159,11 +183,10 @@ char *s;
 {
 	SysLine(s);
 
-	//if(s != NULL)
 	if(s)
 		putchr(' ');
 
-	putstr("Press ANY key, please: "); getchr();
+	putstr("Press ANY key: "); getchr();
 
 	SysLine(NULL);
 }
@@ -180,11 +203,10 @@ char *s;
 
 	SysLine(s);
 
-	//if(s != NULL)
 	if(s)
 		putchr(' ');
 
-	putstr("Please, confirm Y/N: ");
+	putstr("Confirm Y/N: ");
 
 	ch = toupper(getchr());
 
@@ -203,9 +225,9 @@ char *what, *buf; int maxlen;
 	int ch;
 
 	SysLine(what);
-	putstr(" (or [");
+	putstr(" ([");
 	putstr(CRT_ESC_KEY);
-	putstr("] to cancel): ");
+	putstr("] = cancel): ");
 
 	ch = ReadLine(buf, maxlen);
 
@@ -233,7 +255,7 @@ char *fn;
 */
 SysLineChanges()
 {
-	return SysLineConf("The changes will be lost.");
+	return SysLineConf("The changes will be lost!");
 }
 
 /* Read simple line
@@ -278,7 +300,7 @@ int width;
 */
 CurrentFile()
 {
-	return (file_name[0] ? file_name : "-no name-");
+	return (file_name[0] ? file_name : "-");
 }
 
 /* Clear the editor box
@@ -303,6 +325,45 @@ int row; char *txt;
 	putstr(txt);
 }
 
+#if OPT_BLOCK
+
+/* Refresh block selection in editor box
+   -------------------------------------
+   Set 'sel' to NZ for reverse print, else Z for normal print.
+*/
+RefreshBlock(row, sel)
+int row, sel;
+{
+	int i, line;
+
+	line = GetFirstLine() + row;
+
+	for(i = row; i < box_rows; ++i) {
+		if(line >= blk_start) {
+			if(line <= blk_end) {
+				CrtClearLine(BOX_ROW + i);
+
+				if(sel) {
+					CrtReverse(1);
+				}
+
+				putstr(lp_arr[line]); putchr(' ');
+
+				if(sel) {
+					CrtReverse(0);
+				}
+			}
+			else {
+				break;
+			}
+		}
+
+		++line;
+	}
+}
+
+#endif
+
 /* Refresh editor box
    ------------------
    Starting from box row 'row', line 'line'.
@@ -312,12 +373,46 @@ int row, line;
 {
 	int i;
 
+#if OPT_BLOCK
+
+	int blk, sel;
+
+	blk = (blk_count && blk_start <= GetLastLine() && blk_end >= GetFirstLine());
+	sel = 0;
+
+#endif
+
 	for(i = row; i < box_rows; ++i)
 	{
 		CrtClearLine(BOX_ROW + i);
 
-		if(line < lp_now)
+		if(line < lp_now) {
+
+#if OPT_BLOCK
+
+			if(blk) {
+				if(line >= blk_start) {
+					if(line <= blk_end) {
+						CrtReverse((sel = 1));
+					}
+				}
+			}
+
+#endif
+
 			putstr(lp_arr[line++]);
+
+#if OPT_BLOCK
+
+			if(sel) {
+				putchr(' ');
+
+				CrtReverse((sel = 0));
+			}
+
+#endif
+
+		}
 	}
 }
 
@@ -338,15 +433,12 @@ Menu()
 	int run, row, stay, menu, ask;
 
 	/* Setup some things */
-
 	run = stay = menu = ask = 1;
 
 	/* Loop */
-
 	while(run)
 	{
 		/* Show the menu */
-
 		if(menu)
 		{
 			row = BOX_ROW + 1;
@@ -367,28 +459,26 @@ Menu()
 		}
 
 		/* Ask for option */
-
 		if(ask)
 		{
-			SysLine("Enter option, please (or [");
+			SysLine("Enter option ([");
 			putstr(CRT_ESC_KEY);
-			putstr("] to return): ");
+			putstr("] = return): ");
 		}
 		else
 		{
-			++ask;
+			ask = 1;
 		}
 
 		/* Do it */
-
 		switch(toupper(getchr()))
 		{
 			case 'N'   : run = MenuNew(); break;
 			case 'O'   : run = MenuOpen(); break;
 			case 'S'   : run = MenuSave(); break;
 			case 'A'   : run = MenuSaveAs(); break;
-			case 'B'   : MenuAbout(); ++menu; break;
-			case 'H'   : MenuHelp(); ++menu; break;
+			case 'B'   : MenuAbout(); menu = 1; break;
+			case 'H'   : MenuHelp(); menu = 1; break;
 			case 'X'   : run = stay = MenuExit(); break;
 			case K_ESC : run = 0; break;
 			default    : ask = 0; break;
@@ -396,13 +486,11 @@ Menu()
 	}
 
 	/* Clear editor box */
-
 	ClearBox();
 
 	SysLine(NULL);
 
 	/* Return NZ to quit the program */
-
 	return !stay;
 }
 
@@ -412,7 +500,6 @@ Menu()
 */
 MenuNew()
 {
-	//if(lp_now > 1 || strlen(lp_arr[0]))
 	if(lp_chg)
 	{
 		if(!SysLineChanges())
@@ -432,7 +519,6 @@ MenuOpen()
 {
 	char fn[FILENAME_MAX];
 
-	//if(lp_now > 1 || strlen(lp_arr[0]))
 	if(lp_chg)
 	{
 		if(!SysLineChanges())
@@ -492,44 +578,101 @@ MenuSaveAs()
 /* Menu option: Help
    -----------------
 */
+/*
 MenuHelp()
 {
+	int i, k;
+	char *s;
+
 	ClearBox();
 
 	CrtLocate(BOX_ROW + 1, 0);
 
 	putstr("HELP for te & "); putstr(CRT_NAME); putln(":\n");
 
-#ifdef H_0
-	putln(H_0);
-#endif
-#ifdef H_1
-	putln(H_1);
-#endif
-#ifdef H_2
-	putln(H_2);
-#endif
-#ifdef H_3
-	putln(H_3);
-#endif
-#ifdef H_4
-	putln(H_4);
-#endif
-#ifdef H_5
-	putln(H_5);
-#endif
-#ifdef H_6
-	putln(H_6);
-#endif
-#ifdef H_7
-	putln(H_7);
-#endif
-#ifdef H_8
-	putln(H_8);
-#endif
-#ifdef H_9
-	putln(H_9);
-#endif
+	for(i = k = 0; i < KEYS_MAX; ++i) {
+		if(keys[i]) {
+			putstr((s = GetKeyWhat(i)));
+
+			putchrx(' ', 10 - strlen(s));
+
+			if(keys[i] < 32) {
+				putchr('^'); putchr('@' + keys[i]);
+			}
+			else {
+				putint("%02x", keys[i]);
+			}
+
+			putchr(keys_ex[i] ? keys_ex[i] : ' ');
+
+			putchr(' ');
+
+			if(++k < 4) {
+				putstr("| ");
+			}
+			else {
+				k = 0;
+				putchr('\n');
+			}
+		}
+	}
+
+	SysLineKey(NULL);
+}
+*/
+MenuHelp()
+{
+	int i, k;
+	char *s;
+
+	ClearBox();
+
+	CrtLocate(BOX_ROW + 1, 0);
+
+	putstr("HELP for te & "); putstr(CRT_NAME); putln(":\n");
+
+	for(i = 0; help_items[i] != -1; ++i) {
+
+		// 12345678 123 12345678 (21 characters)
+		// BlkEnd   ^BE RETURN
+
+		if((k = help_items[i])) {
+			if(*(s = GetKeyWhat(k)) == '?') {
+				k = 0;
+			}
+		}
+
+		if(k) {
+			putstr(s); putchrx(' ', 9 - strlen(s));
+
+			k -= 1000;
+
+			if(keys[k] < 32) {
+				putchr('^'); putchr('@' + keys[k]);
+			}
+			else {
+				putint("%02x", keys[k]);
+			}
+
+			putchr(keys_ex[k] ? keys_ex[k] : ' ');
+
+			putchr(' ');
+
+			s = (keys_name[k] ? keys_name[k] : "");
+
+			putstr(s); putchrx(' ', 8 - strlen(s));
+		}
+		else {
+			putchrx(' ', 21);
+		}
+
+		if((i + 1) % 3) {
+			putstr(" | ");
+		}
+		else {
+			putchr('\n');
+		}
+	}
 
 	SysLineKey(NULL);
 }

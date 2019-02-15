@@ -4,7 +4,7 @@
 
 	File I/O.
 
-	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2019 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -24,6 +24,9 @@
 
 	30 Jan 2018 : Extracted from te.c.
 	22 Feb 2018 : Check for buffer changes.
+	09 Jan 2018 : Optimize ReadFile().
+	16 Jan 2019 : Added support for block selection.
+	19 Jan 2019 : Optimize WriteFile().
 */
 
 /* Reset lines array
@@ -33,16 +36,17 @@ ResetLines()
 {
 	int i;
 
-	for(i = 0; i < MAX_LINES; ++i)
-	{
-		//if(lp_arr[i] != NULL)
-		if(lp_arr[i])
-		{
-			free(lp_arr[i]); lp_arr[i] = NULL;
-		}
-	}
+	FreeArray(lp_arr, MAX_LINES, 0);
 
 	lp_cur = lp_now = lp_chg = box_shr = box_shc = 0;
+
+#if OPT_BLOCK
+
+	blk_start = blk_end = -1;
+	blk_count = 0;
+
+#endif
+
 }
 
 /* New file
@@ -50,17 +54,14 @@ ResetLines()
 */
 NewFile()
 {
-	char *p;
-
 	/* Free current contents */
-
 	ResetLines();
 
-	file_name[0] = 0;
+	/* No filename */
+	file_name[0] = '\0';
 
-	/* Build first line: Just one byte, please! */
-
-	p = malloc(1); *p = 0; lp_arr[lp_now++] = p;
+	/* Build first line */
+	InsertLine(0, NULL);
 }
 
 /* Read text file
@@ -71,36 +72,30 @@ ReadFile(fn)
 char *fn;
 {
 	FILE *fp;
-	int ch, code, len, i, tabs;
-	char *p;
+	int ch, code, len, i, tabs, rare;
+	unsigned char *p;
 
 	/* Free current contents */
-
 	ResetLines();
 
 	/* Setup some things */
-
-	code = 0;
+	code = tabs = rare = 0;
 
 	/* Open the file */
-
 	SysLine("Reading file.");
 
-	//if((fp = fopen(fn, "r")) == NULL)
 	if(!(fp = fopen(fn, "r")))
 	{
 		ErrLineOpen(); return -1;
 	}
 
 	/* Read the file */
-
 	for(i = 0; i < 32000; ++i)
 	{
-		//if(fgets(ln_dat, ln_max + 2, fp) == NULL) /* ln_max + CR + ZERO */
 		if(!fgets(ln_dat, ln_max + 2, fp)) /* ln_max + CR + ZERO */
 			break;
 
-		if(i == MAX_LINES)
+		if(lp_now == MAX_LINES)
 		{
 			ErrLineTooMany(); ++code; break;
 		}
@@ -114,44 +109,16 @@ char *fn;
 			ErrLineLong(); ++code; break;
 		}
 
-		//if((lp_arr[i] = malloc(len + 1)) == NULL)
-		if(!(lp_arr[i] = malloc(len + 1)))
+		if(!(lp_arr[lp_now] = AllocMem(len + 1)))
 		{
-			ErrLineMem(); ++code; break;
+			++code; break;
 		}
 
-		strcpy(lp_arr[i], ln_dat);
-	}
+		p = strcpy(lp_arr[lp_now++], ln_dat);
 
-	/* Close the file */
-
-	fclose(fp);
-
-	/* Check errors */
-
-	if(code)
-		return -1;
-
-	/* Set readed lines */
-
-	lp_now = i;
-
-	/* Check if empty file */
-
-	if(!lp_now)
-	{
-		/* Build first line: Just one byte, please! */
-
-		p = malloc(1); *p = 0; lp_arr[lp_now++] = p;
-	}
-
-	/* Change TABs to SPACEs, and check characters */
-
-	for(i = tabs = 0; i < lp_now; ++i)
-	{
-		p = lp_arr[i];
-
-		while((ch = (*p & 0xFF)))
+		/* Change TABs to SPACEs, and check characters */
+		//while((ch = (*p & 0xFF)))
+		while((ch = *p))
 		{
 			if(ch < ' ')
 			{
@@ -161,9 +128,7 @@ char *fn;
 				}
 				else
 				{
-					ErrLine("Bad character found.");
-
-					return -1;
+					*p = '?'; ++rare;
 				}
 			}
 
@@ -171,13 +136,29 @@ char *fn;
 		}
 	}
 
-	/* Check TABs */
+	/* Close the file */
+	fclose(fp);
 
+	/* Check errors */
+	if(code)
+		return -1;
+
+	/* Check if empty file */
+	if(!lp_now)
+	{
+		/* Build first line */
+		InsertLine(0, NULL);
+	}
+
+	/* Check TABs */
 	if(tabs)
 		ErrLine("Tabs changed to spaces.");
 
-	/* Success */
+	/* Check rare chars. */
+	if(rare)
+		ErrLine("Illegal characters changed to '?'.");
 
+	/* Success */
 	return 0;
 }
 
@@ -192,7 +173,6 @@ char *fn;
 	char *bkp;
 
 	/* Check if file exists */
-
 	//if((fp = fopen(fn, "r")) != NULL)
 	if((fp = fopen(fn, "r")))
 	{
@@ -200,12 +180,10 @@ char *fn;
 
 		bkp = "te.bkp";
 
-		/* Remove the previous backup file */
-
+		/* Remove the previous backup file, if exists */
 		remove(bkp);
 
 		/* Rename the old file as backup */
-
 		rename(fn, bkp);
 	}
 }
@@ -218,47 +196,25 @@ WriteFile(fn)
 char *fn;
 {
 	FILE *fp;
-	int i, err;
-	char *p;
-
-	/* Do backup of old file */
+	int i;
 
 	SysLine("Writing file.");
 
+	/* Backup old file */
 	BackupFile(fn);
 
 	/* Open the file */
 
-	//if((fp = fopen(fn, "w")) == NULL)
 	if(!(fp = fopen(fn, "w")))
 	{
 		ErrLineOpen(); return -1;
 	}
 
 	/* Write the file */
-
-	for(i = err = 0; i < lp_now; ++i)
+	for(i = 0; i < lp_now; ++i)
 	{
-		p = lp_arr[i];
+		if(fputs(lp_arr[i], fp) == EOF || fputc('\n', fp) == EOF) {
 
-		/* FIX-ME: We don't have fputs() yet! */
-
-		while(*p)
-		{
-			if(fputc(*p++, fp) == EOF)
-			{
-				++err; break;
-			}
-		}
-
-		if(!err)
-		{
-			if(fputc('\n', fp) == EOF)
-				++err;
-		}
-
-		if(err)
-		{
 			fclose(fp); remove(fn);
 
 			ErrLine("Can't write.");
@@ -268,7 +224,6 @@ char *fn;
 	}
 
 	/* Close the file */
-
 	if(fclose(fp) == EOF)
 	{
 		remove(fn);
@@ -279,7 +234,6 @@ char *fn;
 	}
 
 	/* Success */
-
 	return (lp_chg = 0);
 }
 

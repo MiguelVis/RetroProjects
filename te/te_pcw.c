@@ -2,7 +2,7 @@
 
 	Text editor -- version for the Amstrad PCW.
 
-	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2019 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -36,25 +36,29 @@
 	25 Jan 2018 : Find & find next keys.
 	26 Jan 2018 : Key to execute macro from file.
 	04 Feb 2018 : Key to go to line #.
-
+	30 Dec 2018 : Refactorized i/o functions.
+	17 Jan 2019 : Added CrtReverse().
+	18 Jan 2019 : Added K_DELETE.
+	23 Jan 2019 : Modified a lot for key bindings support.
+	29 Jan 2019 : Added K_CLRCLP.
+	
 	Notes:
-
-	The following #defines are optional (the binary will be smaller if you don't use them):
-
-	K_LWORD  -- go to word on the left
-	K_RWORD  -- go to word on the right
-
-	K_FIND   -- find string
-	K_NEXT   -- fint next string
-
-	K_MACRO  -- execute macro from file
-
-	K_GOTO   -- go to line #
 
 	The Amstrad PCW runs CP/M Plus (v3.1) with a VT52-like emulation,
 	and a 32x90 CRT minus 1 line for system messages (it can be enabled
 	or disabled).
 */
+
+/* Options
+   -------
+   Set to 1 to add the following functionalities, else 0.
+*/
+#define OPT_LWORD 0  /* Go to word on the left */
+#define OPT_RWORD 0  /* Go to word on the right */
+#define OPT_FIND  1  /* Find string */
+#define OPT_GOTO  1  /* Go to line # */
+#define OPT_BLOCK 1  /* Block selection */
+#define OPT_MACRO 1  /* Enable macros */
 
 /* Definitions
    -----------
@@ -68,81 +72,7 @@
 #define RULER_CHR     0x90 /* Ruler: Character - ie: . */
 #define SYS_LINE_SEP  0x9A /* System line separator character - ie: - */
 
-#define CRT_ENGLISH
-//#define CRT_SPANISH
-
-/* Keys
-   ----
-*/
-#define K_UP	 31 /* Ctl _ */
-#define K_DOWN	 30 /* Ctl ^ */
-#define K_LEFT	 1  /* Ctl A */
-#define K_RIGHT	 6  /* Ctl F */
-
-#define K_PGUP	 17 /* Ctl Q */
-#define K_PGDOWN 26 /* Ctl Z */
-
-#define K_BEGIN	 22 /* Ctl V */
-#define K_END	 28 /* Ctl \ */
-
-#define K_TOP    16 /* Ctl P */
-#define K_BOTTOM 19 /* Ctl S */
-
-#define K_TAB    9  /* Ctl I */
-
-#define K_INTRO	 13 /* Ctl M */
-#define K_ESC	 27 /* Ctl [ */
-
-#define K_RDEL	 7  /* Ctl G */
-#define K_LDEL   127
-
-#define K_CUT    21 /* Ctl U */
-#define K_COPY   18 /* Crl R */
-#define K_PASTE  23 /* Ctl W */
-
-#define K_FIND   11 /* Ctl K */
-#define K_NEXT   12 /* Ctl L */
-
-#define K_MACRO  24 /* Ctl X */
-
-#define K_GOTO   10 /* Ctl J */
-
-/* Help
-   ----
-*/
-#ifdef CRT_ENGLISH
-
-#define CRT_ESC_KEY "EXIT"
-
-#define H_0 "Up     ^_ [UP]     Left   ^A [LEFT]"
-#define H_1 "Down   ^^ [DOWN]   Right  ^L [RIGHT]"
-#define H_2 "Begin  ^V [+]      LtDel  7F [<-DEL]"
-#define H_3 "End    ^\\ [-]      RtDel  ^G [DEL->]"
-#define H_4 "Top    ^P [F7]     PgUp   ^Q [F3]"
-#define H_5 "Bottom ^S [F5]     PgDown ^Z [F1]"
-#define H_6 "Find   ^K          F.Next ^L           Go ln. ^J"
-#define H_7 "Cut    ^U [CUT]    TAB    ^I [TAB]     Macro  ^X"
-#define H_8 "Copy   ^R [RELAY]  Intro  ^M [RETURN]"
-#define H_9 "Paste  ^W [PASTE]  Esc    ^[ [EXIT]"
-
-#endif
-
-#ifdef CRT_SPANISH
-
-#define CRT_ESC_KEY "SAL"
-
-#define H_0 "Up     ^_ [ARRIBA] Left   ^A [IZQ.]"
-#define H_1 "Down   ^^ [ABAJO]  Right  ^L [DER.]"
-#define H_2 "Begin  ^V [+]      LtDel  7F [<-BORR]"
-#define H_3 "End    ^\\ [-]      RtDel  ^G [BORR->]"
-#define H_4 "Top    ^P [F7]     PgUp   ^Q [F3]"
-#define H_5 "Bottom ^S [F5]     PgDown ^Z [F1]"
-#define H_6 "Find   ^K          F.Next ^L           Go ln. ^J"
-#define H_7 "Cut    ^U [CORT]   Tab    ^I [TAB]     Macro  ^X"
-#define H_8 "Copy   ^R [JUST]   Intro  ^M [RETURN]"
-#define H_9 "Paste  ^W [INS]    Esc    ^[ [SAL]"
-
-#endif
+#define CRT_ESC_KEY "EXIT" /* Escape key name */
 
 /* Include main code
    -----------------
@@ -155,7 +85,66 @@
 */
 CrtSetup()
 {
+	CrtSetupEx();
+
+	SetKey(K_UP,        31,    '\0', NULL);
+	SetKey(K_DOWN,      30,    '\0', NULL);
+	SetKey(K_LEFT,      CTL_A, '\0', NULL);
+	SetKey(K_RIGHT,     CTL_F, '\0', NULL);
+	SetKey(K_BEGIN,     CTL_V, '\0', "+");
+	SetKey(K_END,       28,    '\0', "-");
+	SetKey(K_TOP,       CTL_P, '\0', "F7");
+	SetKey(K_BOTTOM,    CTL_S, '\0', "F5");
+	SetKey(K_PGUP,      CTL_Q, '\0', "F3");
+	SetKey(K_PGDOWN,    CTL_Z, '\0', "F1");
+	SetKey(K_TAB,       CTL_I, '\0', "TAB");
+	SetKey(K_INTRO,     CTL_M, '\0', "RETURN");
+	SetKey(K_ESC,       ESC,   '\0', "EXIT");
+	SetKey(K_RDEL,      CTL_G, '\0', "DEL->");
+	SetKey(K_LDEL,      DEL,   '\0', "<-DEL");
+	SetKey(K_CUT,       CTL_U, '\0', "CUT");
+	SetKey(K_COPY,      CTL_R, '\0', "RELAY");
+	SetKey(K_PASTE,     CTL_W, '\0', "PASTE");
+	SetKey(K_DELETE,    CTL_D, '\0', NULL);
+	SetKey(K_CLRCLP,    CTL_T, '\0', NULL);
+#if OPT_FIND	
+	SetKey(K_FIND,      CTL_K, '\0', NULL);
+	SetKey(K_NEXT,      CTL_L, '\0', NULL);
+#endif
+#if OPT_GOTO
+	SetKey(K_GOTO,      CTL_J, '\0', NULL);
+#endif
+#if OPT_LWORD		
+	/*SetKey(K_LWORD,     '\0', '\0', NULL);*/
+#endif
+#if OPT_RWORD	
+	/*SetKey(K_RWORD,     '\0', '\0', NULL);*/
+#endif
+#if OPT_BLOCK	
+	SetKey(K_BLK_START, CTL_B, 'S', NULL);
+	SetKey(K_BLK_END,   CTL_B, 'E', NULL);
+	SetKey(K_BLK_UNSET, CTL_B, 'U', NULL);
+#endif
+#if OPT_MACRO	
+	SetKey(K_MACRO,     CTL_Y, '\0', NULL);
+#endif	
 }
+
+#asm
+CrtSetupEx:
+	ld  hl,(1)
+	inc hl
+	inc hl
+	inc hl
+	ld  de,BiosConst
+	ld  bc,9
+	ldir
+	ret
+
+BiosConst:  jp 0
+BiosConin:  jp 0
+BiosConout: jp 0
+#endasm
 
 /* Reset CRT: Used when the editor exits
    -------------------------------------
@@ -175,36 +164,26 @@ CrtReset()
 */
 #asm
 CrtOut:
-	ld a,l
-	cp 10
-	jr nz,CrtOut2
-	call CrtOut2
-	ld l,13
-CrtOut2:
-	ld c,l
-	ld hl,(1)
-	ld de,9
-	add hl,de
-	jp (hl)
+	ld   a,l
+	cp   10
+	jr   nz,CrtOutRaw
+	ld   c,13
+	call BiosConout
+	ld   l,10
+CrtOutRaw:
+	ld   c,l
+	jp   BiosConout
 #endasm
 
 /* Input character from the keyboard
    ---------------------------------
    All program input is done with this function.
 
-   May be used to translate IBM PC key codes into single characters.
-
    int CrtIn(void)
 */
 #asm
 CrtIn:
-	ld hl,(1)
-	ld de,6
-	add hl,de
-	ld de,CrtIn2
-	push de
-	jp (hl)
-CrtIn2:
+	call BiosConin
 	ld h,0
 	ld l,a
 	ret
@@ -237,7 +216,7 @@ int row, col;
 CrtClearLine(row)
 int row;
 {
-	CrtLocate(row, 0); CrtOut(27); CrtOut('K');
+	CrtLocate(row, 0); CrtClearEol();
 }
 
 /* Erase from the cursor to the end of the line
@@ -246,6 +225,15 @@ int row;
 CrtClearEol()
 {
 	CrtOut(27); CrtOut('K');
+}
+
+/* Turn on / off reverse video
+   ---------------------------
+*/
+CrtReverse(on)
+int on;
+{
+	CrtOut(27); CrtOut(on ? 'p' : 'q');
 }
 
 

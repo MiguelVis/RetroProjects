@@ -1,8 +1,8 @@
-/*	te_error.c
+/*	te_misc.c
 
-	Text editor.
+	Miscelaneous tools and functions.
 
-	Errors.
+	Operations with text lines.
 
 	Copyright (c) 2015-2019 Miguel Garcia / FloppySoftware
 
@@ -22,48 +22,62 @@
 
 	Changes:
 
-	30 Jan 2018 : Extracted from te.c.
+	13 Jan 2019 : Added AllocMem().
+	19 Jan 2019 : Added FreeArray().
+	30 Jan 2019 : Added MatchStr().
 */
 
-/* Print error message and wait for a key press
-   --------------------------------------------
-*/
-ErrLine(s)
-char *s;
-{
-	SysLineKey(s);
-}
-
-/* No memory error
+/* Allocate memory
    ---------------
+   Shows error message on failure. Returns same values as malloc(),
 */
-ErrLineMem()
+AllocMem(bytes)
+unsigned int bytes;
 {
-	ErrLine("Not enough memory.");
+	char *p;
+
+	if(!(p = malloc(bytes))) {
+		ErrLineMem();
+	}
+
+	return p;
 }
 
-/* Line too long error
-   -------------------
+/* Free array
+   ----------
+   Deallocate array memory.
 */
-ErrLineLong()
+FreeArray(arr, count, flag)
+int *arr, count, flag;
 {
-	ErrLine("Line too long.");
+	int i;
+
+	for(i = 0; i < count; ++i) {
+		if(arr[i]) {
+			free(arr[i]);
+
+			arr[i] = NULL;
+		}
+	}
+
+	if(flag) {
+		free(arr);
+	}
+
+	return NULL;
 }
 
-/* Can't open file error
-   ---------------------
+#if OPT_MACRO
+
+/* Test if two strings are equal
+   -----------------------------
 */
-ErrLineOpen()
+MatchStr(s1, s2)
+char *s1, *s2;
 {
-	ErrLine("Can't open.");
+	return !strcmp(s1, s2);
 }
 
-/* Too many lines error
-   --------------------
-*/
-ErrLineTooMany()
-{
-	ErrLine("Too many lines.");
-}
+#endif
 
 

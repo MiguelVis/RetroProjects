@@ -4,7 +4,7 @@
 
 	Edit line.
 
-	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2019 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -26,6 +26,13 @@
 	04 Feb 2018 : Support for macros. Go to line #.
 	22 Feb 2018 : Check for buffer changes.
 	26 Dec 2018 : Use TAB_COLS instead of 8.
+	06 Jan 2019 : Speed improvements. Now cut deletes the line. Now paste inserts a new line before the current one.
+	08 Jan 2019 : BfEdit() now uses ModifyLine().
+	13 Jan 2019 : Minor optimizations.
+	18 Jan 2019 : Unselect block if needed.
+	18 Jan 2018 : Added K_DELETE.
+	27 Jan 2019 : Added support for macros.
+	29 Jan 2019 : Added K_CLRCLP.
 */
 
 /* Edit current line
@@ -38,39 +45,28 @@ BfEdit()
 	char *buf;
 
 	/* Get current line contents */
-
 	strcpy(ln_dat, lp_arr[lp_cur]);
 
 	/* Setup some things */
-
 	len = old_len = strlen(ln_dat);
 
 	run = upd_col = upd_now = upd_cur = 1; upd_lin = spc = 0;
 
 	/* Adjust column position */
-
 	if(box_shc > len)
 		box_shc = len;
 
 	/* Loop */
-
 	while(run)
 	{
 		/* Print line? */
-
 		if(upd_lin)
 		{
 			upd_lin = 0;
 
-		/* ************************************
-			for(i = box_shc; i < len; ++i)
-				putchr(ln_dat[i]);
-		   ************************************ */
-
 			putstr(ln_dat + box_shc);
 
 			/* Print a space? */
-
 			if(spc)
 			{
 				putchr(' '); spc = 0;
@@ -78,7 +74,6 @@ BfEdit()
 		}
 
 		/* Print length? */
-
 		if(upd_now)
 		{
 			upd_now = 0;
@@ -87,7 +82,6 @@ BfEdit()
 		}
 
 		/* Print column #? */
-
 		if(upd_col)
 		{
 			upd_col = 0;
@@ -96,7 +90,6 @@ BfEdit()
 		}
 
 		/* Locate cursor? */
-
 		if(upd_cur)
 		{
 			upd_cur = 0;
@@ -105,252 +98,244 @@ BfEdit()
 		}
 
 		/* Get character and do action */
+		ch = ForceGetCh();
 
-		/* Note: This function does preliminary checks in some
-		   keys for Loop(), to avoid wasted time. */
+#if OPT_BLOCK
 
-		switch((ch = ForceGetCh()))
-		{
-			case K_LEFT :    /* Move one character to the left ----------- */
-				if(box_shc)
+		/* Unselect block if needed: don't check blk_count, we want to unselect start and / or end block selection */
+		if(blk_start != -1 || blk_end != -1) {
+			if(ch < 1000) {
+				upd_cur = 1;
+			}
+			else {
+				switch(ch)
 				{
-					--box_shc; ++upd_col;
-				}
-				else if(lp_cur)
-				{
-					box_shc = 9999 /* strlen(lp_arr[lp_cur - 1]) */ ;
-
-					ch = K_UP;
-
-					run = 0;
-				}
-				++upd_cur;
-				break;
-			case K_RIGHT :   /* Move one character to the right ---------- */
-				if(box_shc < len)
-				{
-					++box_shc; ++upd_col;
-				}
-				else if(lp_cur < lp_now - 1)
-				{
-					ch = K_DOWN;
-
-					box_shc = run = 0;
-				}
-				++upd_cur;
-				break;
-			case K_LDEL :   /* Delete one character to the left --------- */
-				if(box_shc)
-				{
-					strcpy(ln_dat + box_shc - 1, ln_dat + box_shc);
-
-					--box_shc; --len; ++upd_now; ++upd_lin; ++spc; ++upd_col;
-
-					putchr('\b');
-				}
-				else if(lp_cur)
-					run = 0;
-				++upd_cur;
-				break;
-			case K_RDEL :   /* Delete one character to the right ------- */
-				if(box_shc < len)
-				{
-					strcpy(ln_dat + box_shc, ln_dat + box_shc + 1);
-
-					--len; ++upd_now; ++upd_lin; ++spc;
-				}
-				else if(lp_cur < lp_now -1)
-					run = 0;
-				++upd_cur;
-				break;
-			case K_CUT :    /* Delete the line ------------------------ */
-				CrtClearLine(BOX_ROW + box_shr);
-
-				strcpy(ln_clp, ln_dat);
-
-				ln_dat[0] = len = box_shc = 0;
-
-				++upd_now; ++upd_col; ++upd_cur;
-				break;
-			case K_COPY :   /* Copy the line to the clipboard --------- */
-				strcpy(ln_clp, ln_dat);
-				++upd_cur;
-				break;
-			case K_PASTE :  /* Paste the line into current column ----- */
-/*******************************************
-				if((tmp = strlen(ln_clp)))
-				{
-					if(len + tmp < ln_max)
-					{
-						for(i = len; i > box_shc; --i)
-							ln_dat[i + tmp - 1] = ln_dat[i - 1];
-
-						for(i = 0; i < tmp; ++i)
-							putchr((ln_dat[i + box_shc] = ln_clp[i]));
-
-						len += tmp; box_shc += tmp;
-
-						ln_dat[len] = 0;
-
-						++upd_lin; ++upd_now; ++upd_col;
-					}
-				}
-				++upd_cur;
-**********************************************/
-				ForceStr(ln_clp);
-				++upd_cur;
-				break;
-			case K_PGUP :   /* Page up ------------------------------ */
-			case K_TOP :    /* Document top ------------------------- */
-				if(lp_cur || box_shc)
-					run = 0;
-				++upd_cur;
-				break;
-			case K_UP :     /* Up one line -------------------------- */
-				if(lp_cur)
-					run = 0;
-				++upd_cur;
-				break;
-			case K_PGDOWN : /* Page down ---------------------------- */
-			case K_BOTTOM : /* Document bottom ---------------------- */
-				if(lp_cur < lp_now - 1 || box_shc != len)
-					run = 0;
-				++upd_cur;
-				break;
-			case K_DOWN :   /* One line down ------------------------ */
-				if(lp_cur < lp_now - 1)
-					run = 0;
-				++upd_cur;
-				break;
-			case K_BEGIN :  /* Begin of line ------------------------ */
-				if(box_shc)
-				{
-					box_shc = 0; ++upd_col;
-				}
-				++upd_cur;
-				break;
-			case K_END :    /* End of line -------------------------- */
-				if(box_shc != len)
-				{
-					box_shc = len; ++upd_col;
-				}
-				++upd_cur;
-				break;
-			case K_ESC :    /* Escape: Show the menu ---------------- */
-				run = 0;
-				break;
-			case K_INTRO :  /* Insert CR (split the line) ----------- */
-				if(lp_now < MAX_LINES)
-					run = 0;
-				break;
-			case K_TAB :    /* Insert TAB (spaces) ------------------ */
-				i = TAB_COLS - box_shc % TAB_COLS;
-
-				while(i--)
-				{
-					if(ForceCh(' '))
+					case K_INTRO :
+					case K_TAB :
+					case K_LDEL :
+					case K_RDEL :
+					case K_PASTE :
+					case K_MACRO :
+						upd_cur = 1;
 						break;
 				}
-				break;
-#ifdef K_LWORD
-			case K_LWORD :  /* Move one word to the left ------------ */
+			}
 
-				if(box_shc)
+			if(upd_cur) {
+				LoopBlkUnset();
+
+				CrtLocate(BOX_ROW + box_shr, box_shc);
+
+				upd_cur = 0;
+			}
+		}
+
+#endif
+
+		if(ch < 1000)
+		{
+			if(len < ln_max)
+			{
+				putchr(ch);
+
+				for(i = len; i > box_shc; --i)
 				{
-					/* Skip the current word if we are at its begining */
+					ln_dat[i] = ln_dat[i - 1];
+				}
 
-					if(ln_dat[box_shc] != ' ' && ln_dat[box_shc - 1] == ' ')
-						--box_shc;
+				ln_dat[box_shc++] = ch; ln_dat[++len] = 0;
+
+				++upd_lin; ++upd_now; ++upd_col;
+			}
+
+			++upd_cur;
+		}
+		else
+		{
+			/* Note: This function does preliminary checks in some
+			   keys for Loop(), to avoid wasted time. */
+			switch(ch)
+			{
+				case K_LEFT :    /* Move one character to the left -------- */
+					if(box_shc)
+					{
+						--box_shc; ++upd_col;
+					}
+					else if(lp_cur)
+					{
+						box_shc = 9999 /* strlen(lp_arr[lp_cur - 1]) */ ;
+
+						ch = K_UP;
+
+						run = 0;
+					}
+					++upd_cur;
+					break;
+				case K_RIGHT :   /* Move one character to the right ------- */
+					if(box_shc < len)
+					{
+						++box_shc; ++upd_col;
+					}
+					else if(lp_cur < lp_now - 1)
+					{
+						ch = K_DOWN;
+
+						box_shc = run = 0;
+					}
+					++upd_cur;
+					break;
+				case K_LDEL :   /* Delete one character to the left ------- */
+					if(box_shc)
+					{
+						strcpy(ln_dat + box_shc - 1, ln_dat + box_shc);
+
+						--box_shc; --len; ++upd_now; ++upd_lin; ++spc; ++upd_col;
+
+						putchr('\b');
+					}
+					else if(lp_cur)
+						run = 0;
+					++upd_cur;
+					break;
+				case K_RDEL :   /* Delete one character to the right ----- */
+					if(box_shc < len)
+					{
+						strcpy(ln_dat + box_shc, ln_dat + box_shc + 1);
+
+						--len; ++upd_now; ++upd_lin; ++spc;
+					}
+					else if(lp_cur < lp_now -1)
+						run = 0;
+					++upd_cur;
+					break;
+				case K_UP :     /* Up one line --------------------------- */
+					if(lp_cur)
+						run = 0;
+					++upd_cur;
+					break;
+				case K_DOWN :   /* One line down ------------------------- */
+					if(lp_cur < lp_now - 1)
+						run = 0;
+					++upd_cur;
+					break;
+#if OPT_BLOCK
+				case K_BLK_START : /* Set block start -------------------- */
+				case K_BLK_END :   /* Set block end ---------------------- */
+				case K_BLK_UNSET : /* Unset block  ----------------------- */
+#endif
+
+#if OPT_GOTO
+				case K_GOTO :  /* Go to line # -------------------------- */
+#endif
+
+#if OPT_MACRO
+				case K_MACRO :  /* Execute macro from file -------------- */
+#endif
+				case K_COPY :   /* Copy block/line to the clipboard ------ */
+				case K_CUT :    /* Copy and delete block/line ------------ */
+				case K_PASTE :  /* Paste clipboard before the current line */
+				case K_DELETE : /* Delete block/line --------------------- */
+				case K_CLRCLP : /* Clear the clipboard ------------------- */
+				case K_ESC :    /* Escape: Show the menu ----------------- */
+				case K_INTRO :  /* Insert CR (split the line) ------------ */
+					run = 0;
+					break;
+				case K_PGUP :   /* Page up ------------------------------- */
+				case K_TOP :    /* Document top -------------------------- */
+					if(lp_cur || box_shc)
+						run = 0;
+					++upd_cur;
+					break;
+
+				case K_PGDOWN : /* Page down ----------------------------- */
+				case K_BOTTOM : /* Document bottom ----------------------- */
+					if(lp_cur < lp_now - 1 || box_shc != len)
+						run = 0;
+					++upd_cur;
+					break;
+
+				case K_BEGIN :  /* Begin of line ------------------------- */
+					if(box_shc)
+					{
+						box_shc = 0; ++upd_col;
+					}
+					++upd_cur;
+					break;
+				case K_END :    /* End of line --------------------------- */
+					if(box_shc != len)
+					{
+						box_shc = len; ++upd_col;
+					}
+					++upd_cur;
+					break;
+				case K_TAB :    /* Insert TAB (spaces) ------------------- */
+					i = TAB_COLS - box_shc % TAB_COLS;
+
+					while(i--)
+					{
+						if(ForceCh(' '))
+							break;
+					}
+					break;
+#if OPT_LWORD
+				case K_LWORD :  /* Move one word to the left ------------ */
+
+					if(box_shc)
+					{
+						/* Skip the current word if we are at its begining */
+						if(ln_dat[box_shc] != ' ' && ln_dat[box_shc - 1] == ' ')
+							--box_shc;
+
+						/* Skip spaces */
+						while(box_shc && ln_dat[box_shc] == ' ')
+							--box_shc;
+
+						/* Find the beginning of the word */
+						while(box_shc && ln_dat[box_shc] != ' ')
+						{
+							/* Go to the beginning of the word */
+							if(ln_dat[--box_shc] == ' ')
+							{
+								++box_shc; break;
+							}
+						}
+
+						++upd_col;
+					}
+
+					++upd_cur;
+
+					break;
+#endif
+
+#if OPT_RWORD
+				case K_RWORD :  /* Move one word to the right ----------- */
+
+					/* Skip current word */
+					while(ln_dat[box_shc] && ln_dat[box_shc] != ' ')
+						++box_shc;
 
 					/* Skip spaces */
+					while(ln_dat[box_shc] == ' ')
+						++box_shc;
 
-					while(box_shc && ln_dat[box_shc] == ' ')
-						--box_shc;
+					++upd_col; ++upd_cur;
 
-					/* Find the beginning of the word */
-
-					while(box_shc && ln_dat[box_shc] != ' ')
-					{
-						/* Go to the beginning of the word */
-
-						if(ln_dat[--box_shc] == ' ')
-						{
-							++box_shc; break;
-						}
-					}
-
-					++upd_col;
-				}
-
-				++upd_cur;
-
-				break;
+					break;
 #endif
 
-#ifdef K_RWORD
-			case K_RWORD :  /* Move one word to the right ----------- */
-
-				/* Skip current word */
-
-				while(ln_dat[box_shc] && ln_dat[box_shc] != ' ')
-					++box_shc;
-
-				/* Skip spaces */
-
-				while(ln_dat[box_shc] == ' ')
-					++box_shc;
-
-				++upd_col; ++upd_cur;
-
-				break;
-#endif
-
-#ifdef K_FIND
-			case K_FIND :   /* Find string -------------------------- */
-				run = 0;
-				break;
-
-			case K_NEXT :   /* Find next string --------------------- */
-				if(find_str[0])
+#if OPT_FIND
+				case K_FIND :   /* Find string -------------------------- */
 					run = 0;
-				break;
+					break;
+
+				case K_NEXT :   /* Find next string --------------------- */
+					if(find_str[0])
+						run = 0;
+					break;
 #endif
 
-#ifdef K_GOTO
-			case K_GOTO :  /* Go to line # -------------------------- */
-				run = 0;
-				break;
-#endif
-
-#ifdef K_MACRO
-			case K_MACRO :  /* Execute macro from file -------------- */
-				run = 0;
-				break;
-#endif
-
-			default :       /* Other: Insert character -------------- */
-				if(len < ln_max && ch >= ' ')
-				{
-					putchr(ch);
-
-					for(i = len; i > box_shc; --i)
-					{
-						ln_dat[i] = ln_dat[i - 1];
-					}
-
-			/* *** Following code can cause collateral effects on some compilers ***
-					i = len;
-
-					while(i > box_shc)
-						ln_dat[i] = ln_dat[--i];
-			************************************************************************/
-
-					ln_dat[box_shc++] = ch; ln_dat[++len] = 0;
-
-					++upd_lin; ++upd_now; ++upd_col;
-				}
-				++upd_cur;
-				break;
+			}
 		}
 	}
 
@@ -368,27 +353,14 @@ BfEdit()
 			lp_chg = 1;
 		}
 	}
-	else if((buf = malloc(len + 1)))
-	{
-		/* Update the changes */
-		strcpy(buf, ln_dat);
-
-		/* Free old buffer */
-		free(lp_arr[lp_cur]);
-
-		/* Point to new buffer */
-		lp_arr[lp_cur] = buf;
+	else {
+		ModifyLine(lp_cur, ln_dat); /* FIX-ME: Re-print the line with old contents in case of error? */
 
 		/* Changes are not saved */
 		lp_chg = 1;
 	}
-	else
-	{
-		ErrLineMem(); /* FIX-ME: Re-print the line with old contents? */
-	}
 
 	/* Return last character entered */
-
 	return ch;
 }
 
@@ -445,14 +417,17 @@ ForceGetCh()
 
 		return fe_dat[fe_get++];
 	}
-	
-#ifdef K_MACRO
-	MacroGet();
-	
-	if(fe_now)
-	{
-		return ForceGetCh();
-	}	
+
+#if OPT_MACRO
+
+	if(MacroRunning()) {
+		MacroGet();
+
+		if(fe_now) {
+			return ForceGetCh();
+		}
+	}
+
 #endif
 
 	return getchr();

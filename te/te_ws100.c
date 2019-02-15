@@ -2,7 +2,7 @@
 
 	Text editor -- version for VT100 & WordStar keys, under CP/M.
 
-	Copyright (c) 2015-2018 Miguel Garcia / FloppySoftware
+	Copyright (c) 2015-2019 Miguel Garcia / FloppySoftware
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -38,21 +38,27 @@
 	24 Jan 2018 : Find & find next keys.
 	26 Jan 2018 : Key to execute macro from file.
 	04 Feb 2018 : Key to go to line #.
+	30 Dec 2018 : Refactorized i/o functions.
+	15 Jan 2019 : Added CrtReverse().
+	18 Jan 2019 : Added K_DELETE.
+	23 Jan 2019 : Modified a lot for key bindings support.
+	29 Jan 2019 : Added K_CLRCLP.
 
 	Notes:
 
-	The following #defines are optional (the binary will be smaller if you don't use them):
-
-	K_LWORD  -- go to word on the left
-	K_RWORD  -- go to word on the right
-
-	K_FIND   -- find string
-	K_NEXT   -- fint next string
-
-	K_MACRO  -- execute macro from file
-
-	K_GOTO   -- go to line #
+	-
 */
+
+/* Options
+   -------
+   Set to 1 to add the following functionalities, else 0.
+*/
+#define OPT_LWORD 1  /* Go to word on the left */
+#define OPT_RWORD 1  /* Go to word on the right */
+#define OPT_FIND  1  /* Find string */
+#define OPT_GOTO  1  /* Go to line # */
+#define OPT_BLOCK 1  /* Block selection */
+#define OPT_MACRO 1  /* Enable macros */
 
 /* Definitions
    -----------
@@ -68,59 +74,6 @@
 
 #define CRT_ESC_KEY "ESC" /* Escape key name */
 
-/* Keys
-   ----
-*/
-#define K_UP	 5  /* Ctl E -- WS */
-#define K_DOWN	 24 /* Ctl X -- WS */
-#define K_LEFT	 19 /* Ctl S -- WS */
-#define K_RIGHT	 4  /* Ctl D -- WS */
-
-#define K_PGUP	 3  /* Ctl C -- WS */
-#define K_PGDOWN 18 /* Ctl R -- WS */
-
-#define K_BEGIN	 2  /* Ctl B -- translated from WS */
-#define K_END	 20 /* Ctl T -- translated from WS */
-
-#define K_TOP    22 /* Ctl V -- translated from WS */
-#define K_BOTTOM 16 /* Ctl P -- translated from WS */
-
-#define K_TAB    9  /* Ctl I -- WS */
-
-#define K_INTRO	 13 /* Ctl M -- WS */
-#define K_ESC	 27 /* Ctl [ */
-
-#define K_RDEL	 7   /* Ctl G -- WS */
-#define K_LDEL   127 /* 0x7F  -- WS */
-
-#define K_CUT    25 /* Ctl Y -- WS */
-#define K_COPY   15 /* Crl O */
-#define K_PASTE  23 /* Ctl W */
-
-#define K_LWORD  1  /* Ctl A -- WS */
-#define K_RWORD  6  /* Ctl F -- WS */
-
-#define K_FIND   11 /* Ctl K -- translated from WS */
-#define K_NEXT   12 /* Ctl L -- WS */
-
-#define K_MACRO  26 /* Ctl Z */
-
-#define K_GOTO   10 /* Ctl J */
-
-/* Help
-   ----
-*/
-#define H_0 "Up     ^E   Left   ^S"
-#define H_1 "Down   ^X   Right  ^D"
-#define H_2 "Begin  ^QS  LtDel  ^H / 7F"
-#define H_3 "End    ^QD  RtDel  ^G"
-#define H_4 "Top    ^QR  PgUp   ^C  LtWord ^A"
-#define H_5 "Bottom ^QC  PgDown ^R  RtWord ^F"
-#define H_6 "Find   ^QF  F.Next ^L  Go ln. ^J"
-#define H_7 "Cut    ^Y   Tab    ^I  Macro  ^Z"
-#define H_8 "Copy   ^O   Intro  ^M"
-#define H_9 "Paste  ^W   Esc    ^["
-
 /* Include main code
    -----------------
 */
@@ -132,7 +85,66 @@
 */
 CrtSetup()
 {
+	CrtSetupEx();
+
+	SetKey(K_UP,        CTL_E, '\0', NULL);
+	SetKey(K_DOWN,      CTL_X, '\0', NULL);
+	SetKey(K_LEFT,      CTL_S, '\0', NULL);
+	SetKey(K_RIGHT,     CTL_D, '\0', NULL);
+	SetKey(K_BEGIN,     CTL_Q, 'S',  NULL);
+	SetKey(K_END,       CTL_Q, 'D',  NULL);
+	SetKey(K_TOP,       CTL_Q, 'R',  NULL);
+	SetKey(K_BOTTOM,    CTL_Q, 'C',  NULL);
+	SetKey(K_PGUP,      CTL_C, '\0', NULL);
+	SetKey(K_PGDOWN,    CTL_R, '\0', NULL);	
+	SetKey(K_TAB,       CTL_I, '\0', "TAB");
+	SetKey(K_INTRO,     CTL_M, '\0', "or ^N");
+	SetKey(K_ESC,       ESC,   '\0', "ESC");
+	SetKey(K_RDEL,      CTL_G, '\0', NULL);
+	SetKey(K_LDEL,      CTL_H, '\0', "or DEL");
+	SetKey(K_CUT,       CTL_Y, '\0', NULL);
+	SetKey(K_COPY,      CTL_O, '\0', NULL);
+	SetKey(K_PASTE,     CTL_W, '\0', NULL);
+	SetKey(K_DELETE,    CTL_K, 'Y',  NULL);
+	SetKey(K_CLRCLP,    CTL_T, '\0', NULL);
+#if OPT_FIND
+	SetKey(K_FIND,      CTL_Q, 'F',  NULL);
+	SetKey(K_NEXT,      CTL_L, '\0', NULL);
+#endif
+#if OPT_GOTO
+	SetKey(K_GOTO,      CTL_J, '\0', NULL);
+#endif
+#if OPT_LWORD	
+	SetKey(K_LWORD,     CTL_A, '\0', NULL);
+#endif
+#if OPT_RWORD
+	SetKey(K_RWORD,     CTL_F, '\0', NULL);
+#endif
+#if OPT_BLOCK
+	SetKey(K_BLK_START, CTL_K, 'B', NULL);
+	SetKey(K_BLK_END,   CTL_K, 'K', NULL);
+	SetKey(K_BLK_UNSET, CTL_K, 'U', NULL);
+#endif
+#if OPT_MACRO
+	SetKey(K_MACRO,     CTL_Q, 'M', NULL);
+#endif
 }
+
+#asm
+CrtSetupEx:
+	ld  hl,(1)
+	inc hl
+	inc hl
+	inc hl
+	ld  de,BiosConst
+	ld  bc,9
+	ldir
+	ret
+
+BiosConst:  jp 0
+BiosConin:  jp 0
+BiosConout: jp 0
+#endasm
 
 /* Reset CRT: Used when the editor exits
    -------------------------------------
@@ -145,88 +157,49 @@ CrtReset()
 /* Output character to the CRT
    ---------------------------
    All program output is done with this function.
-
+   
    On '\n' outputs '\n' + '\r'.
 
    void CrtOut(int ch)
 */
 #asm
 CrtOut:
-	ld a,l
-	cp 10
-	jr nz,CrtOut2
-	call CrtOut2
-	ld l,13
-CrtOut2:
-	ld c,l
-	ld hl,(1)
-	ld de,9
-	add hl,de
-	jp (hl)
+	ld   a,l
+	cp   10
+	jr   nz,CrtOutRaw
+	ld   c,13
+	call BiosConout
+	ld   l,10
+CrtOutRaw:
+	ld   c,l
+	jp   BiosConout
 #endasm
 
 /* Input character from the keyboard
    ---------------------------------
    All program input is done with this function.
 
-   May be used to translate key codes.
+   Translate WordStar key sequences to TE key codes.
 
    int CrtIn(void)
 */
-
 CrtIn()
 {
 	int ch;
 
-	/* Get character from keyboard */
-
-	ch = CrtInEx();
-
-	/* Make Ctrl H (backspace) equivalent to DEL */
-
-	if(ch == 8) /* Ctrl H */
-		return K_LDEL;
-
-	/* Translate some Ctrl Q + ? commands */
-
-	if(ch == 17) /* Ctrl Q */
-	{
-		ch = CrtInEx();
-
-		switch(ch)
-		{
-			case 'r' :
-			case 'R' :
-				return K_TOP;
-			case 'c' :
-			case 'C' :
-				return K_BOTTOM;
-			case 's' :
-			case 'S' :
-				return K_BEGIN;
-			case 'd' :
-			case 'D' :
-				return K_END;
-			case 'f' :
-			case 'F' :
-				return K_FIND;
-		}
+	switch(ch = CrtInEx()) {
+		case DEL :   /* DEL == CTL_H */
+			return CTL_H;
+		case CTL_N : /* ^N == ^M */
+			return CTL_M;
 	}
-
-	/* Return character */
-
+	
 	return ch;
 }
 
 #asm
 CrtInEx:
-	ld hl,(1)
-	ld de,6
-	add hl,de
-	ld de,CrtIn2
-	push de
-	jp (hl)
-CrtIn2:
+	call BiosConin
 	ld h,0
 	ld l,a
 	ret
@@ -261,7 +234,7 @@ int row, col;
 CrtClearLine(row)
 int row;
 {
-	CrtLocate(row, 0); CrtOut(27); putstr("[K");
+	CrtLocate(row, 0); CrtClearEol();
 }
 
 /* Erase from the cursor to the end of the line
@@ -270,6 +243,15 @@ int row;
 CrtClearEol()
 {
 	CrtOut(27); putstr("[K");
+}
+
+/* Turn on / off reverse video
+   ---------------------------
+*/
+CrtReverse(on)
+int on;
+{
+	CrtOut(27); CrtOut('['); CrtOut(on ? '7' : '0'); CrtOut('m');
 }
 
 

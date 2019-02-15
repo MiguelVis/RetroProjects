@@ -38,21 +38,27 @@
 	02 Jun 2016 : mgl : Minor changes.
 	25 Jan 2018 : mgl : Find & find next keys.
 	20 Feb 2018 : mgl : Macro & go to line # keys.
+	30 Dec 2018 : Refactorized i/o functions.
+	15 Jan 2019 : Added CrtReverse().
+	18 Jan 2019 : Added K_DELETE.
+	23 Jan 2019 : Modified a lot for key bindings support.
+	29 Jan 2019 : Added K_CLRCLP.
 
 	Notes:
 
-	The following #defines are optional (the binary will be smaller if you don't use them):
-
-	K_LWORD  -- go to word on the left
-	K_RWORD  -- go to word on the right
-
-	K_FIND   -- find string
-	K_NEXT   -- fint next string
-
-	K_MACRO  -- execute macro from file
-
-	K_GOTO   -- go to line #
+	-
 */
+
+/* Options
+   -------
+   Set to 1 to add the following functionalities, else 0.
+*/
+#define OPT_LWORD 0  /* Go to word on the left */
+#define OPT_RWORD 0  /* Go to word on the right */
+#define OPT_FIND  1  /* Find string */
+#define OPT_GOTO  1  /* Go to line # */
+#define OPT_BLOCK 1  /* Block selection */
+#define OPT_MACRO 1  /* Enable macros */
 
 /* Definitions
    -----------
@@ -66,60 +72,7 @@
 #define RULER_CHR     '.'  /* Ruler: Character */
 #define SYS_LINE_SEP  '-'  /* System line separator character */
 
-#define CRT_ENGLISH
-
-/* Keys
-   ----
-*/
-#define K_UP	 11 /* Ctl K */
-#define K_DOWN	 10 /* Ctl J */
-#define K_LEFT	 8  /* Ctl H */
-#define K_RIGHT	 12 /* Ctl L */
-
-#define K_PGUP	 17 /* Ctl Q */
-#define K_PGDOWN 26 /* Ctl Z */
-
-#define K_BEGIN	 22 /* Ctl V */
-#define K_END	 28 /* Ctl \ */
-
-#define K_TOP    16 /* Ctl P */
-#define K_BOTTOM 19 /* Ctl S */
-
-#define K_TAB    9  /* Ctl I */
-
-#define K_INTRO	 13 /* Ctl M */
-#define K_ESC	 27 /* Ctl [ */
-
-#define K_RDEL	 7  /* Ctl G */
-#define K_LDEL   127
-
-#define K_CUT    21 /* Ctl U */
-#define K_COPY   18 /* Crl R */
-#define K_PASTE  23 /* Ctl W */
-
-#define K_FIND   2  /* Ctl B */
-#define K_NEXT   4  /* Ctl D */
-
-#define K_MACRO  24 /* Ctl X */
-
-#define K_GOTO   1  /* Ctl A */
-
-/* Help
-   ----
-*/
-
-#define CRT_ESC_KEY "ESC"
-
-#define H_0 "Up     ^K [UP]     Left   ^H [LEFT]"
-#define H_1 "Down   ^J [DOWN]   Right  ^L [RIGHT]"
-#define H_2 "Begin  ^V          LtDel   [DEL]"
-#define H_3 "End    ^\\          RtDel  ^G"
-#define H_4 "Top    ^P          PgUp   ^Q"
-#define H_5 "Bottom ^S          PgDown ^Z"
-#define H_6 "Find   ^B          F.Next ^D          Go ln. ^A"
-#define H_7 "Cut    ^U          Tab    ^I          Macro  ^X"
-#define H_8 "Copy   ^R          Intro  ^M [RETURN]"
-#define H_9 "Paste  ^W          Esc    [ESC]"
+#define CRT_ESC_KEY  "ESC" /* Escape key name */
 
 /* Include main code
    -----------------
@@ -132,7 +85,66 @@
 */
 CrtSetup()
 {
+	CrtSetupEx();
+
+	SetKey(K_UP,        CTL_K, '\0', NULL);
+	SetKey(K_DOWN,      CTL_J, '\0', NULL);
+	SetKey(K_LEFT,      CTL_H, '\0', NULL);
+	SetKey(K_RIGHT,     CTL_L, '\0', NULL);
+	SetKey(K_BEGIN,     CTL_V, '\0', NULL);
+	SetKey(K_END,       28,    '\0', NULL);
+	SetKey(K_TOP,       CTL_P, '\0', NULL);
+	SetKey(K_BOTTOM,    CTL_S, '\0', NULL);
+	SetKey(K_PGUP,      CTL_Q, '\0', NULL);
+	SetKey(K_PGDOWN,    CTL_Z, '\0', NULL);
+	SetKey(K_TAB,       CTL_I, '\0', NULL);
+	SetKey(K_INTRO,     CTL_M, '\0', "RETURN");
+	SetKey(K_ESC,       ESC,   '\0', "ESC");
+	SetKey(K_RDEL,      CTL_G, '\0', NULL);
+	SetKey(K_LDEL,      DEL,   '\0', "DEL");
+	SetKey(K_CUT,       CTL_U, '\0', NULL);
+	SetKey(K_COPY,      CTL_R, '\0', NULL);
+	SetKey(K_PASTE,     CTL_W, '\0', NULL);
+	SetKey(K_DELETE,    CTL_X, '\0', NULL);
+	SetKey(K_CLRCLP,    CTL_T, '\0', NULL);
+#if OPT_FIND	
+	SetKey(K_FIND,      CTL_F, '\0', NULL);
+	SetKey(K_NEXT,      CTL_D, '\0', NULL);
+#endif
+#if OPT_GOTO
+	SetKey(K_GOTO,      CTL_A, '\0', NULL);
+#endif
+#if OPT_LWORD		
+	/*SetKey(K_LWORD,     '\0', '\0', NULL);*/
+#endif
+#if OPT_RWORD	
+	/*SetKey(K_RWORD,     '\0', '\0', NULL);*/
+#endif
+#if OPT_BLOCK	
+	SetKey(K_BLK_START, CTL_B, 'S', NULL);
+	SetKey(K_BLK_END,   CTL_B, 'E', NULL);
+	SetKey(K_BLK_UNSET, CTL_B, 'U', NULL);
+#endif
+#if OPT_MACRO	
+	SetKey(K_MACRO,     CTL_Y, '\0', NULL);
+#endif	
 }
+
+#asm
+CrtSetupEx:
+	ld  hl,(1)
+	inc hl
+	inc hl
+	inc hl
+	ld  de,BiosConst
+	ld  bc,9
+	ldir
+	ret
+
+BiosConst:  jp 0
+BiosConin:  jp 0
+BiosConout: jp 0
+#endasm
 
 /* Reset CRT: Used when the editor exits
    -------------------------------------
@@ -145,24 +157,22 @@ CrtReset()
 /* Output character to the CRT
    ---------------------------
    All program output is done with this function.
-
+   
    On '\n' outputs '\n' + '\r'.
 
    void CrtOut(int ch)
 */
 #asm
 CrtOut:
-	ld a,l
-	cp 10
-	jr nz,CrtOut2
-	call CrtOut2
-	ld l,13
-CrtOut2:
-	ld c,l
-	ld hl,(1)
-	ld de,9
-	add hl,de
-	jp (hl)
+	ld   a,l
+	cp   10
+	jr   nz,CrtOutRaw
+	ld   c,13
+	call BiosConout
+	ld   l,10
+CrtOutRaw:
+	ld   c,l
+	jp   BiosConout
 #endasm
 
 /* Input character from the keyboard
@@ -173,13 +183,7 @@ CrtOut2:
 */
 #asm
 CrtIn:
-	ld hl,(1)
-	ld de,6
-	add hl,de
-	ld de,CrtIn2
-	push de
-	jp (hl)
-CrtIn2:
+	call BiosConin
 	ld h,0
 	ld l,a
 	ret
@@ -211,7 +215,7 @@ int row, col;
 CrtClearLine(row)
 int row;
 {
-	CrtLocate(row, 0); CrtOut(24);
+	CrtLocate(row, 0); CrtClearEol();
 }
 
 /* Erase from the cursor to the end of the line
@@ -222,4 +226,13 @@ CrtClearEol()
 	CrtOut(24);
 }
 
-
+/* Turn on / off reverse video
+   ---------------------------
+*/
+CrtReverse(on)
+int on;
+{
+	CrtOut(27); CrtOut(on ? 'B' : 'C'); CrtOut('0');
+}
+
+
