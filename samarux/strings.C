@@ -30,6 +30,7 @@
 	16 Dec 2014 : v1.00 : Version for CP/M.
 	26 Aug 2015 : v1.01 : Version for SamaruX as external command.
 	07 Sep 2015 : v1.02 : Modified some messages and comments.
+	22 Mar 2019 : v1.03 : Delete unused variable.
 
 	To-do & ideas:
 
@@ -90,14 +91,14 @@ char *msg;
 
 #endif
 
-#define VERSION "Strings v1.02 / 07 Sep 2015\n\n(c) 2015 FloppySoftware"
+#define VERSION "Strings v1.03 / 22 Mar 2019\n\n(c) 2015-19 FloppySoftware"
 
 #define MAX_LENGHT 16
 
 main(argc, argv)
 int argc, argv[];
 {
-	char *pch, *fn;
+	char *pch;
 	int minlen, i;
 
 	/* No command line arguments: show usage and exit */
@@ -112,7 +113,6 @@ int argc, argv[];
 	/* Default values */
 
 	minlen = 4;  /* Minimum lenght of strings */
-	fn = NULL;   /* Filename */
 
 	/* Parse command line arguments */
 
