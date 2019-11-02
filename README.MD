@@ -7,12 +7,9 @@ Contact info.:
 
 Miguel García / FloppySoftware, Spain
 
-floppysoftware@gmail.com
-
-http://www.floppysoftware.es
-
-http://cpm-connections.blogspot.com.es
-
+- Website: [www.floppysoftware.es](http://www.floppysoftware.es)
+- Blog: [cpm-connections.blogspot.com](http://cpm-connections.blogspot.com)
+- Email: [floppysoftware@gmail.com](mailto:floppysoftware@gmail.com)
 
 2048
 ----
@@ -36,6 +33,12 @@ CF
 --
 
 Management library for configuration files.
+
+
+CF READER
+---------
+
+Simple reader library for configuration files.
 
 
 CPMX

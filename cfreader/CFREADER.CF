@@ -1,0 +1,35 @@
+# Book data:
+title = "That's cool!"
+author = Jim Brown
+year = 1977
+pages = 150
+summary = "This book, blah, blah, blah..."
+
+# Lent to:
+lent = true
+lent_to = Peter
+lend_expires = "12 Jan 2017"  
+   
+# --------------
+# TE text editor
+# --------------
+
+# Global settings:
+te.autoindent = true
+te.macros = false
+
+  # Terminal settings:
+  te.tty.name = "Amstrad PCW"
+  te.tty.core = "VT52"
+  te.tty.rows = 32
+  te.tty.cols = 90
+  
+  # Keyboard bindings:
+  te.key.begin = ^F
+  te.key.end = ^R
+  te.key.top = ^E
+  te.key.bottom = ^W
+  te.key.menu = ESC
+  te.key.find = ^A
+
+
