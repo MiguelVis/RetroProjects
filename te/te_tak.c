@@ -41,6 +41,7 @@
 	18 Jan 2019 : Added K_DELETE.
 	23 Jan 2019 : Modified a lot for key bindings support.
 	29 Jan 2019 : Added K_CLRCLP.
+	22 Dec 2019 : Modified K_BEGIN to CTL_V.
 
 	Notes:
 
@@ -93,7 +94,7 @@ CrtSetup()
 	SetKey(K_DOWN,      CTL_X, '\0', NULL);
 	SetKey(K_LEFT,      CTL_S, '\0', NULL);
 	SetKey(K_RIGHT,     CTL_D, '\0', NULL);
-	SetKey(K_BEGIN,     CTL_B, '\0', "HOME");
+	SetKey(K_BEGIN,     CTL_V, '\0', "HOME");
 	SetKey(K_END,       CTL_A, '\0', "END");
 	SetKey(K_TOP,       CTL_P, '\0', "CTL+HOME");
 	SetKey(K_BOTTOM,    CTL_F, '\0', "CTL+END");
@@ -208,7 +209,7 @@ CrtIn()
 			case 77  : /* RIGHT */
 				return 4;
 			case 71  : /* HOME - INICIO */
-				return 2;
+				return 22;
 			case 79  : /* END */
 				return 1;
 			case 73  : /* PGUP */
