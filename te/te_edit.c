@@ -33,6 +33,8 @@
 	18 Jan 2018 : Added K_DELETE.
 	27 Jan 2019 : Added support for macros.
 	29 Jan 2019 : Added K_CLRCLP.
+	24 Dec 2019 : Added support for line numbers.
+	26 Dec 2019 : Now K_INTRO is K_CR.
 */
 
 /* Edit current line
@@ -93,8 +95,12 @@ BfEdit()
 		if(upd_cur)
 		{
 			upd_cur = 0;
-
+			
+#if OPT_NUM
+			CrtLocate(BOX_ROW + box_shr, box_shc + MAX_DIGITS + 1);
+#else
 			CrtLocate(BOX_ROW + box_shr, box_shc);
+#endif		
 		}
 
 		/* Get character and do action */
@@ -110,7 +116,7 @@ BfEdit()
 			else {
 				switch(ch)
 				{
-					case K_INTRO :
+					case K_CR :
 					case K_TAB :
 					case K_LDEL :
 					case K_RDEL :
@@ -124,7 +130,11 @@ BfEdit()
 			if(upd_cur) {
 				LoopBlkUnset();
 
-				CrtLocate(BOX_ROW + box_shr, box_shc);
+#if OPT_NUM
+			CrtLocate(BOX_ROW + box_shr, box_shc + MAX_DIGITS + 1);
+#else
+			CrtLocate(BOX_ROW + box_shr, box_shc);
+#endif
 
 				upd_cur = 0;
 			}
@@ -237,7 +247,7 @@ BfEdit()
 				case K_DELETE : /* Delete block/line --------------------- */
 				case K_CLRCLP : /* Clear the clipboard ------------------- */
 				case K_ESC :    /* Escape: Show the menu ----------------- */
-				case K_INTRO :  /* Insert CR (split the line) ------------ */
+				case K_CR :     /* Insert CR (split the line) ------------ */
 					run = 0;
 					break;
 				case K_PGUP :   /* Page up ------------------------------- */

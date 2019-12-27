@@ -31,7 +31,7 @@
 ErrLine(s)
 char *s;
 {
-	SysLineKey(s);
+	SysLineCont(s);
 }
 
 /* No memory error
@@ -39,7 +39,7 @@ char *s;
 */
 ErrLineMem()
 {
-	ErrLine("Not enough memory.");
+	ErrLine("Not enough memory");
 }
 
 /* Line too long error
@@ -47,7 +47,7 @@ ErrLineMem()
 */
 ErrLineLong()
 {
-	ErrLine("Line too long.");
+	ErrLine("Line too long");
 }
 
 /* Can't open file error
@@ -55,7 +55,7 @@ ErrLineLong()
 */
 ErrLineOpen()
 {
-	ErrLine("Can't open.");
+	ErrLine("Can't open");
 }
 
 /* Too many lines error
@@ -63,7 +63,7 @@ ErrLineOpen()
 */
 ErrLineTooMany()
 {
-	ErrLine("Too many lines.");
+	ErrLine("Too many lines");
 }
 
 

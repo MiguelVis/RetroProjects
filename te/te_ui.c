@@ -28,6 +28,8 @@
 	19 Jan 2019 : Added ShowFilename().
 	23 Jan 2019 : Refactorized MenuHelp().
 	30 Jan 2019 : Added putchrx().
+	24 Dec 2019 : Modified some text messages. SysLineKey() is now SysLineCont(). Added support for numbered lines.
+	26 Dec 2019 : Now K_INTRO is K_CR. Add SysLineWait(), SysLineBack().
 */
 
 /* Read character from keyboard
@@ -100,6 +102,10 @@ char *format; int value;
 Layout()
 {
 	int i, k;
+	
+#if OPT_NUM
+	int w;
+#endif
 
 	/* Clear screen */
 	CrtClear();
@@ -117,9 +123,18 @@ Layout()
 	CrtLocate(PS_ROW, PS_COL_MAX); putint("%02d", CRT_COLS);
 
 	/* Ruler */
+#if OPT_NUM	
+	CrtLocate(BOX_ROW - 1, MAX_DIGITS + 1);
+	
+	w = CRT_COLS - MAX_DIGITS - 1;
+	
+	for(i = k = 0; i < w; ++i)
+#else
 	CrtLocate(BOX_ROW - 1, 0);
 
 	for(i = k = 0; i < CRT_COLS; ++i)
+#endif
+
 	{
 		if(k++)
 		{
@@ -174,45 +189,83 @@ char *s;
 }
 
 /* Print message on system line and wait
-   for a key press
+   for CR and / or ESC key press
+   -------------------------------------
+   Message can be NULL. Returns NZ if CR, else Z.
+*/
+SysLineWait(s, cr, esc)
+char *s, *cr, *esc;
+{
+	int ch;
+	
+	SysLine(s);
+	
+	if(s)
+		putstr(" (");
+
+	if(cr)
+	{
+		putstr(GetKeyName(K_CR)); putstr(" = "); putstr(cr); putstr(", ");
+	}
+	
+	if(esc)
+	{
+		putstr(GetKeyName(K_ESC)); putstr(" = "); putstr(esc);
+	}
+	
+	if(s)
+		putchr(')');
+	
+	putstr(": ");
+	
+	for(;;)
+	{
+		ch = getchr();
+		
+		if(cr && ch == K_CR)
+			break;
+		
+		if(esc && ch == K_ESC)
+			break;		
+	}
+	
+	SysLine(NULL);
+
+	return (ch == K_CR);
+}
+   
+
+/* Print message on system line and wait
+   for ESC key press to CONTINUE
    -------------------------------------
    Message can be NULL.
 */
-SysLineKey(s)
+SysLineCont(s)
 char *s;
 {
-	SysLine(s);
-
-	if(s)
-		putchr(' ');
-
-	putstr("Press ANY key: "); getchr();
-
-	SysLine(NULL);
+	SysLineWait(s, NULL, "continue");
 }
 
 /* Print message on system line and wait
-   for confirmation
+   for ESC key press to COMEBACK
+   -------------------------------------
+   Message can be NULL.
+*/
+SysLineBack(s)
+char *s;
+{
+	SysLineWait(s, NULL, "back");
+}
+
+/* Print message on system line and wait
+   for CONFIRMATION
    -------------------------------------
    Message can be NULL. Returns NZ if YES, else Z.
 */
 SysLineConf(s)
 char *s;
 {
-	int ch;
-
-	SysLine(s);
-
-	if(s)
-		putchr(' ');
-
-	putstr("Confirm Y/N: ");
-
-	ch = toupper(getchr());
-
-	SysLine(NULL);
-
-	return (ch == 'Y' || ch == K_INTRO);
+	return SysLineWait(s, "continue", "cancel");
 }
 
 /* Ask for a string
@@ -225,15 +278,15 @@ char *what, *buf; int maxlen;
 	int ch;
 
 	SysLine(what);
-	putstr(" ([");
-	putstr(CRT_ESC_KEY);
-	putstr("] = cancel): ");
+	putstr(" (");
+	putstr(GetKeyName(K_ESC));
+	putstr(" = cancel): ");
 
 	ch = ReadLine(buf, maxlen);
 
 	SysLine(NULL);
 
-	if(ch == K_INTRO && *buf)
+	if(ch == K_CR && *buf)
 			return 1;
 
 	return 0;
@@ -255,7 +308,7 @@ char *fn;
 */
 SysLineChanges()
 {
-	return SysLineConf("The changes will be lost!");
+	return SysLineConf("Changes will be lost!");
 }
 
 /* Read simple line
@@ -283,7 +336,7 @@ int width;
 					--len;
 				}
 				break;
-			case K_INTRO :
+			case K_CR :
 			case K_ESC :
 				buf[len] = 0;
 				return ch;
@@ -341,7 +394,13 @@ int row, sel;
 	for(i = row; i < box_rows; ++i) {
 		if(line >= blk_start) {
 			if(line <= blk_end) {
+
+#if OPT_NUM
+				CrtLocate(BOX_ROW + i, MAX_DIGITS + 1);
+				CrtClearEol();
+#else			
 				CrtClearLine(BOX_ROW + i);
+#endif
 
 				if(sel) {
 					CrtReverse(1);
@@ -372,6 +431,10 @@ Refresh(row, line)
 int row, line;
 {
 	int i;
+	
+#if OPT_NUM
+	char *format;
+#endif
 
 #if OPT_BLOCK
 
@@ -382,12 +445,22 @@ int row, line;
 
 #endif
 
+#if OPT_NUM
+	format = "%?d";
+	format[1] = '0' + MAX_DIGITS;
+#endif
+
 	for(i = row; i < box_rows; ++i)
 	{
 		CrtClearLine(BOX_ROW + i);
 
 		if(line < lp_now) {
 
+#if OPT_NUM
+			putint(format, line + 1);
+			putchr(' ');
+#endif
+	
 #if OPT_BLOCK
 
 			if(blk) {
@@ -461,9 +534,9 @@ Menu()
 		/* Ask for option */
 		if(ask)
 		{
-			SysLine("Enter option ([");
-			putstr(CRT_ESC_KEY);
-			putstr("] = return): ");
+			SysLine("Option (");
+			putstr(GetKeyName(K_ESC));
+			putstr(" = back): ");
 		}
 		else
 		{
@@ -578,48 +651,6 @@ MenuSaveAs()
 /* Menu option: Help
    -----------------
 */
-/*
-MenuHelp()
-{
-	int i, k;
-	char *s;
-
-	ClearBox();
-
-	CrtLocate(BOX_ROW + 1, 0);
-
-	putstr("HELP for te & "); putstr(CRT_NAME); putln(":\n");
-
-	for(i = k = 0; i < KEYS_MAX; ++i) {
-		if(keys[i]) {
-			putstr((s = GetKeyWhat(i)));
-
-			putchrx(' ', 10 - strlen(s));
-
-			if(keys[i] < 32) {
-				putchr('^'); putchr('@' + keys[i]);
-			}
-			else {
-				putint("%02x", keys[i]);
-			}
-
-			putchr(keys_ex[i] ? keys_ex[i] : ' ');
-
-			putchr(' ');
-
-			if(++k < 4) {
-				putstr("| ");
-			}
-			else {
-				k = 0;
-				putchr('\n');
-			}
-		}
-	}
-
-	SysLineKey(NULL);
-}
-*/
 MenuHelp()
 {
 	int i, k;
@@ -658,9 +689,7 @@ MenuHelp()
 
 			putchr(' ');
 
-			s = (keys_name[k] ? keys_name[k] : "");
-
-			putstr(s); putchrx(' ', 8 - strlen(s));
+			putstr((s = GetKeyName(k + 1000))); putchrx(' ', 8 - strlen(s));
 		}
 		else {
 			putchrx(' ', 21);
@@ -674,7 +703,7 @@ MenuHelp()
 		}
 	}
 
-	SysLineKey(NULL);
+	SysLineBack(NULL);
 }
 
 /* Menu option: About
@@ -701,7 +730,7 @@ MenuAbout()
 	CenterText(row++, "cpm-connections.blogspot.com");
 	CenterText(row++, "floppysoftware@gmail.com");
 
-	SysLineKey(NULL);
+	SysLineBack(NULL);
 }
 
 /* Menu option: Quit program

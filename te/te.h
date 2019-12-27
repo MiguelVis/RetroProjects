@@ -41,6 +41,9 @@
 	29 Jan 2019 : Added K_CLRCLP. Show clipboard status on information line.
 	30 Jan 2019 : Removed support for SamaruX.
 	15 Feb 2019 : v1.13
+	24 Dec 2019 : Added MAX_DIGITS.
+	26 Dec 2019 : Now K_INTRO is K_CR.
+	27 Dec 2019 : v1.20
 
 	Notes:
 
@@ -50,7 +53,7 @@
 /* Version
    -------
 */
-#define VERSION "v1.13 / 15 Feb 2019 for CP/M"
+#define VERSION "v1.20 / 27 Dec 2019 for CP/M"
 
 /* Copyright
    ---------
@@ -61,6 +64,8 @@
    ----------
 */
 #define MAX_LINES  512   /* Max. # of text lines: each empty line uses 2 bytes with the Z80 */
+
+#define MAX_DIGITS 3     /* Max. # of digits in line number */
 
 #define TAB_COLS   8     /* How many columns has a tab. (usually 8) */
 
@@ -114,7 +119,7 @@
 #define K_PGUP	    1008
 #define K_PGDOWN    1009
 #define K_TAB       1010
-#define K_INTRO	    1011
+#define K_CR	    1011
 #define K_ESC	    1012
 #define K_RDEL	    1013
 #define K_LDEL      1014

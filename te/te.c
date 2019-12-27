@@ -62,6 +62,8 @@
 	29 Jan 2019 : Added K_CLRCLP. Show clipboard status.
 	30 Jan 2019 : Removed support for SamaruX.
 	14 Feb 2019 : Added help items layout.
+	24 Dec 2019 : Added support for line numbers.
+	26 Dec 2019 : Now K_INTRO is K_CR, LoopIntro() is LoopCr().
 
 	Notes:
 
@@ -173,7 +175,7 @@ WORD keys_name[KEYS_MAX]; /* char *[] */
 */
 int help_items[] = {
 	K_UP,        K_DOWN,    K_TAB,
-	K_LEFT,      K_RIGHT,   K_INTRO,
+	K_LEFT,      K_RIGHT,   K_CR,
 	K_BEGIN,     K_END,     K_ESC,
 	K_TOP,       K_BOTTOM,  K_MACRO,
 	K_PGUP,      K_PGDOWN,  0,
@@ -214,7 +216,11 @@ int argc, argv[];
 	/* Setup some globals */
 	box_rows = CRT_ROWS - 4;
 
+#if OPT_NUM
+	ln_max = CRT_COLS - MAX_DIGITS - 2;
+#else
 	ln_max = CRT_COLS - 1;
+#endif
 
 	/* Setup CRT */
 	CrtSetup();
@@ -282,7 +288,7 @@ int argc, argv[];
 	{
 		if(strlen(argv[1]) > FILENAME_MAX - 1)
 		{
-			ErrLine("Filename too long.");
+			ErrLine("Filename too long");
 
 			NewFile();
 		}
@@ -334,9 +340,7 @@ Loop()
 		/* Refresh system line message if it changed */
 		if(sysln)
 		{
-			SysLine("Press [");
-			putstr(CRT_ESC_KEY);
-			putstr("] to show the menu.");
+			SysLine(GetKeyName(K_ESC));	putstr(" = menu");
 
 			sysln = 0;
 		}
@@ -374,8 +378,8 @@ Loop()
 			case K_DOWN :  /* Down one line ------------------- */
 				LoopDown();
 				break;
-			case K_INTRO : /* Insert CR ----------------------- */
-				LoopIntro();
+			case K_CR :    /* Insert CR ----------------------- */
+				LoopCr();
 				break;
 			case K_LDEL :  /* Delete CR on the left ----------- */
 				LoopLeftDel();
@@ -566,10 +570,10 @@ LoopPgDown()
 		LoopBottom();
 }
 
-/* Insert CR (intro)
-   -----------------
+/* Insert CR
+   ---------
 */
-LoopIntro()
+LoopCr()
 {
 	int ok, rs;
 

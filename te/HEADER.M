@@ -1,5 +1,5 @@
-{top}{intro}{up}
-+----------------+{intro}
-| FloppySoftware |{intro}
-+----------------+{intro}
+{top}{cr}{up}
++----------------+{cr}
+| FloppySoftware |{cr}
++----------------+{cr}
 

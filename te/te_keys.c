@@ -25,7 +25,19 @@
 	22 Jan 2019 : Start.
 	23 Jan 2019 : Added GetKeyWhat().
 	29 Jan 2019 : Added K_CLRCLP.
+	26 Dec 2019 : Now K_INTRO is K_CR. Add GetKeyName().
 */
+
+/* Return key name
+   ---------------
+*/
+GetKeyName(key)
+int key;
+{
+	key -= 1000;
+	
+	return (keys_name[key] ? keys_name[key] : "");
+}
 
 /* Return key purpose
    ------------------
@@ -46,7 +58,7 @@ int key;
 		case K_TOP:     return "Top";
 		case K_BOTTOM:  return "Bottom";
 		case K_TAB:     return "Tab";
-		case K_INTRO:   return "Intro";
+		case K_CR:      return "NewLine";
 		case K_ESC:     return "Escape";
 		case K_RDEL:    return "Del->";
 		case K_LDEL:    return "<-Del";

@@ -26,6 +26,7 @@
 	20 Feb 2018 : Disable code for macros from strings, for now.
 	26 Dec 2018 : Allow # of repeats in macros - ie {up:12}. Rename MacroGetCh() to MacroGet().
 	29 Dec 2018 : Added MacroRunning().
+	26 Dec 2019 : Now K_INTRO is K_CR.
 */
 
 /* Run a macro from file
@@ -131,7 +132,7 @@ MacroGet()
 			else
 			{
 				/* Error: missing escaped character */
-				ErrLine("Bad escape sequence.");
+				ErrLine("Bad escape sequence");
 
 				MacroStop();
 			}
@@ -188,7 +189,7 @@ MacroGet()
 				else if(MatchStr(sym, "end"))      ch = K_END;
 				else if(MatchStr(sym, "top"))      ch = K_TOP;
 				else if(MatchStr(sym, "bottom"))   ch = K_BOTTOM;
-				else if(MatchStr(sym, "intro"))    ch = K_INTRO;
+				else if(MatchStr(sym, "cr"))       ch = K_CR;
 				else if(MatchStr(sym, "tab"))      ch = K_TAB;
 				else if(MatchStr(sym, "cut"))      ch = K_CUT;
 				else if(MatchStr(sym, "copy"))     ch = K_COPY;
@@ -224,7 +225,7 @@ MacroGet()
 		}
 
 		/* Error: symbol name not found, bad formed, too large, bad # of repeats */
-		ErrLine("Bad symbol.");
+		ErrLine("Bad symbol");
 
 		MacroStop();
 	}

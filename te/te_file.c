@@ -82,7 +82,7 @@ char *fn;
 	code = tabs = rare = 0;
 
 	/* Open the file */
-	SysLine("Reading file.");
+	SysLine("Reading file... ");
 
 	if(!(fp = fopen(fn, "r")))
 	{
@@ -152,11 +152,11 @@ char *fn;
 
 	/* Check TABs */
 	if(tabs)
-		ErrLine("Tabs changed to spaces.");
+		ErrLine("Tabs changed to spaces");
 
 	/* Check rare chars. */
 	if(rare)
-		ErrLine("Illegal characters changed to '?'.");
+		ErrLine("Illegal characters changed to '?'");
 
 	/* Success */
 	return 0;
@@ -198,7 +198,7 @@ char *fn;
 	FILE *fp;
 	int i;
 
-	SysLine("Writing file.");
+	SysLine("Writing file... ");
 
 	/* Backup old file */
 	BackupFile(fn);
@@ -217,7 +217,7 @@ char *fn;
 
 			fclose(fp); remove(fn);
 
-			ErrLine("Can't write.");
+			ErrLine("Can't write");
 
 			return -1;
 		}
@@ -228,7 +228,7 @@ char *fn;
 	{
 		remove(fn);
 
-		ErrLine("Can't close.");
+		ErrLine("Can't close");
 
 		return -1;
 	}

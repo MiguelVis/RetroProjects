@@ -41,6 +41,8 @@
 	18 Jan 2019 : Added K_DELETE.
 	23 Jan 2019 : Modified a lot for key bindings support.
 	29 Jan 2019 : Added K_CLRCLP.
+	24 Dec 2019 : Added OPT_NUM.
+	26 Dec 2019 : Now K_INTRO is K_CR. Remove CRT_ESC_KEY.
 	
 	Notes:
 
@@ -59,6 +61,7 @@
 #define OPT_GOTO  1  /* Go to line # */
 #define OPT_BLOCK 1  /* Block selection */
 #define OPT_MACRO 1  /* Enable macros */
+#define OPT_NUM   1  /* Line numbers */
 
 /* Definitions
    -----------
@@ -71,8 +74,6 @@
 #define RULER_TAB     0x91 /* Ruler: Tab stop character - ie: ! */
 #define RULER_CHR     0x90 /* Ruler: Character - ie: . */
 #define SYS_LINE_SEP  0x9A /* System line separator character - ie: - */
-
-#define CRT_ESC_KEY "EXIT" /* Escape key name */
 
 /* Include main code
    -----------------
@@ -98,7 +99,7 @@ CrtSetup()
 	SetKey(K_PGUP,      CTL_Q, '\0', "F3");
 	SetKey(K_PGDOWN,    CTL_Z, '\0', "F1");
 	SetKey(K_TAB,       CTL_I, '\0', "TAB");
-	SetKey(K_INTRO,     CTL_M, '\0', "RETURN");
+	SetKey(K_CR,        CTL_M, '\0', "RETURN");
 	SetKey(K_ESC,       ESC,   '\0', "EXIT");
 	SetKey(K_RDEL,      CTL_G, '\0', "DEL->");
 	SetKey(K_LDEL,      DEL,   '\0', "<-DEL");

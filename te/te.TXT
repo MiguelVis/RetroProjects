@@ -1,9 +1,9 @@
 +----+
-| te +-------------+
+| TE +-------------+
 +----| Text Editor |
      +-------------+
 
-v1.13 / 15 Feb 2019
+v1.20 / 27 Dec 2019
 
 (c) 2015-2019 Miguel Garcia / FloppySoftware
 
@@ -15,7 +15,7 @@ v1.13 / 15 Feb 2019
 Introduction
 ------------
 
-The te text editor is small, humble, and useful.
+The TE text editor is small, humble, and useful.
 
 It's screen oriented, and can be easily adapted to a lot of computers.
 
@@ -29,14 +29,14 @@ Command line
 It's simple (for the PCW adaptation; see below for the name of the rest
 of available adaptations):
 
-        te_pcw [filename]
+        TE_PCW [filename]
 
 Examples:
 
-        te_pcw           - To start an empty document.
-        te_pcw notes.txt - To edit the document 'notes.txt'.
+        TE_PCW           - To start an empty document.
+        TE_PCW notes.txt - To edit the document 'notes.txt'.
 
-You could rename the adaptation of your choice to simply 'te'.
+You could rename the adaptation of your choice to simply 'TE'.
 
 
 The screen layout
@@ -54,7 +54,7 @@ The very first field, can have one of the following values:
 
         --- Means the clipboard is empty.
         CLP Means the clipboard has data.
- 
+
 The numbers following 'Lin' are:
 
         0015 - The line number you are editing right now.
@@ -69,6 +69,9 @@ The numbers following 'Col' are:
 And, finally, the number following 'Len' is:
 
         36 - The length of the current line.
+
+A line number is shown at the start of each line of text, if TE has
+been compiled with this option enabled. The first line number is 1.
 
 On the last screen line, you will see program messages and questions.
 
@@ -91,7 +94,7 @@ The options are:
         Save      - To save the current document
         save As   - To save the current document under another filename.
         Help      - To show the help screen.
-        aBout te  - To show some te information.
+        aBout te  - To show some TE information.
         eXit te   - To quit the program.
 
 You can select an option by pressing the character in uppercase.
@@ -99,8 +102,8 @@ You can select an option by pressing the character in uppercase.
 To leave the menu, you must press ESCAPE.
 
 If you select one of the options New, Open or eXit, and there are any
-changes that are not saved yet, te will ask you for confirmation
-before proceed (both INTRO or Y mean YES).
+changes that are not saved yet, TE will ask you for confirmation
+before proceed.
 
 If you start a new document, the 'Save' option will redirect to you to
 the 'save As' option.
@@ -111,17 +114,17 @@ of the program adaptation.
 For example, in the case of TE_WS100 (25x80 VT100 and WordStar keys) you
 could see something like this:
 
-        Up       ^E           | Down     ^X           | Tab      ^I  TAB
-        Left     ^S           | Right    ^D           | Intro    ^M  or ^N
-        Begin    ^QS          | End      ^QD          | Escape   ^[  ESC
-        Top      ^QR          | Bottom   ^QC          | Macro    ^QM
-        PgUp     ^C           | PgDown   ^R           |
-        <-Word   ^A           | Word->   ^F           |
-        <-Del    ^H  or DEL   | Del->    ^G           |
-        BlkStart ^KB          | BlkEnd   ^KK          | BlkUnset ^KU
-        Cut      ^Y           | Copy     ^O           | Paste    ^W
-        Delete   ^KY          | ClrClip  ^T           |
-        Find     ^QF          | F.Next   ^L           | GoLine   ^J
+        Up       ^E           | Down     ^X        | Tab      ^I  TAB
+        Left     ^S           | Right    ^D        | Intro    ^M  or ^N
+        Begin    ^QS          | End      ^QD       | Escape   ^[  ESC
+        Top      ^QR          | Bottom   ^QC       | Macro    ^QM
+        PgUp     ^C           | PgDown   ^R        |
+        <-Word   ^A           | Word->   ^F        |
+        <-Del    ^H  or DEL   | Del->    ^G        |
+        BlkStart ^KB          | BlkEnd   ^KK       | BlkUnset ^KU
+        Cut      ^Y           | Copy     ^O        | Paste    ^W
+        Delete   ^KY          | ClrClip  ^T        |
+        Find     ^QF          | F.Next   ^L        | GoLine   ^J
 
 The clipboard
 -------------
@@ -136,13 +139,14 @@ anymore, to free some memory.
 Key bindings
 ------------
 
-As you can see in the help screen of example, there are some key bindings
-to perform actions when you are editing the file.
+As you can see in the help screen of example, there are some key
+bindings to perform actions when you are editing the file.
 
 The exact keys you must press to do an action, depend on the adaptation
 you are running, but the meanings are the same:
 
-        - Up, Down, Left, Right: to move the cursor one character at a time.
+        - Up, Down, Left, Right: to move the cursor one character at
+          a time.
         - Begin, End: to move the cursor to the begin or the end of the
           current line.
         - Top, Bottom: to move the cursor to the begin or the end of the
@@ -160,15 +164,15 @@ you are running, but the meanings are the same:
         - ClrClip: to clear the clipboard data.
         - Macro: to run a macro.
         - Tab: to insert spaces as indentation.
-        - Intro: to insert a break or empty line.
+        - NewLine: to insert a break or empty line.
         - Esc: to exit the menu or cancel an action.
 
-Take into account that some actions could not be available in all te
+Take into account that some actions could not be available in all TE
 adaptations to save memory space. These actions are: <-Word, Word->,
 Find, F.Next, GoLine, BlkStart, BlkEnd, BlkUnset and Macro.
 
 If you miss one or more of the mentioned actions, you can edit the exact
-file of the te adaptation and recompile it to include them.
+file of the TE adaptation and recompile it to include them.
 
 
 Macros
@@ -191,7 +195,7 @@ There are some special symbols you can use in your macros:
         {up} {down} {left} {right}
         {begin} {end}
         {top} {bottom}
-        {intro}
+        {cr}
         {tab}
         {cut} {copy} {paste} {delete}
         {clrclip}
@@ -205,30 +209,30 @@ are equivalents.
 
 Additionally, you can repeat a symbol as in:
 
-        {up:12} 
+        {up:12}
 
-Take into account that line endings in the macro are not translated to Intro
-actions. Use {intro} for that.
+Take into account that line endings in the macro are not translated
+to Intro actions. Use {cr} for that.
 
-If you need to insert the { or } characters in the text of the macro, just
-write \{ and \}.
+If you need to insert the { or } characters in the text of the macro,
+just write \{ and \}.
 
-For example, a macro to insert a banner at the top of the document, could
-be written as:
+For example, a macro to insert a banner at the top of the document,
+could be written as:
 
-        {top}{intro}{up}
-        =============={intro}
-        FloppySoftware{intro}
-        =============={intro}
+        {top}{cr}{up}
+        =============={cr}
+        FloppySoftware{cr}
+        =============={cr}
 
 
 File backup
 -----------
 
-Each time a file is saved, te does a backup of the previous file
+Each time a file is saved, TE does a backup of the previous file
 contents if it exists.
 
-It is renamed as 'te.bkp'.
+It is renamed as 'TE.BKP'.
 
 
 Adaptations
@@ -249,13 +253,13 @@ See the source code files for more information.
 
 Current CP/M adaptations are:
 
-        - te_pcw:   Amstrad PCW and CP/M Plus (31x90 VT52 like terminal).
-        - te_cpc3:  Amstrad CPC and CP/M Plus (24x80 VT52 like terminal).
-        - te_spec:  Spectrum +3 and CP/M Plus (23x51 VT52 like terminal).
-        - te_mur:   K. Murakami's CP/M emulator (25x80 VT100/Ansi).
-        - te_tak:   Takeda Toshiya's CP/M emulator (25x80 VT100/Ansi).
-        - te_ws100: Generic 25x80 VT100 and WordStar keys.
-        - te_kp:    Kaypro II, 4 and 10 (24x80 ADM-3A like terminal),
+        - TE_PCW:   Amstrad PCW and CP/M Plus (31x90 VT52 like terminal).
+        - TE_CPC3:  Amstrad CPC and CP/M Plus (24x80 VT52 like terminal).
+        - TE_SPEC:  Spectrum +3 and CP/M Plus (23x51 VT52 like terminal).
+        - TE_MUR:   K. Murakami's CP/M emulator (25x80 VT100/Ansi).
+        - TE_TAK:   Takeda Toshiya's CP/M emulator (25x80 VT100/Ansi).
+        - TE_WS100: Generic 25x80 VT100 and WordStar keys.
+        - TE_KP:    Kaypro II, 4 and 10 (24x80 ADM-3A like terminal),
                     contributed by Stephen S. Mitchell (thanks!).
 
 Adaptations for other OS are (they are distributed apart):
@@ -278,6 +282,6 @@ See the file 'copying.txt' for more details.
 About this file
 ---------------
 
-Of course, this text file has been created and edited with te.
+Of course, this text file has been created and edited with TE.
 
-
+
