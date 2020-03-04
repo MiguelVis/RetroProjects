@@ -3,9 +3,9 @@
 +----| Text Editor |
      +-------------+
 
-v1.20 / 27 Dec 2019
+v1.30 / 04 Mar 2020
 
-(c) 2015-2019 Miguel Garcia / FloppySoftware
+(c) 2015-2020 Miguel Garcia / FloppySoftware
 
     www.floppysoftware.es
     cpm-connections.blogspot.com
@@ -173,6 +173,30 @@ Find, F.Next, GoLine, BlkStart, BlkEnd, BlkUnset and Macro.
 
 If you miss one or more of the mentioned actions, you can edit the exact
 file of the TE adaptation and recompile it to include them.
+
+
+Auto-completion
+---------------
+
+If the text editor is compiled with the auto-completion option enabled,
+the input of some characters will cause the automatic input of some other.
+
+Very useful for programmers:
+-[ --> ]
+-{ --> }
+-( --> )
+-" --> "
+-' --> '
+
+Also, for C language style comments:
+-/* --> */
+
+
+Auto-indentation
+----------------
+
+The text editor supports automatic indentation of lines, according
+to the indentation of the previous one.
 
 
 Macros

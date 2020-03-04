@@ -44,6 +44,10 @@
 	24 Dec 2019 : Added MAX_DIGITS.
 	26 Dec 2019 : Now K_INTRO is K_CR.
 	27 Dec 2019 : v1.20
+	29 Feb 2020 : Adjust KEYS_MAX.
+	01 Mar 2020 : Added OPT_CLANG. Set default options.
+	02 Mar 2020 : Added OPT_INDENT.
+	04 Mar 2020 : v1.30
 
 	Notes:
 
@@ -53,12 +57,51 @@
 /* Version
    -------
 */
-#define VERSION "v1.20 / 27 Dec 2019 for CP/M"
+#define VERSION "v1.30 / 04 Mar 2020 for CP/M"
 
 /* Copyright
    ---------
 */
-#define COPYRIGHT "(c) 2015-2019 Miguel Garcia / FloppySoftware"
+#define COPYRIGHT "(c) 2015-2020 Miguel Garcia / FloppySoftware"
+
+/* Default options
+   ---------------
+*/
+#ifndef OPT_LWORD
+#define OPT_LWORD  1  /* Go to word on the left */
+#endif
+
+#ifndef OPT_RWORD
+#define OPT_RWORD  1  /* Go to word on the right */
+#endif
+
+#ifndef OPT_FIND
+#define OPT_FIND   1  /* Find string */
+#endif
+
+#ifndef OPT_GOTO
+#define OPT_GOTO   1  /* Go to line # */
+#endif
+
+#ifndef OPT_BLOCK
+#define OPT_BLOCK  1  /* Block selection */
+#endif
+
+#ifndef OPT_MACRO
+#define OPT_MACRO  1  /* Enable macros */
+#endif
+
+#ifndef OPT_NUM
+#define OPT_NUM    1  /* Line numbers */
+#endif
+
+#ifndef OPT_CLANG
+#define OPT_CLANG  1  /* C language completion */
+#endif
+
+#ifndef OPT_INDENT
+#define OPT_INDENT 1  /* Automatic indentation */
+#endif
 
 /* More defs.
    ----------
@@ -72,8 +115,6 @@
 #define FORCED_MAX 128   /* Keyboard forced entry buffer size (for paste, tabs, etc.) */
 
 #define FIND_MAX   32    /* Find string buffer size */
-
-#define KEYS_MAX   32    /* Max. # of key bindings */
 
 #define PS_ROW     0     /* Information position */
 #define PS_FNAME   4     /* Filename - position in row */
@@ -137,6 +178,8 @@
 #define K_BLK_END   1026
 #define K_BLK_UNSET 1027
 #define K_MACRO     1028
+
+#define KEYS_MAX    29   /* Max. # of key bindings */
 
 /* Control characters
    ------------------

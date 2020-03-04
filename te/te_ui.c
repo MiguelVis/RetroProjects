@@ -30,6 +30,7 @@
 	30 Jan 2019 : Added putchrx().
 	24 Dec 2019 : Modified some text messages. SysLineKey() is now SysLineCont(). Added support for numbered lines.
 	26 Dec 2019 : Now K_INTRO is K_CR. Add SysLineWait(), SysLineBack().
+	28 Feb 2020 : Minor changes.
 */
 
 /* Read character from keyboard
@@ -111,7 +112,7 @@ Layout()
 	CrtClear();
 
 	/* Header */
-	putln("te:");
+	putstr("te:");
 
 	/* Information layout */
 	CrtLocate(PS_ROW, PS_INF); putstr(PS_TXT);
@@ -120,7 +121,7 @@ Layout()
 	CrtLocate(PS_ROW, PS_LIN_MAX); putint("%04d", MAX_LINES);
 
 	/* # of columns */
-	CrtLocate(PS_ROW, PS_COL_MAX); putint("%02d", CRT_COLS);
+	CrtLocate(PS_ROW, PS_COL_MAX); putint("%02d", 1 + ln_max);
 
 	/* Ruler */
 #if OPT_NUM	
@@ -526,7 +527,7 @@ Menu()
 			CenterText(row++, "save As");
 			CenterText(row++, "Help");
 			CenterText(row++, "aBout te");
-			CenterText(row++, "eXit te");
+			CenterText(row  , "eXit te");
 
 			menu = 0;
 		}
@@ -728,7 +729,7 @@ MenuAbout()
 	row++;
 	CenterText(row++, "www.floppysoftware.es");
 	CenterText(row++, "cpm-connections.blogspot.com");
-	CenterText(row++, "floppysoftware@gmail.com");
+	CenterText(row  , "floppysoftware@gmail.com");
 
 	SysLineBack(NULL);
 }

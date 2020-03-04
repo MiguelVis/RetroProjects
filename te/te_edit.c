@@ -35,6 +35,7 @@
 	29 Jan 2019 : Added K_CLRCLP.
 	24 Dec 2019 : Added support for line numbers.
 	26 Dec 2019 : Now K_INTRO is K_CR.
+	01 Mar 2020 : Added CLANG support. Set fe_forced flag in ForceGetCh().
 */
 
 /* Edit current line
@@ -95,12 +96,12 @@ BfEdit()
 		if(upd_cur)
 		{
 			upd_cur = 0;
-			
+
 #if OPT_NUM
 			CrtLocate(BOX_ROW + box_shr, box_shc + MAX_DIGITS + 1);
 #else
 			CrtLocate(BOX_ROW + box_shr, box_shc);
-#endif		
+#endif
 		}
 
 		/* Get character and do action */
@@ -156,6 +157,25 @@ BfEdit()
 				ln_dat[box_shc++] = ch; ln_dat[++len] = 0;
 
 				++upd_lin; ++upd_now; ++upd_col;
+
+#if OPT_CLANG
+#if OPT_MACRO
+				if(!MacroRunning())
+				{
+#endif
+					switch(ch)
+					{
+						case '[' : ForceChLeft(len, ']'); break;
+						case '{' : ForceChLeft(len, '}'); break;
+						case '(' : ForceChLeft(len, ')'); break;
+						case '"' : ForceChLeft(len, '"'); break;
+						case '\'' : ForceChLeft(len, '\''); break;
+						case '*' : if(box_shc > 1 && ln_dat[box_shc - 2] == '/' && len + 1 < ln_max) { ForceStr("*/"); ForceCh(K_LEFT); ForceCh(K_LEFT);} break;
+					}
+#if OPT_MACRO
+				}
+#endif
+#endif
 			}
 
 			++upd_cur;
@@ -425,6 +445,8 @@ ForceGetCh()
 		if(fe_get == FORCED_MAX)
 			fe_get = 0;
 
+		fe_forced = 1;
+
 		return fe_dat[fe_get++];
 	}
 
@@ -440,7 +462,28 @@ ForceGetCh()
 
 #endif
 
+	fe_forced = 0;
+
 	return getchr();
 }
+
+#if OPT_CLANG
+
+/* Single character completion for C language
+   ------------------------------------------
+*/
+ForceChLeft(len, ch)
+int len, ch;
+{
+	if(!fe_forced)
+	{
+		if(len < ln_max)
+		{
+			ForceCh(ch); ForceCh(K_LEFT);
+		}
+	}
+}
+
+#endif
 
 

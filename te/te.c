@@ -64,6 +64,8 @@
 	14 Feb 2019 : Added help items layout.
 	24 Dec 2019 : Added support for line numbers.
 	26 Dec 2019 : Now K_INTRO is K_CR, LoopIntro() is LoopCr().
+	01 Mar 2020 : Added fe_forced.
+	02 Mar 2020 : Added automatic indentation.
 
 	Notes:
 
@@ -134,10 +136,11 @@ int box_shc;  /* Horizontal position of cursor in the box (0..CRT_COLS - 1) */
 /* Keyboard forced entry
    ---------------------
 */
-int *fe_dat;  /* Data buffer */
-int fe_now;   /* How many characters are now in the buffer */
-int fe_set;   /* Set position */
-int fe_get;   /* Get position */
+int *fe_dat;   /* Data buffer */
+int fe_now;    /* How many characters are now in the buffer */
+int fe_set;    /* Set position */
+int fe_get;    /* Get position */
+int fe_forced; /* Flag: true if forced character on input */
 
 /* System line
    -----------
@@ -577,6 +580,10 @@ LoopCr()
 {
 	int ok, rs;
 
+#if OPT_INDENT
+	int i, k;
+#endif
+
 	if(box_shc) {
 		if(ln_dat[box_shc]) {
 			/* Cursor is in the middle of the line */
@@ -599,7 +606,27 @@ LoopCr()
 	}
 
 	if(ok) {
+
 		++lp_cur;
+
+#if OPT_INDENT
+		if(box_shc) {
+			for(i = 0; ln_dat[i] == ' '; ++i)
+				;
+
+			if(i) {
+				k = i;
+
+				strcpy(ln_dat + i, lp_arr[lp_cur]);
+
+				while(i--) {
+					ln_dat[i] = ' ';
+				}
+
+				ModifyLine(lp_cur, ln_dat);
+			}
+		}
+#endif
 
 		if(box_shr < box_rows - 1) {
 
@@ -611,7 +638,11 @@ LoopCr()
 			Refresh(0, lp_cur - box_rows + 1);
 		}
 
+#if OPT_INDENT
+		box_shc = (k ? k : 0);
+#else
 		box_shc = 0;
+#endif
 
 		lp_chg = 1;
 	}
