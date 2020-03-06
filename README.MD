@@ -125,6 +125,9 @@ My GUI and related programs for the Amstrad PCW. Binaries only.
 SAMARUX
 -------
 
+**SAMARUX has been moved to another repository:**
+[https://github.com/MiguelVis/samarux](https://github.com/MiguelVis/samarux)
+
 A Unix-like shell for CP/M. Includes some built-in and external commands.
 
 
