@@ -92,6 +92,9 @@ Simple logger for MESCC.
 MESCC
 -----
 
+**MESCC has been moved to another repository:**
+[https://github.com/MiguelVis/mescc](https://github.com/MiguelVis/mescc)
+
 Mike's Enhanced Small C Compiler for the CP/M operating system and the Z80 cpu.
 
 
