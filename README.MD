@@ -166,6 +166,9 @@ What To Do; a to-do list manager for CP/M.
 XPCW
 ----
 
+**XPCW has been moved to another repository:**
+[https://github.com/MiguelVis/xpcw](https://github.com/MiguelVis/xpcw)
+
 Graphics and keyboard library for the Amstrad PCW.
 
 
