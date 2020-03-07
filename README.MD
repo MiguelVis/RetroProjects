@@ -169,6 +169,9 @@ Graphics and keyboard library for the Amstrad PCW.
 ZSM
 ---
 
+**ZSM has been moved to another repository:**
+[https://github.com/MiguelVis/zsm](https://github.com/MiguelVis/zsm)
+
 Source code and tools for the ZSM / Z80ASMUK assembler.
 
 
