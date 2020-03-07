@@ -14,6 +14,9 @@ Miguel García / FloppySoftware, Spain
 2048
 ----
 
+**2048 has been moved to another repository:**
+[https://github.com/MiguelVis/2048](https://github.com/MiguelVis/2048)
+
 A clon of the game 2048 for the Amstrad PCW (uses XPCW).
 
 
