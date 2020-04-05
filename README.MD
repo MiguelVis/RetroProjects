@@ -77,6 +77,9 @@ Filename expansion library for MESCC. It needs LKLIST.
 KS
 --
 
+**KS has been moved to another repository:**
+[https://github.com/MiguelVis/xpcw](https://github.com/MiguelVis/ks)
+
 Keyboard & screen library for CP/M.
 
 
