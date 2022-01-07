@@ -1,0 +1,102 @@
+UMMO
+----
+
+A GAME FOR THE AMSTRAD PCW
+
+v1.1 - August 2014
+
+  )+(
+        (x)
+   :
+   :
+
+     /^\
+
+
+(c) 2014 FLOPPY SOFTWARE, VALENCIA (SPAIN)
+    floppysoftware@gmail.com
+    https://floppysoftware.es
+    https://cpm-connections.blogspot.com.es
+
+INTRODUCTION
+------------
+
+Ummo is a graphical game for the Amstrad PCW.
+
+1st of June, 1967.
+
+A UFO from planet UMMO, was seen flying over San Jose de Valderas, Madrid, Spain.
+
+Press said that... bla, bla, bla...
+
+Look. This is a shoot'em up game, you know perfectly how it works, then...
+
+Shoot the aliens or die!
+
+
+GAME FILES
+----------
+
+UMMO.COM -- Command to run the game in CP/M.
+UMMO.TXT -- This help file.
+
+
+HOW TO PLAY
+-----------
+
+UP     : MOVE UP
+DOWN   : MOVE DOWN
+LEFT   : MOVE LEFT
+RIGHT  : MOVE RIGHT
+SPACE  : LASER
+RETURN : BOMB
+STOP   : PAUSE
+EXIT   : ABORT GAME
+
+
+TECHNICAL NOTES
+---------------
+
+This program was developed using MESCC (Mike's Enhanced Small C Compiler - my
+own version of Small C), and some SAMARUC libraries (my GUI / Graphical User
+Interface for the Amstrad PCW).
+
+
+SPECIAL THANKS TO...
+--------------------
+
++ JOHN ELLIOTT, for his JOYCE emulator.
+
++ HABI SOFT, for his CP/M BOX emulator.
+
++ C. A. BERRY, for his PCW MUSIC program, originaly published in 8000 Plus
+  issue 19, page 72 (and John Elliott, who retyped and offered it in
+  the AMSTRAD newsgroup).
+
+
+COPYRIGHT AND LEGAL NOTES
+-------------------------
+
+This program is copyright of FLOPPY SOFTWARE from VALENCIA, SPAIN.
+
+This program may be distributed freely, provided that no charge is made for it,
+other than a nominal copying and administration fee.
+
+It may not be sold, or included with commercial material, without my
+written agreement in advance.
+
+I am not able to guarantee to provide technical support or to fix
+programming errors. 
+
+I accept no liability whatsoever for non-operation of this program
+or any loss or damage resulting from their use.
+
+Run it at your risk, there is not warranty of any type. 
+
+(c) 2014 FLOPPY SOFTWARE, VALENCIA (SPAIN)
+    https://floppysoftware.es
+    https://cpm-connections.blogspot.com.es
+
+EOF
+
+

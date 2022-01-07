@@ -126,7 +126,14 @@ SAMARUC
 -------
 
 My GUI and related programs for the Amstrad PCW. Binaries only.
-
+- CTLPANEL: Standalone control panel.
+- DESKJOY: Desktop.
+- EDFONT: Font editor.
+- MINES: Find that mine! minesweeper like game.
+- QJT: Quijote, the HTML reader.
+- ROSWELL: Game, help the alien scape.
+- SAMEGAME: SameGame like game.
+- UMMO: Game, shoot the aliens or die!
 
 SAMARUX
 -------

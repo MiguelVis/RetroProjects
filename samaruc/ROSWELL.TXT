@@ -19,8 +19,8 @@ Preview Edition
 (c) 2015 Miguel Garcia / FloppySoftware
     Valencia Spain
     floppysoftware@gmail.com
-    www.floppysoftware.vacau.com
-    cpm-connections.blogspot.com.es
+    https://floppysoftware.es
+    https://cpm-connections.blogspot.com.es
 
 
 INTRODUCTION
@@ -197,8 +197,8 @@ Run it at your risk, there is not warranty of any type.
 (c) 2012-2015 FLOPPY SOFTWARE (Miguel Garcia)
     VALENCIA, SPAIN
     floppysoftware@gmail.com
-    www.floppysoftware.vacau.com
-    cpm-connections.blogspot.com.es
+    https://floppysoftware.es
+    https://cpm-connections.blogspot.com.es
 
 END OF DOCUMENT
 
